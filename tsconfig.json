@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "ES2017",
+        "watch": true,
+        "outDir": "./dist",
+        "strictNullChecks": true,
+        "noImplicitAny": true
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}

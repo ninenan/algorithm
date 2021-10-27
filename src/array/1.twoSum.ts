@@ -15,6 +15,7 @@
 /* 输入：nums = [3,3], target = 6
 输出：[0,1] */
 
+// map
 const twoSum = (numArr: number[], target: number): number[] => {
   let result: number[] = [],
     cacheMap: Map<number, number> = new Map();
@@ -35,3 +36,22 @@ const twoSum = (numArr: number[], target: number): number[] => {
 console.log(twoSum([2, 7, 11, 15], 9)); // [1, 0]
 console.log(twoSum([2, 7, 11, 15], 13)); // [2, 0]
 console.log(twoSum([3, 3], 6)); // [1, 0]
+
+// 双指针
+const twoSum2 = (numArr: number[], target: number): number[] => {
+  let start = 0,
+    end = numArr.length - 1,
+    result: number[] = [];
+  while (start < end) {
+    const total = numArr[start] + numArr[end];
+    if (total === target) {
+      result.push(numArr[start], numArr[end]);
+      return result;
+    } else if (total > target) {
+      end--;
+    } else {
+      start++;
+    }
+  }
+  return result;
+};

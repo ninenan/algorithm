@@ -1,3 +1,5 @@
+// 主要练习高频题目 算法快慢指针
+
 // https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/
 
 /* 给定单向链表的头指针和一个要删除的节点的值，定义一个函数删除该节点。

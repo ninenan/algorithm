@@ -27,7 +27,7 @@ const twoSum = (numArr, target) => {
 console.log(twoSum([2, 7, 11, 15], 9)); // [1, 0]
 console.log(twoSum([2, 7, 11, 15], 13)); // [2, 0]
 console.log(twoSum([3, 3], 6)); // [1, 0]
-// 双指针
+// 双指针 必须是从小到达的排列
 const twoSum2 = (numArr, target) => {
     let start = 0, end = numArr.length - 1, result = [];
     while (start < end) {

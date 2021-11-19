@@ -1,10 +1,11 @@
 {
     "compilerOptions": {
-        "target": "ES2017",
+        "target": "ES2015",
         "watch": true,
         "outDir": "./dist",
         "strictNullChecks": true,
-        "noImplicitAny": true
+        "noImplicitAny": true,
+        "experimentalDecorators": false
     },
     "include": [
         "./src/**/*"

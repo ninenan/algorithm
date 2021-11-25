@@ -43,69 +43,41 @@ const proxyImg = new ProxyImg(preLoadImg);
 
 proxyImg.setSrc("https://cdn2.thecatapi.com/images/ced.jpg");
 
-const obj = {
-  value: 1,
-};
+const debounce = function (fn: Function, delay = 500) {
+  let timer: null | number = null;
 
-function foo() {
-  return this.value;
-}
-
-const objFoo = foo.bind(obj);
-
-// console.log(objFoo()); // 1
-
-Function.prototype.myBind = function (context = window) {
-  let self = this;
-  let NOOP = function () {};
-
-  // 获取函数从第二个参数到最后一个参数
-  const args = [].slice.call(arguments, 1);
-  // const args = Array.prototype.slice.call(arguments, 1); 也可以使用这种写法
-  let fBound = function () {
-    // 这时候的 arguments 是 bind 返回的函数所传递的参数
-    const bindArgs = [].slice.call(arguments);
-    return self.apply(
-      this instanceof NOOP ? this : context,
-      args.concat(bindArgs)
-    );
+  return function () {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    const args = arguments;
+    timer = setTimeout(() => {
+      return fn.apply(this, args);
+    }, delay);
   };
-
-  NOOP.prototype = this.prototype;
-  fBound.prototype = new NOOP();
-  return fBound;
 };
 
-const objFoo2 = foo.myBind(obj);
+const throttle = function (fn: Function, delay = 500) {
+  let flag = true;
 
-// console.log(objFoo2()); // 1
+  return function () {
+    if (!flag) return;
+    flag = false;
+    const args = arguments;
 
-let testFoo = {
-  value: 1,
+    setTimeout(() => {
+      fn.apply(this, args);
+      flag = true;
+    }, delay);
+  };
 };
 
-function bar(name: string, age: number) {
-  this.habit = "shopping";
-  console.log(this.value);
-  console.log(name);
-  console.log(age);
-}
+/* document.getElementsByTagName("img")[0].addEventListener(
+  "click",
+  debounce(() => console.log("2222"), 3000)
+); */
 
-bar.prototype.friend = "xxx";
-
-let bindFoo = bar.bind(testFoo, "xxx1");
-let testObj = new bindFoo(18);
-
-// undefined
-// xxx1
-// 18
-console.log(testObj.habit); // shopping
-console.log(testObj.friend); // xxx
-
-let bindFoo2 = bar.myBind(testFoo, "xxx2");
-let testObj2 = new bindFoo2(20);
-// undefined
-// xxx2
-// 20
-console.log(testObj2.habit); // shopping
-console.log(testObj2.friend); // xxx
+document.getElementsByTagName("img")[0].addEventListener(
+  "click",
+  throttle(() => console.log("2222"))
+);

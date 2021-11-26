@@ -38,29 +38,67 @@ class ProxyImg {
 }
 
 const imgNode = document.getElementsByTagName("img")[0];
+const btn = document.getElementsByTagName("button")[0];
 const preLoadImg = new PreLoadImg(imgNode);
 const proxyImg = new ProxyImg(preLoadImg);
 
 proxyImg.setSrc("https://cdn2.thecatapi.com/images/ced.jpg");
 
-// 事件在 n 后执行，如果 n 秒内别多次执行，则重新计时
-const debounce = (fn: Function, delay = 500) => {
+/**
+ * 防抖
+ * 事件在 n 后执行，如果 n 秒内别多次执行，则重新计时
+ * 当使用 immediate 时候，
+ * 此时注意一点，就是回调函数可能是有返回值的，
+ * 所以我们也要返回函数的执行结果，但是当 immediate 为 false 的时候，因为使用了 setTimeout ，
+ * 我们将 fn.apply(context, args) 的返回值赋给变量，
+ * 最后再 return 的时候，值将会一直是 undefined，所以我们只在 immediate 为 true 的时候返回函数的执行结果。
+ * @param fn 回调函数
+ * @param delay 延迟时间
+ * @param immediate 是否立即执行
+ * @returns 返回毁掉函数执行的结果
+ */
+const debounce = (fn: Function, delay = 500, immediate = false) => {
   let timer: null | number = null;
+  // let result: any = null;
 
-  return function (...reset) {
+  const debounced = function (...args: unknown[]) {
     if (timer) {
       clearTimeout(timer);
     }
-    timer = setTimeout(() => {
-      return fn.apply(this, reset);
-    }, delay);
+    if (immediate) {
+      // 如果已经执行了，则不再执行
+      let callNow = !timer;
+      timer = setTimeout(() => {
+        timer = null;
+      }, delay);
+      if (callNow) {
+        fn.apply(this, args);
+        // result = fn.apply(this, args);
+      }
+    } else {
+      timer = setTimeout(() => {
+        return fn.apply(this, args);
+      }, delay);
+    }
+    // return result;
   };
+
+  /**
+   * 取消 debounce 函数
+   */
+  debounced.cancel = function () {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = null;
+  };
+
+  return debounced;
 };
 
 // 单位时间内执行一次，如果单位时间内重复执行，则只执行一次
 const throttle = function (fn: Function, delay = 500) {
   let flag = true;
-  let timer = null;
 
   return function (...args: unknown[]) {
     if (!flag) return;
@@ -72,10 +110,13 @@ const throttle = function (fn: Function, delay = 500) {
   };
 };
 
-function testFn2(num: number, num2: number) {
-  console.log("num :>> ", num);
-  console.log("num2 :>> ", num2);
+function testFn2(event: EventTarget) {
+  console.log("event :>> ", event);
 }
 
-imgNode.addEventListener("click", debounce(testFn2, 2000));
+const clickTestFn = debounce(testFn2, 5000, true);
+
+imgNode.addEventListener("click", clickTestFn);
+btn.addEventListener("click", () => clickTestFn.cancel());
+
 // imgNode.addEventListener("click", throttle(testFn2, 2000));

@@ -43,41 +43,39 @@ const proxyImg = new ProxyImg(preLoadImg);
 
 proxyImg.setSrc("https://cdn2.thecatapi.com/images/ced.jpg");
 
-const debounce = function (fn: Function, delay = 500) {
+// 事件在 n 后执行，如果 n 秒内别多次执行，则重新计时
+const debounce = (fn: Function, delay = 500) => {
   let timer: null | number = null;
 
-  return function () {
+  return function (...reset) {
     if (timer) {
       clearTimeout(timer);
     }
-    const args = arguments;
     timer = setTimeout(() => {
-      return fn.apply(this, args);
+      return fn.apply(this, reset);
     }, delay);
   };
 };
 
+// 单位时间内执行一次，如果单位时间内重复执行，则只执行一次
 const throttle = function (fn: Function, delay = 500) {
   let flag = true;
+  let timer = null;
 
-  return function () {
+  return function (...args: unknown[]) {
     if (!flag) return;
     flag = false;
-    const args = arguments;
-
     setTimeout(() => {
-      fn.apply(this, args);
       flag = true;
+      fn.apply(this, args);
     }, delay);
   };
 };
 
-/* document.getElementsByTagName("img")[0].addEventListener(
-  "click",
-  debounce(() => console.log("2222"), 3000)
-); */
+function testFn2(num: number, num2: number) {
+  console.log("num :>> ", num);
+  console.log("num2 :>> ", num2);
+}
 
-document.getElementsByTagName("img")[0].addEventListener(
-  "click",
-  throttle(() => console.log("2222"))
-);
+imgNode.addEventListener("click", debounce(testFn2, 2000));
+// imgNode.addEventListener("click", throttle(testFn2, 2000));

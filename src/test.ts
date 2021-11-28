@@ -96,8 +96,18 @@ const debounce = (fn: Function, delay = 500, immediate = false) => {
   return debounced;
 };
 
+function testFn2(event: EventTarget) {
+  console.log("event :>> ", event);
+}
+
+// debounce
+/* const clickTestFn = debounce(testFn2, 5000, true);
+imgNode.addEventListener("click", clickTestFn);
+btn.addEventListener("click", () => clickTestFn.cancel()); */
+
 // 单位时间内执行一次，如果单位时间内重复执行，则只执行一次
-const throttle = function (fn: Function, delay = 500) {
+// 定时器版本
+/* const throttle = function (fn: Function, delay = 500) {
   let flag = true;
 
   return function (...args: unknown[]) {
@@ -108,15 +118,21 @@ const throttle = function (fn: Function, delay = 500) {
       fn.apply(this, args);
     }, delay);
   };
+}; */
+
+// 时间戳版本
+const throttle = function (fn: Function, delay: number) {
+  let previous = 0;
+
+  return function (...reset: unknown[]) {
+    const now = +new Date();
+    if (now - previous > delay) {
+      previous = now;
+      fn.apply(this, reset);
+    }
+  };
 };
 
-function testFn2(event: EventTarget) {
-  console.log("event :>> ", event);
-}
-
-const clickTestFn = debounce(testFn2, 5000, true);
-
+const clickTestFn = throttle(testFn2, 1000);
 imgNode.addEventListener("click", clickTestFn);
-btn.addEventListener("click", () => clickTestFn.cancel());
-
-// imgNode.addEventListener("click", throttle(testFn2, 2000));
+// btn.addEventListener("click", () => clickTestFn.cancel());

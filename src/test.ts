@@ -120,7 +120,7 @@ btn.addEventListener("click", () => clickTestFn.cancel()); */
   };
 }; */
 
-const throttle = function (fn: Function, delay: number) {
+/* const throttle = function (fn: Function, delay: number) {
   let flag = true;
   return function (...reset: unknown[]) {
     if (!flag) return;
@@ -132,7 +132,7 @@ const throttle = function (fn: Function, delay: number) {
       }, delay);
     }
   };
-};
+}; */
 
 // 时间戳版本
 const TimestampThrottle = function (fn: Function, delay: number) {
@@ -145,19 +145,6 @@ const TimestampThrottle = function (fn: Function, delay: number) {
     }
   };
 };
-
-// 时间戳版本
-// const throttle = function (fn: Function, delay: number) {
-//   let previous = 0;
-
-//   return function (...reset: unknown[]) {
-//     const now = +new Date();
-//     if (now - previous > delay) {
-//       previous = now;
-//       fn.apply(this, reset);
-//     }
-//   };
-// };
 
 /* const throttle3 = function (fn: Function, delay: number) {
   let timeout: number | null = null,
@@ -197,6 +184,57 @@ interface IOptions {
   trailing?: boolean; // 表示禁用停止触发的回调
 }
 
+const throttle = function (
+  fn: Function,
+  delay: number,
+  options: IOptions = { leading: true, trailing: true }
+) {
+  let timer: number | null = null;
+  let args: any = null;
+  let context: any = null;
+  let previous = 0;
+
+  const later = function () {
+    previous = options.leading === false ? 0 : +new Date();
+    timer = null;
+    fn.apply(context, args);
+    if (!timer) context = args = null;
+  };
+
+  const throttled = function () {
+    const now = +new Date();
+    if (!previous && options.leading === false) {
+      previous = now;
+    }
+    const remaining = delay - (now - previous);
+    context = this;
+    args = arguments;
+    if (remaining <= 0 || remaining > delay) {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = null;
+      previous = now;
+      fn.apply(context, args);
+      if (!timer) context = args = null;
+    } else if (!timer && options.trailing) {
+      timer = setTimeout(later, delay);
+    }
+  };
+  /**
+   * 取消
+   */
+  throttled.cancel = function () {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = null;
+    previous = 0;
+  };
+
+  return throttled;
+};
+
 /**
  * 节流
  * leading：false 和 trailing: false 不能同时设置。
@@ -227,6 +265,7 @@ const throttle4 = function (
     fn.apply(context, args);
     if (!timeout) context = args = null;
   };
+
   const throttled = function () {
     const now = +new Date();
     if (!previous && options.leading === false) previous = now;
@@ -242,7 +281,7 @@ const throttle4 = function (
       previous = now;
       fn.apply(context, args);
       if (!timeout) context = args = null;
-    } else if (!timeout && options.trailing) {
+    } else if (!timeout && options.trailing === true) {
       timeout = setTimeout(later, delay);
     }
   };
@@ -261,9 +300,9 @@ const throttle4 = function (
   return throttled;
 };
 
-const clickTestFn = throttle4(testFn2, 3000, {
+const clickTestFn = throttle(testFn2, 1500, {
   leading: true,
-  trailing: true,
+  trailing: false,
 });
 imgNode.addEventListener("click", clickTestFn);
 btn.addEventListener("click", () => clickTestFn.cancel());

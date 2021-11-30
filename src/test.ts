@@ -242,7 +242,7 @@ const throttle = function (
 imgNode.addEventListener("click", clickTestFn);
 btn.addEventListener("click", () => clickTestFn.cancel()); */
 
-const throttle2 = function (fn: Function, delay: number) {
+/* const throttle2 = function (fn: Function, delay: number) {
   let args: any = null;
   let self: any = null;
   let previous = 0;
@@ -270,7 +270,61 @@ const throttle2 = function (fn: Function, delay: number) {
       timer = setTimeout(later, delay);
     }
   };
+}; */
+
+const throttle2 = function (
+  fn: Function,
+  delay: number,
+  options: IOptions = { leading: true }
+) {
+  // 上次触发的时间
+  let previous = 0;
+  let self: any = null;
+  let args: any = null;
+  let timer: null | number = null;
+  const later = function () {
+    if (options.leading === false) {
+      previous = 0;
+    } else {
+      previous = +new Date();
+    }
+    timer = null;
+    return fn.apply(self, args);
+  };
+  const throttled = function (...reset: unknown[]) {
+    const now = +new Date();
+    self = this;
+    args = reset;
+    if (!options.leading && !previous) {
+      previous = now;
+    }
+    const remaining = delay - (now - previous);
+    if (remaining <= 0 || remaining > delay) {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = null;
+      previous = now;
+      return fn.apply(self, args);
+    } else if (!timer && options.trailing) {
+      timer = setTimeout(later, delay);
+    }
+  };
+
+  throttled.cancel = function () {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = null;
+    previous = 0;
+  };
+
+  return throttled;
 };
 
-const clickTestFn = throttle2(testFn2, 1500);
+const clickTestFn = throttle2(testFn2, 1500, {
+  leading: false,
+  trailing: true,
+});
 imgNode.addEventListener("click", clickTestFn);
+btn.addEventListener("click", () => clickTestFn.cancel());

@@ -2,29 +2,10 @@ const hasOwnProperty = Object.prototype.hasOwnProperty
 const objectToString = Object.prototype.toString
 const isObject = (val) => objectToString.call(val).slice(8, -1) === 'Object'
 
-const deepClone1 = (source) => {
-    if (!isObject(source)) return source
+const deepClone = (source) => {
+    const uniqueList = []
+    let root = {}
 
-    const target = {}
-    for (const key in source) {
-        if (hasOwnProperty.call(source, key)) {
-            if (isObject(source[key])) {
-                target[key] = deepClone1(source[key])
-            } else {
-                target[key] = source[key]
-            }
-        }
-    }
-
-    return target
-}
-
-// var a1 = { b: { c: {} } }
-// var a3 = deepClone1(a1); // 深拷贝
-// console.log(a3.b.c === a1.b.c); // false
-
-const deepClone2 = (source) => {
-    const root = {}
     const loopList = [
         {
             parent: root,
@@ -35,46 +16,69 @@ const deepClone2 = (source) => {
 
     while (loopList.length) {
         const node = loopList.pop()
-        const { data, key, parent } = node
+        const { parent, key, data } = node
 
+        // 初始化赋值目标，key为undefined则拷贝到父元素，否则拷贝到子元素
         let res = parent
-
         if (typeof key !== 'undefined') {
             res = parent[key] = {}
         }
 
+        // 如果数据已经存在
+        const uniqueData = find(uniqueList, source)
+        if (uniqueData) {
+            parent[key] = uniqueData.target
+            // 中断本次循环
+            continue
+        }
+
+        // 数据不存在
+        uniqueList.push({
+            target: res,
+            source: data
+        })
+
         for (const key in data) {
             if (hasOwnProperty.call(data, key)) {
-                if (isObject(data[key])) {
+                if (isObject(data)) {
                     loopList.push({
                         parent: res,
                         key,
                         data: data[key]
                     })
+                } else {
+                    res[key] = data[key]
                 }
-            } else {
-                res[key] = data[key]
             }
         }
     }
-
     return root
 }
 
-/* var a1 = {
+function find(uniqueList, source) {
+    for (let index = 0; index < uniqueList.length; index++) {
+        if (uniqueList[index].source === source) {
+            return uniqueList[index]
+        }
+    }
+
+    return null
+}
+
+var a1 = {
     b:
     {
         c:
             { d: 123 }
     }
 }
-var a3 = deepClone2(a1); // 深拷贝
-console.log(a3.b.c === a1.b.c); // false */
+var a3 = deepClone(a1); // 深拷贝
+console.log(a3.b.c === a1.b.c); // false
 
 
 var b = {};
 var a = { a1: b, a2: b };
 console.log(a.a1 === a.a2); // true
 
-var c = deepClone2(a);
+var c = deepClone(a);
 console.log(c.a1 === c.a2); // false

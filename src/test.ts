@@ -235,6 +235,56 @@ const throttle = function (
   return throttled;
 };
 
-const clickTestFn = throttle(testFn2, 1500);
+const throttle3 = (
+  fn: Function,
+  delay = 500,
+  options: IOptions = {
+    leading: true, // 是否禁用第一次执行
+    trailing: true, // 是否禁用停止触发的回调
+  }
+) => {
+  let args: unknown[] = [];
+  let self: unknown = null;
+  let timer: null | number = null;
+  let previous = 0;
+
+  const later = function () {
+    previous = options.leading === false ? 0 : +new Date();
+    timer = null;
+    return fn.apply(self, args);
+  };
+
+  const throttled = function (...reset: unknown[]) {
+    self = this;
+    args = reset;
+    const now = +new Date();
+    if (!previous && options.leading === false) {
+      previous = now;
+    }
+    const remaining = delay - (now - previous);
+    if (remaining <= 0 || remaining > delay) {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      previous = now;
+      return fn.apply(this, reset);
+    } else if (!timer && options.trailing !== false) {
+      timer = setTimeout(later, delay);
+    }
+  };
+
+  throttled.cancel = function () {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = null;
+    previous = 0;
+  };
+
+  return throttled;
+};
+
+const clickTestFn = throttle3(testFn2, 1500, { trailing: false });
 imgNode.addEventListener("click", clickTestFn);
 btn.addEventListener("click", () => clickTestFn.cancel());

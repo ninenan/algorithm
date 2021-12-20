@@ -288,3 +288,23 @@ const throttle3 = (
 const clickTestFn = throttle3(testFn2, 1500, { trailing: false });
 imgNode.addEventListener("click", clickTestFn);
 btn.addEventListener("click", () => clickTestFn.cancel());
+
+const dom2json = (rootDom: HTMLElement) => {
+  if (!rootDom) return;
+
+  let rootObj = {
+    tagName: rootDom.tagName,
+    children: [],
+  };
+
+  const children = rootDom.children;
+  if (children && children.length) {
+    [...children].forEach((el, index) => {
+      rootObj.children[index] = dom2json(el);
+    });
+  }
+
+  return rootObj;
+};
+
+console.log(dom2json(document.querySelector(".container")));

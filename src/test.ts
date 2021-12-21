@@ -353,21 +353,10 @@ function buildTree(arr, parentId, childrenArray) {
 function arrayToTree(input, parentId) {
   const array = [];
   buildTree(input, parentId, array);
+  console.log("array :>> ", array);
   return array.length > 0 ? (array.length > 1 ? array : array[0]) : {};
 }
 const obj = arrayToTree(input, null);
 console.log(obj);
-// const arrayToTree = (arr, parentId) => {
-//   arr.forEach((element) => {
-//     if (element.parentId === parentId) {
-//       if (!element.children) {
-//         element.children = [];
-//       }
-//       element.children.push(element);
-//       arrayToTree(element.children, element.id);
-//     }
-//   });
-//   return arr;
-// };
 
-// console.log(arrayToTree(input, null));
+const arrayToTree1 = (arr: unknown[], parentId: number) => {};

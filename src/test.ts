@@ -308,3 +308,66 @@ const dom2json = (rootDom: HTMLElement) => {
 };
 
 console.log(dom2json(document.querySelector(".container")));
+
+let input = [
+  {
+    id: 1,
+    val: "学校",
+    parentId: null,
+  },
+  {
+    id: 2,
+    val: "班级1",
+    parentId: 1,
+  },
+  {
+    id: 3,
+    val: "班级2",
+    parentId: 1,
+  },
+  {
+    id: 4,
+    val: "学生1",
+    parentId: 2,
+  },
+  {
+    id: 5,
+    val: "学生2",
+    parentId: 3,
+  },
+  {
+    id: 6,
+    val: "学生3",
+    parentId: 3,
+  },
+];
+function buildTree(arr, parentId, childrenArray) {
+  arr.forEach((item) => {
+    if (item.parentId === parentId) {
+      item.children = [];
+      buildTree(arr, item.id, item.children);
+      childrenArray.push(item);
+    }
+  });
+}
+function arrayToTree(input, parentId) {
+  const array = [];
+  buildTree(input, parentId, array);
+  return array.length > 0 ? (array.length > 1 ? array : array[0]) : {};
+}
+const obj = arrayToTree(input, null);
+console.log(obj);
+// const arrayToTree = (arr, parentId) => {
+//   arr.forEach((element) => {
+//     if (element.parentId === parentId) {
+//       if (!element.children) {
+//         element.children = [];
+//       }
+//       element.children.push(element);
+//       arrayToTree(element.children, element.id);
+//     }
+//   });
+//   return arr;
+// };
+
+// console.log(arrayToTree(input, null));

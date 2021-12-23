@@ -416,11 +416,10 @@ const cacheStringFunction = <T extends (str: string) => string>(fn: T): T => {
 ```typescript
 const camelizeRE = /-(\w)/g;
 const camelize = cacheStringFunction((str: string): string => {
-  console.log(1111);
   return str.replace(camelizeRE, (_, c) => (c ? c.toUpperCase() : ""));
 });
 
-console.log(camelize("on-click")); // 111 onClick
+console.log(camelize("on-click")); // onClick
 console.log(camelize("on-click")); // onClick 第二次 直接走缓存了
 ```
 

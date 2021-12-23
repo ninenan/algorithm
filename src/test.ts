@@ -285,31 +285,19 @@ const throttle3 = (
   return throttled;
 };
 
-const clickTestFn = throttle3(testFn2, 1500, { trailing: false });
-imgNode.addEventListener("click", clickTestFn);
-btn.addEventListener("click", () => clickTestFn.cancel());
+interface INode {
+  id: number;
+  val: string;
+  parentId: number | null;
+}
 
-const dom2json = (rootDom: HTMLElement) => {
-  if (!rootDom) return;
-
-  let rootObj = {
-    tagName: rootDom.tagName,
-    children: [],
-  };
-
-  const children = rootDom.children;
-  if (children && children.length) {
-    [...children].forEach((el, index) => {
-      rootObj.children[index] = dom2json(el);
-    });
-  }
-
-  return rootObj;
-};
-
-console.log(dom2json(document.querySelector(".container")));
-
-let input = [
+interface ITreeNode {
+  id: number;
+  val: string;
+  parentId: number | null;
+  children?: ITreeNode[];
+}
+let arr: INode[] = [
   {
     id: 1,
     val: "学校",
@@ -341,22 +329,19 @@ let input = [
     parentId: 3,
   },
 ];
-function buildTree(arr, parentId, childrenArray) {
-  arr.forEach((item) => {
-    if (item.parentId === parentId) {
-      item.children = [];
-      buildTree(arr, item.id, item.children);
-      childrenArray.push(item);
-    }
-  });
-}
-function arrayToTree(input, parentId) {
+function arrayToTree(arr, parentId) {
   const array = [];
-  buildTree(input, parentId, array);
-  console.log("array :>> ", array);
+
+  function buildTree(arr, parentId, childrenArray) {
+    arr.forEach((item) => {
+      if (item.parentId === parentId) {
+        item.children = [];
+        buildTree(arr, item.id, item.children);
+        childrenArray.push(item);
+      }
+    });
+  }
+  buildTree(arr, parentId, array);
   return array.length > 0 ? (array.length > 1 ? array : array[0]) : {};
 }
-const obj = arrayToTree(input, null);
-console.log(obj);
-
-const arrayToTree1 = (arr: unknown[], parentId: number) => {};
+console.log(arrayToTree(arr, null));

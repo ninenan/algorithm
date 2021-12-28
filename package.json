@@ -1,10 +1,10 @@
 {
   "name": "algorithm",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "my interview study",
+  "main": "myPromise.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "promises-aplus-tests myPromise",
     "commit": "cz"
   },
   "keywords": [],
@@ -17,5 +17,8 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
+  },
+  "devDependencies": {
+    "promises-aplus-tests": "^2.1.2"
   }
 }

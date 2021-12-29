@@ -73,7 +73,7 @@ class MyPromise {
   // then 方法要链式调用那么就需要返回一个 Promise 对象
   // then 方法里面 return 一个返回值作为下一个 then 方法的参数，
   // 如果是 return 一个 Promise 对象，那么就需要判断它的状态
-  then(onFulfilled: Function, onRejected?: Function) {
+  then(onFulfilled: Function | null, onRejected?: Function) {
     // 如果不穿参数，就使用默认值
     const onRealFulfilled = isFun(onFulfilled)
       ? onFulfilled
@@ -150,6 +150,30 @@ class MyPromise {
     return new MyPromise((resolve: Resolve, reject: Reject) => {
       reject(reason);
     });
+  }
+
+  // all
+  static all(promiseArr: unknown[]) {
+    return new MyPromise((resolve: Resolve, reject: Reject) => {
+      let result: any[] = [];
+      let count = 0;
+      const len = promiseArr.length;
+      for (let index = 0; index < len; index++) {
+        MyPromise.resolve(promiseArr[index]).then(
+          (val: any) => {
+            result[index] = val;
+            if (++count === len) resolve(result);
+          },
+          (reason: any) => reject(reason)
+        );
+      }
+    });
+  }
+
+  // catch
+  catch(onRejected: Function) {
+    // 只需要进行错误的处理
+    this.then(null, onRejected);
   }
 }
 

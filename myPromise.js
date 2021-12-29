@@ -138,6 +138,25 @@ class MyPromise {
             reject(reason);
         });
     }
+    // all
+    static all(promiseArr) {
+        return new MyPromise((resolve, reject) => {
+            let result = [];
+            let count = 0;
+            const len = promiseArr.length;
+            for (let index = 0; index < len; index++) {
+                MyPromise.resolve(promiseArr[index]).then((val) => {
+                    result[index] = val;
+                    if (++count === len)
+                        resolve(result);
+                }, (reason) => reject(reason));
+            }
+        });
+    }
+    // catch
+    catch(onRejected) {
+        this.then(null, onRejected);
+    }
 }
 function resolvePromise(promise2, x, resolve, reject) {
     // 如果相等，说明 return 的是自己，抛出类型错误并返回

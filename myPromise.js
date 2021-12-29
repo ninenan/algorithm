@@ -61,22 +61,6 @@ class MyPromise {
             this.reject(err);
         }
     }
-    // resolve 静态方法
-    static resolve(parameter) {
-        if (parameter instanceof MyPromise) {
-            return parameter;
-        }
-        // 转换成常规的写法
-        return new MyPromise((resolve) => {
-            resolve(parameter);
-        });
-    }
-    // reject 静态方法
-    static reject(reason) {
-        return new MyPromise((resolve, reject) => {
-            reject(reason);
-        });
-    }
     // then 方法要链式调用那么就需要返回一个 Promise 对象
     // then 方法里面 return 一个返回值作为下一个 then 方法的参数，
     // 如果是 return 一个 Promise 对象，那么就需要判断它的状态
@@ -87,7 +71,9 @@ class MyPromise {
             : (value) => value;
         const onRealRejected = isFun(onRejected)
             ? onRejected
-            : (reason) => reason;
+            : (reason) => {
+                throw reason;
+            };
         // 为了链式调用 直接返回一个 promise，并 return 出去
         const promise2 = new MyPromise((resolve, reject) => {
             // 成功执行函数
@@ -136,18 +122,20 @@ class MyPromise {
         });
         return promise2;
     }
-    catch(onRejected) {
-        this.then(undefined, onRejected);
+    // resolve 静态方法
+    static resolve(parameter) {
+        if (parameter instanceof MyPromise) {
+            return parameter;
+        }
+        // 转换成常规的写法
+        return new MyPromise((resolve) => {
+            resolve(parameter);
+        });
     }
-    finally(fn) {
-        return this.then((value) => {
-            return MyPromise.resolve(fn()).then(() => {
-                return value;
-            });
-        }, (error) => {
-            return MyPromise.resolve(fn()).then(() => {
-                throw error;
-            });
+    // reject 静态方法
+    static reject(reason) {
+        return new MyPromise((resolve, reject) => {
+            reject(reason);
         });
     }
 }
@@ -172,20 +160,17 @@ function resolvePromise(promise2, x, resolve, reject) {
         if (typeof then === "function") {
             let called = false;
             try {
-                then.call(
-                    x,
-                    y => {
-                        if (called)
-                            return;
-                        called = true;
-                        resolvePromise(promise2, y, resolve, reject);
-                    }),
-                    r => {
-                        if (called)
-                            return;
-                        called = true;
-                        reject(r);
-                    };
+                then.call(x, (y) => {
+                    if (called)
+                        return;
+                    called = true;
+                    resolvePromise(promise2, y, resolve, reject);
+                }, (r) => {
+                    if (called)
+                        return;
+                    called = true;
+                    reject(r);
+                });
             }
             catch (error) {
                 if (called)
@@ -200,11 +185,6 @@ function resolvePromise(promise2, x, resolve, reject) {
     else {
         resolve(x);
     }
-    // if (x instanceof MyPromise) {
-    //   x.then(resolve, reject);
-    // } else {
-    //   resolve(x);
-    // }
 }
 MyPromise.deger = MyPromise.deferred = function () {
     var result = {};

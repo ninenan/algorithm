@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    body {
+      font-family: Avenir, Helvetica, Arial, sans-serif;
+      line-height: 1.2;
+      padding: 1em;
+      text-align: center;
+    }
+    div {
+      position: absolute;
+      top: 33%;
+    }
+    span {
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: rgba(0, 0, 0, 0.1);
+    }
+  </style>
+  <body>
+    <div>
+      <span id="test">Loading...</span>
+    </div>
+    <script>
+      let color = "#1785e6";
+      let frame = 0;
+      let fps = 60;
+      let len = 5;
+      let totalFrames = fps * len;
+      const testEl = document.querySelector("#test");
+      const animation = setInterval(() => {
+        if (++frame >= totalFrames) clearInterval(animation);
+        let percentage = (1 - frame / totalFrames) * 100;
+        testEl.style.backgroundImage = `-webkit-linear-gradient(right, white, white ${percentage}%, ${color} ${percentage}%)`;
+      }, 1000 / fps);
+      // testEl.style.backgroundImage = `-webkit-linear-gradient(right, white, white 20%, ${color} 20%)`;
+    </script>
+  </body>
+</html>

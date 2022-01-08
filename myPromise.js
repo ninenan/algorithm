@@ -155,6 +155,7 @@ class MyPromise {
     }
     // catch
     catch(onRejected) {
+        // 只需要进行错误的处理
         this.then(null, onRejected);
     }
 }

@@ -74,7 +74,7 @@ class MyPromise {
   // then 方法里面 return 一个返回值作为下一个 then 方法的参数，
   // 如果是 return 一个 Promise 对象，那么就需要判断它的状态
   then(onFulfilled: Function | null, onRejected?: Function) {
-    // 如果不穿参数，就使用默认值
+    // 如果不传参数，就使用默认值
     const onRealFulfilled = isFun(onFulfilled)
       ? onFulfilled
       : (value: any) => value;
@@ -207,12 +207,14 @@ function resolvePromise(
       let called = false;
       try {
         then.call(
-          x,
+          x, // this 指向 x
           (y) => {
+            // 如果 resolvePromise 和 rejectPromise 都没调用，或者被同一参数调用多次，则优先采用首次调用并忽略剩下的调用
             if (called) return;
             called = true;
             resolvePromise(promise2, y, resolve, reject);
           },
+          // 如果 rejectPromise 以拒因 r 为参数被调用，则已拒因 r 拒绝 promise
           (r) => {
             if (called) return;
             called = true;
@@ -220,17 +222,20 @@ function resolvePromise(
           }
         );
       } catch (error) {
+        // 如果 then 的方法抛出了异常 error，如果 resolvePromise 或 rejectPromise 已经被调用，则直接返回
         if (called) return;
+        // 否则 reject
         reject(error);
       }
     } else {
+      // 如果不是函数，以 x 为参数返回 Promise
       resolve(x);
     }
   } else {
+    // 如果 x 不是函数和对象，以 x 为参数返回 Promise
     resolve(x);
   }
 }
-
 MyPromise.deger = MyPromise.deferred = function () {
   var result = {};
   result.promise = new MyPromise(function (resolve, reject) {

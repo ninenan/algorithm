@@ -19,6 +19,16 @@
     }
   },
   "devDependencies": {
-    "promises-aplus-tests": "^2.1.2"
-  }
+    "promises-aplus-tests": "^2.1.2",
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ninenan/algorithm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ninenan/algorithm/issues"
+  },
+  "homepage": "https://github.com/ninenan/algorithm#readme"
 }

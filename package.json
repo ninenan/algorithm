@@ -5,7 +5,8 @@
   "main": "myPromise.js",
   "scripts": {
     "test": "promises-aplus-tests myPromise",
-    "commit": "cz"
+    "commit": "cz",
+    "build": "webpack"
   },
   "keywords": [],
   "author": "",

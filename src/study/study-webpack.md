@@ -36,3 +36,32 @@ module.exports = {
 ```base
 ./node_modules/.bin/webpack -v
 ```
+
+### Entry
+
+用来指定 webpack 的打包入口
+
+**单入口**
+entry 是一个字符串
+
+```javascript
+module.exports = {
+  entry: "./path/to/my/entry/file.js",
+};
+```
+
+**多入口**
+entry 是一个对象
+
+```javascript
+module.exports = {
+  entry: {
+    app: "./src/app.js",
+    adminApp: "./src/adminAp.js",
+  },
+};
+```
+
+### Output
+
+Output 用来告诉 webpack 如何将编译后的文件输出到磁盘

@@ -65,3 +65,29 @@ module.exports = {
 ### Output
 
 Output 用来告诉 webpack 如何将编译后的文件输出到磁盘
+**单入口**
+
+```javascript
+module.exports = {
+  entry: './path/to/my/path.js'
+  output: {
+    filename: 'bundle.js',
+    path: __dirname + '/dist'
+  }
+}
+```
+
+**多文件**
+
+```javascript
+module.exports = {
+  entry: {
+    app: "./src/app.js",
+    adminApp: "./src/adminApp.js",
+  },
+  output: {
+    filename: "[name].js", // 通过占位符方法 指定打包文件的名称 dist 文件夹下面 会出现两个 js 文件 分别是 app.js 和 adminApp.js
+    path: __dirname + "/dist",
+  },
+};
+```

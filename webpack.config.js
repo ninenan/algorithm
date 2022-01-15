@@ -1,7 +1,8 @@
 const path = require('path')
+const webpack = require('webpack')
 
 module.exports = {
-    mode: 'production',
+    mode: 'development',
     entry: {
         bundle: './src/index.js',
         search: './src/search.js'
@@ -14,5 +15,16 @@ module.exports = {
         rules: [
             { test: /\.txt$/, use: 'raw-loader' } // test 指定匹配规则 use 指定使用的 loader 名称
         ]
+    },
+    plugins: [
+        new webpack.HotModuleReplacementPlugin()
+    ],
+    devServer: {
+        // 服务的基础目录
+        static: {
+            directory: path.join(__dirname, './dist'),
+        },
+        // 设置热更新
+        hot: true
     }
 }

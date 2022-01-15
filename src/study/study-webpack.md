@@ -178,3 +178,100 @@ module.exports = {
   mode: "production",
 };
 ```
+
+### webpack 中的文件监听
+
+文件监听是在发生源码变化时，自动重新构建出新的文件输出文件
+
+**需要每次都要刷新页面才能看到效果**
+
+#### webpack 开启监听模式，有两种方式
+
+1. 启动 webpack 命令时，带上 --watch 参数
+2. 在配置 webpack.config.js 中设置 watch:true
+
+#### 文件监听的原理分析
+
+轮询判断文件的最后编辑时间是否发生变化
+某个文件发生了变化，并不会立刻告诉监听者，而是先缓存起来，等 aggregateTimeout
+
+```javascript
+module.export = {
+  // 默认 false 不开启
+  watch: true,
+  // 之后开启监听模式，watchOptions 才有意义
+  watchOptions: {
+    // 默认为空，不监听的文件或者文件夹，支持正则匹配
+    // 直接直接忽略掉 node_modules 文件夹下的内容对性能有好处
+    ignored: /node_modules/,
+    // 监听到变化发生后会等到 300ms 再去执行，默认 300ms
+    aggregateTimeout: 300,
+    // 判断文件是否发生变化是通过不停的循环系统指定的文件有没有发生变化，默认是每秒 1000 次
+    poll: 1000,
+  },
+};
+```
+
+### webpack 热更新 webpack-dev-server
+
+WDS 不刷新浏览器
+WDS 不输出文件，而是放在内存中（因为是放在内存当中，所以构建速度会有更大的提升）
+使用 HotModuleReplacementPlugin 插件
+
+```javascript
+const path = require("path");
+const webpack = require("webpack");
+
+module.exports = {
+  mode: "development",
+  entry: {
+    bundle: "./src/index.js",
+    search: "./src/search.js",
+  },
+  output: {
+    path: path.join(__dirname, "dist"), // 指定文件路径
+    filename: "[name].js", // 指定文件名称
+  },
+  module: {
+    rules: [
+      { test: /\.txt$/, use: "raw-loader" }, // test 指定匹配规则 use 指定使用的 loader 名称
+    ],
+  },
+  plugins: [new webpack.HotModuleReplacementPlugin()], // 使用 HotModuleReplacementPlugin plugin
+  devServer: {
+    // 该配置项允许配置从目录提供静态文件的选项（默认是 'public' 文件夹）。将其设置为 false 以禁用：
+    static: {
+      directory: path.join(__dirname, "./dist"),
+    },
+    // 设置热更新 因为使用上面的 plugin 这里可写可不写 默认为 true
+    hot: true,
+  },
+};
+```
+
+```json
+"scripts": {
+  "dev": "webpack-dev-server --open" // 添加新的启动命令 npm run dev 启动
+}
+```
+
+### webpack 热更新 webpack-dev-middleware
+
+WDM 将 webpack 输出的文件传输给服务器
+适用于灵活的定制场景
+
+### 人更新的原理分析
+
+webpack Compiler : 将 js 编译成 Bundle
+HMR Server: 将热更新的文件输出给 HMR Runtime
+Bundle server: 提供文件在浏览器的访问
+HMR Runtime: 会被注入到浏览器，更新文件的变化
+bundle.js: 构建输出的文件
+
+1. 启动阶段
+   文件系统里面将初始的代码通过 webpack Compiler 进行打包成 Bundle，然后将打包好的文件传输给 Bundle Server，Bundle Server 是一个服务器，Bundle Server 可以让文件以一个 server 的方式让浏览器访问
+2. 文件更新
+   代码通过 webpack Compiler 进行编译，将代码发送给 HRM Server，HMR Server 可以知道哪些文件发生了改变,
+   HMR Server 通知 HMR Runtime （一般以一种 json 的数据进行传输），HMR Runtime 再改变相应的代码，并且不会刷新浏览器
+
+<img srv="https://yw-dev-bucket.eos-ningbo-1.cmecloud.cn/d427ba53-ca7c-4117-8d4f-730cd983bec3.png">

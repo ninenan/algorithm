@@ -42,8 +42,10 @@ const btn = document.getElementsByTagName("button")[0];
 const preLoadImg = new PreLoadImg(imgNode);
 const proxyImg = new ProxyImg(preLoadImg);
 
-proxyImg.setSrc("https://cdn2.thecatapi.com/images/ced.jpg");
-
+// proxyImg.setSrc("https://cdn2.thecatapi.com/images/ced.jpg");
+proxyImg.setSrc(
+  "https://test.com/20200803115749u=2876792700,1627849181&fm=26&gp=0.jpg"
+);
 /**
  * 防抖
  * 事件在 n 后执行，如果 n 秒内别多次执行，则重新计时

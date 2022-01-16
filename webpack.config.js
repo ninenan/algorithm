@@ -14,7 +14,26 @@ module.exports = {
     module: {
         rules: [
             { test: /\.txt$/, use: 'raw-loader' }, // test 指定匹配规则 use 指定使用的 loader 名称
-            { test: /.js$/, use: 'babel-loader' } // 解析 js 文件，使用 babel-loader
+            { test: /.js$/, use: 'babel-loader' }, // 解析 js 文件，使用 babel-loader
+            {
+                test: /.css$/,
+                use: [
+                    'style-loader',
+                    'css-loader'
+                ] // loader 的解析是从右到左，从下到上的 这里先解析了 css-loader 再解析了 style-loader
+            },
+            {
+                test: /.less$/,
+                use: [
+                    'style-loader',
+                    'css-loader',
+                    'less-loader'
+                ]
+            },
+            {
+                test: /.(png|jpg|jpeg|gif)$/,
+                use: 'file-loader'
+            }
         ]
     },
     plugins: [

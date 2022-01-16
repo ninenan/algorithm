@@ -101,6 +101,8 @@ webpack 开箱即用只支持 js 和 json 两种文件类型，通过 loaders �
 
 本事是一个函数，接受源文件作为参数，返回转换的结果。
 
+Loader 的解析是从右到左，从下到上
+
 #### 常用的 loaders
 
 | 名称          | 描述                         |
@@ -275,3 +277,104 @@ bundle.js: 构建输出的文件
    HMR Server 通知 HMR Runtime （一般以一种 json 的数据进行传输），HMR Runtime 再改变相应的代码，并且不会刷新浏览器
 
 <img srv="https://yw-dev-bucket.eos-ningbo-1.cmecloud.cn/d427ba53-ca7c-4117-8d4f-730cd983bec3.png">
+
+### 资源解析
+
+#### 解析 ES6
+
+使用 babel-loader
+创建 babel 的配置文件：.babelrc
+
+```base
+npm i @babel/core @babel/preset-env babel-loader -D
+```
+
+webpack.config.js
+
+```javascript
+module.exports = {
+  module: {
+    rules: [
+      { test: /.js$/, use: "babel-loader" }, // 解析 js 文件，使用 babel-loader
+    ],
+  },
+};
+```
+
+.babelrc
+
+```json
+{
+  "presets": ["@babel/preset-env", "@babel/preset-react"]
+}
+```
+
+#### 解析 CSS
+
+需要安装 css-loader
+
+css-loader 用于加载 .css 文件，并将其转换成 commonjs 对象
+style-loader 用于将样式通过 <style\> 标签插入到 head 中
+
+```base
+npm i style-loader css-loader -D
+```
+
+webpack.config.js
+
+```javascript
+module.export = {
+  module: {
+    rules: [
+      {
+        test: /.css$/,
+        use: ["style-loader", "css-loader"],
+      },
+    ],
+  },
+};
+```
+
+#### 解析 Less
+
+less-loader 用于将 less 转换成 css
+
+```base
+npm i less-loader less -D
+```
+
+webpack.config.js
+
+```javascript
+module.export = {
+  module: {
+    rules: [
+      {
+        test: /.less$/,
+        use: ["style-loader", "css-loader", "less-loader"],
+      },
+    ],
+  },
+};
+```
+
+#### 解析图片/字体
+
+file-loader 用于处理文件
+
+```base
+npm i file-loader less -D
+```
+
+webpack.config.js
+
+```javascript
+module.export = {
+  module: {
+    rules: {
+      test: /.(png|jpg|jpeg|gif)$/,
+      use: "file-loader",
+    },
+  },
+};
+```

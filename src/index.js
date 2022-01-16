@@ -1,4 +1,6 @@
 import { helloWorld } from './hellowWorld';
+import './search-test.less';
+import logo from './assets/image/logo.png';
 document.write(helloWorld())
 
 
@@ -7,7 +9,9 @@ import ReactDom from 'react-dom';
 
 class Search extends React.Component {
     render() {
-        return <div>Search Text</div>
+        return <div className='search__container'>Search Text
+            <img src={logo} />
+        </div>
     }
 }
 

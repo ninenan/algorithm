@@ -26,7 +26,7 @@ class ProxyImg {
     this.targetImg.setSrc(ProxyImg.LOADING_IMG);
     // 创建一个帮助加载的 Image 实例
     const vImage = new Image();
-    // 监听目标图片的加载情况，完成式再将 img 节点的 src 属性设置为目标图片的 url
+    // 监听目标图片的加载情况，完成时再将 img 节点的 src 属性设置为目标图片的 url
     vImage.onload = () => {
       this.targetImg.setSrc(targetUrl);
     };

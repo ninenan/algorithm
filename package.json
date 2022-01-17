@@ -6,9 +6,9 @@
   "scripts": {
     "test": "promises-aplus-tests myPromise",
     "commit": "cz",
-    "build": "webpack",
+    "build": "webpack --config webpack.prod.js",
     "watch": "webpack --watch",
-    "dev": "webpack-dev-server --open"
+    "dev": "webpack-dev-server --open --config webpack.dev.js"
   },
   "keywords": [],
   "author": "",
@@ -30,6 +30,7 @@
     "file-loader": "^6.2.0",
     "less": "^4.1.2",
     "less-loader": "^10.2.0",
+    "mini-css-extract-plugin": "^2.5.1",
     "promises-aplus-tests": "^2.1.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

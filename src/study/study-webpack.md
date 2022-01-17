@@ -225,7 +225,7 @@ const path = require("path");
 const webpack = require("webpack");
 
 module.exports = {
-  mode: "development",
+  mode: "development", // 因为只是开发环境需要 所以设置 development
   entry: {
     bundle: "./src/index.js",
     search: "./src/search.js",
@@ -262,7 +262,7 @@ module.exports = {
 WDM 将 webpack 输出的文件传输给服务器
 适用于灵活的定制场景
 
-### 人更新的原理分析
+### 热更新的原理分析
 
 webpack Compiler : 将 js 编译成 Bundle
 HMR Server: 将热更新的文件输出给 HMR Runtime
@@ -360,7 +360,9 @@ module.export = {
 
 #### 解析图片/字体
 
-file-loader 用于处理文件
+##### 1. file-loader
+
+**用于处理图片文件**
 
 ```base
 npm i file-loader less -D
@@ -371,10 +373,51 @@ webpack.config.js
 ```javascript
 module.export = {
   module: {
-    rules: {
-      test: /.(png|jpg|jpeg|gif)$/,
-      use: "file-loader",
-    },
+    rules: [
+      {
+        test: /.(png|jpg|jpeg|gif)$/,
+        use: "file-loader",
+      },
+    ],
+  },
+};
+```
+
+**处理字体文件**
+
+```javascript
+module.export = {
+  module: {
+    rules: [{ test: /.(ttf|woff|woff2|otf|eot)$/, use: "file-loader" }],
+  },
+};
+```
+
+##### 2. url-loader
+
+url-loader 也可以处理图片和字体
+可以设置较小资源自动 base64
+
+```base
+npm i url-loader -D
+```
+
+webpack.config.js
+
+```javascript
+module.export = {
+  module: {
+    rules: [
+      {
+        test: /.(png|svg|jpg|gif)$/,
+        use: [
+          {
+            loader: "url-loader",
+            options: { limit: 10240 }, // 小于 10k 的图片会自动转换成 base64 格式引入
+          },
+        ],
+      },
+    ],
   },
 };
 ```

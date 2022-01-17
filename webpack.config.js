@@ -32,6 +32,17 @@ module.exports = {
             },
             {
                 test: /.(png|jpg|jpeg|gif)$/,
+                use: [
+                    {
+                        loader: 'url-loader',
+                        options: {
+                            limit: 10240 // 小于 10k 的图片文件会自动转成 base64
+                        }
+                    }
+                ]
+            },
+            {
+                test: /.(ttf|woff|woff2|otf|eot)$/,
                 use: 'file-loader'
             }
         ]

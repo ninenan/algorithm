@@ -7,7 +7,7 @@
     "test": "promises-aplus-tests myPromise",
     "commit": "cz",
     "build": "webpack --config webpack.prod.js",
-    "watch": "webpack --watch",
+    "watch": "webpack --watch --config webpack.dev.js",
     "dev": "webpack-dev-server --open --config webpack.dev.js"
   },
   "keywords": [],

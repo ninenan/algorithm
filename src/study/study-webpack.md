@@ -431,3 +431,63 @@ module.export = {
 **Hash**: 和整个项目的构建有关，只要项目文件有修改，整个项目构建的 hash 值就会更改
 **Chunkhash**: 和 webpack 打包的 chunk 有关，不同的 entry 会生成不同的 chunkhash 值
 **Contenthash**: 根据文件内容来定义 hash，文件内容不变，则 contenthash 不变（一般用于 css 文件）
+
+webpack.prod.js
+
+```javascript
+const path = require("path");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+module.exports = {
+  mode: "production",
+  entry: {
+    bundle: "./src/index.js",
+    search: "./src/search.js",
+  },
+  output: {
+    path: path.join(__dirname, "dist"), // 指定文件路径
+    filename: "[name]_[chunkhash:8].js", // 指定文件名称 js 文件使用 chunkhash
+  },
+  module: {
+    rules: [
+      { test: /\.txt$/, use: "raw-loader" }, // test 指定匹配规则 use 指定使用的 loader 名称
+      { test: /.js$/, use: "babel-loader" }, // 解析 js 文件，使用 babel-loader
+      {
+        test: /.css$/,
+        use: [MiniCssExtractPlugin.loader, "css-loader"], // loader 的解析是从右到左，从下到上的 这里先解析了 css-loader 再解析了 style-loader
+      },
+      {
+        test: /.less$/,
+        use: [MiniCssExtractPlugin.loader, "css-loader", "less-loader"],
+      },
+      {
+        test: /.(png|jpg|jpeg|gif)$/,
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              name: "[name]_[hash:8].[ext]", // 图片文件使用 hash
+            },
+          },
+        ],
+      },
+      {
+        test: /.(ttf|woff|woff2|otf|eot)$/,
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              name: "[name]_[hash:8].[ext]", // 字体文件使用 hash
+            },
+          },
+        ],
+      },
+    ],
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: "[name]_[contenthash:8].css", // css 文件使用 contenthash
+    }),
+  ],
+};
+```

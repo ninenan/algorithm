@@ -3,6 +3,17 @@ const webpack = require('webpack')
 
 module.exports = {
     mode: 'development',
+    // watch: true,
+    // 之后开启监听模式，watchOptions 才有意义
+    // watchOptions: {
+    //     // 默认为空，不监听的文件或者文件夹，支持正则匹配
+    //     // 直接直接忽略掉 node_modules 文件夹下的内容对性能有好处
+    //     ignored: /node_modules/,
+    //     // 监听到变化发生后会等到 300ms 再去执行，默认 300ms
+    //     aggregateTimeout: 300,
+    //     // 判断文件是否发生变化是通过不停的循环系统指定的文件有没有发生变化，默认是每秒 1000 次
+    //     poll: 1000,
+    // },
     entry: {
         bundle: './src/index.js',
         search: './src/search.js'

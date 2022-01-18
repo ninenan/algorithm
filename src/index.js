@@ -7,7 +7,7 @@ import ReactDom from 'react-dom';
 class Search extends React.Component {
     render() {
         return <div className='search__container'>
-            change Search Text
+            Search Text
             <img src={logo} />
         </div>
     }

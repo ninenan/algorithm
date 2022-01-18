@@ -491,3 +491,91 @@ module.exports = {
   ],
 };
 ```
+
+## 代码压缩
+
+HTML 压缩
+CSS 压缩
+JS 压缩
+
+### JS 压缩
+
+内置了 uglifyjs-webpack-plugin
+
+### CSS 压缩
+
+#### 1. webpack 4
+
+optimize-css-assets-webpack-plugin
+
+同时使用 cssnano
+
+```base
+npm i optimize-css-assets-webpack-plugin cssnano -D
+```
+
+webpack.config.js
+
+```javascript
+module.exports = {
+  plugins: [
+    new OptimizeCSSAssetsPlugin({
+      assetNameRegExp: /\.css$/g,
+      cssProcessor: require("cssnano"),
+    }),
+  ],
+};
+```
+
+#### 2. webpack5
+
+```base
+npm i css-minimizer-webpack-plugin -D
+```
+
+webpack.config.js
+
+```javascript
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+
+module.exports = {
+  plugins: [new CssMinimizerPlugin()],
+};
+```
+
+### HTML 文件的压缩
+
+修改 html-webpack-plugin,设置压缩参数（很强大，常用）
+webpack.config.js
+
+```javascript
+const path = require("path");
+
+module.exports = {
+  mode: "production",
+  entry: {
+    bundle: "./src/index.js",
+    search: "./src/search.js",
+  },
+  output: {
+    path: path.join(__dirname, "dist"), // 指定文件路径
+    filename: "[name]_[chunkhash:8].js", // 指定文件名称
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, "src/index.html"),
+      filename: "index.html",
+      chunks: ["bundle"], // 这里需要是打包出来的 js 文件的 chunk 前缀
+      inject: true,
+      minify: {
+        html5: true,
+        collapseWhitespace: true,
+        preserveLineBreaks: false,
+        minifyCSS: true,
+        minifyJS: true,
+        removeComments: false,
+      },
+    }),
+  ],
+};
+```

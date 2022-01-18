@@ -1,1 +1,1 @@
-document.write('search page')
+document.write('this is search page')

@@ -25,7 +25,9 @@
     "@babel/core": "^7.16.7",
     "@babel/preset-env": "^7.16.8",
     "@babel/preset-react": "^7.16.7",
+    "autoprefixer": "^10.4.2",
     "babel-loader": "^8.2.3",
+    "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.5.1",
     "css-minimizer-webpack-plugin": "^3.4.1",
     "file-loader": "^6.2.0",
@@ -33,6 +35,8 @@
     "less": "^4.1.2",
     "less-loader": "^10.2.0",
     "mini-css-extract-plugin": "^2.5.1",
+    "postcss": "^8.4.5",
+    "postcss-loader": "^6.2.1",
     "promises-aplus-tests": "^2.1.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -42,6 +46,12 @@
     "webpack-cli": "^4.9.1",
     "webpack-dev-server": "^4.7.3"
   },
+  "browserslist": [
+    "> 1%",
+    "not ie <= 8",
+    "ios 7",
+    "last 2 version"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ninenan/algorithm.git"

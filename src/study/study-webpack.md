@@ -579,3 +579,74 @@ module.exports = {
   ],
 };
 ```
+
+## 清理目录
+
+### 通过 npm scripts 清理构建目录
+
+#### 1. 添加命令
+
+```json
+rm -rf ./dist && webpack
+rimraf ./dist && webpack
+```
+
+#### 2. 使用 clean-webpack-plugin
+
+```base
+npm i clean-webpack-plugin -D
+```
+
+webpack.config.js
+
+```javascript
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+
+module.exports = {
+  plugins: [new CleanWebpackPlugin()],
+};
+```
+
+## 补充 css 前缀
+
+使用 postcss-loader 和 autoprefixer 插件
+
+```base
+npm i postcss-loader autoprefixer -D
+```
+
+webpack.config.js
+
+```javascript
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /.less$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          "css-loader",
+          "less-loader",
+          {
+            loader: "postcss-loader",
+            options: {
+              postcssOptions: {
+                plugins: [["autoprefixer"]],
+              },
+            },
+          },
+        ],
+      },
+    ],
+  },
+};
+```
+
+```json
+"browserslist": [
+    "> 1%",
+    "not ie <= 8",
+    "ios 7",
+    "last 2 version"
+  ],
+```

@@ -650,3 +650,104 @@ module.exports = {
     "last 2 version"
   ],
 ```
+
+## css px 自动转换为 rem
+
+使用 px2rem-loader 和 lib-flexible
+
+```base
+npm i px2rem-loader -D
+npm i lib-flexible -S
+```
+
+webpack.config.js
+
+```javascript
+module.export = {
+  module: {
+    rules: [
+      {
+        test: /\.less$/,
+        use: [
+          "style-loader",
+          "css-loader",
+          "less-loader",
+          {
+            loader: "px2rem-loader",
+            options: {
+              remUnit: 75, // 对应 750 的设计稿
+              remPrecision: 8, // 转换之后小数点的位数
+            },
+          },
+        ],
+      },
+    ],
+  },
+};
+```
+
+## 资源内联
+
+1. 代码层面
+
+- 页面框架初始化脚本
+- 上报相关打点
+- css 内联避免页面闪动
+
+2. 请求层面 - 减少 HTTP 请求
+
+- 小图片或者字体内联 (url-loader)
+
+### HTML 和 JS 内联
+
+raw-loader 内联 HTML
+比如说手机端每个页面都需要 meta 信息 可以动态添加
+
+raw-loader@0.5.1 (暂时固定版本)
+
+```base
+npm i raw-loader -D
+```
+
+```javascript
+<script>${require("raw-loader!babel-loader!./meta.html")}</script>
+```
+
+raw-loader 内联 JS
+
+```javascript
+<script>
+  ${require("raw-loader!babel-loader!../node_modules/lib-flexible/flexible.js")}
+</script>
+```
+
+### CSS 内联
+
+#### 1. 借助 style-loader
+
+webpack.config.js
+
+```javascript
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.less$/,
+        use: [
+          {
+            loader: "style-loader",
+            options: {
+              insertAt: "top", // 样式插入到 <head>
+              singleton: true, // 将所有的 style 标签合并成一个
+            },
+          },
+        ],
+        'css-loader',
+        'less-loader'
+      },
+    ],
+  },
+};
+```
+
+#### 2. html-inline-css-webpack-plugin

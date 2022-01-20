@@ -41,6 +41,13 @@ module.exports = {
                             }
                         },
                     },
+                    {
+                        loader: 'px2rem-loader',
+                        options: {
+                            remUnit: 75, // 对应设计稿是 750
+                            remPrecision: 8 // 转换之后小数点最多保留 8 位
+                        }
+                    }
                 ]
             },
             {

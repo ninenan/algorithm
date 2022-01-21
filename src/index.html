@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <%=require('raw-loader!./meta.html')%>
     <meta charset="UTF-8" />
-    ${require("raw-loader!./meta.html")}
     <title>hello html webpack</title>
     <script>
-      ${require("raw-loader!babel-loader!../../node_modules/lib-flexible/flexible.js")}
+      <%=require("raw-loader!babel-loader!../node_modules/lib-flexible/flexible.js")%>
     </script>
   </head>
   <body>

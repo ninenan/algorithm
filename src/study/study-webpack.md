@@ -709,15 +709,15 @@ raw-loader@0.5.1 (暂时固定版本)
 npm i raw-loader -D
 ```
 
-```javascript
-<script>${require("raw-loader!babel-loader!./meta.html")}</script>
+```html
+<%=require('raw-loader!./meta.html')%>
 ```
 
 raw-loader 内联 JS
 
-```javascript
+```html
 <script>
-  ${require("raw-loader!babel-loader!../node_modules/lib-flexible/flexible.js")}
+  <%=require("raw-loader!babel-loader!../node_modules/lib-flexible/flexible.js")%>
 </script>
 ```
 

@@ -16,7 +16,7 @@ module.exports = {
     },
     module: {
         rules: [
-            { test: /\.txt$/, use: 'raw-loader' }, // test 指定匹配规则 use 指定使用的 loader 名称
+            // { test: /\.txt$/, use: 'raw-loader' }, // test 指定匹配规则 use 指定使用的 loader 名称
             { test: /.js$/, use: 'babel-loader' }, // 解析 js 文件，使用 babel-loader
             {
                 test: /.css$/,

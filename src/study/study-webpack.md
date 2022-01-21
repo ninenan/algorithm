@@ -723,7 +723,7 @@ raw-loader 内联 JS
 
 ### CSS 内联
 
-#### 1. 借助 style-loader
+1. 借助 style-loader
 
 webpack.config.js
 
@@ -750,4 +750,127 @@ module.exports = {
 };
 ```
 
-#### 2. html-inline-css-webpack-plugin
+2.  html-inline-css-webpack-plugin
+
+## 多页面(MPA)打包通用方案
+
+每次页面跳转的时候，后台服务器都会返回一个新的 html 文档。
+
+**优势**
+
+1. 每个页面都是解耦的
+2. 更好的 SEO
+
+### 基本思路
+
+每个页面都对应一个 entry，一个 html-webpack-plugin
+
+**缺点**
+每次新增或者删除页面都需要修改 webpack 配置
+
+webpack.config.js
+
+```javascript
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+module.exports = {
+  entry: {
+    index: "./src/index.js",
+    search: "./src/search.js",
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, "src/index.html"),
+      filename: "index.html",
+      chunks: ["bundle"],
+      inject: true,
+      minify: {
+        html5: true,
+        collapseWhitespace: true,
+        preserveLineBreaks: false,
+        minifyCSS: true,
+        minifyJS: true,
+        removeComments: false,
+      },
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, "src/search.html"),
+      filename: "search.html",
+      chunks: ["search"],
+      inject: true,
+      minify: {
+        html5: true,
+        collapseWhitespace: true,
+        preserveLineBreaks: false,
+        minifyCSS: true,
+        minifyJS: true,
+        removeComments: false,
+      },
+    }),
+  ],
+};
+```
+
+### 多页面打包通用方案
+
+动态获取 entry 和设置 html-webpack-plugin 数量
+利用 **glob.sync**
+
+```base
+npm i glob -D
+```
+
+webpack.config.js
+
+```javascript
+const glob = require("glob");
+
+// 这里打包的是 src/study-webpack 下面的文件
+// 约定好的目录结构式 必须有 index.html index.js
+// 动态的设置 entry 和 htmlWebpackPlugin
+const setMPA = () => {
+  const entry = {};
+  const htmlWebpackPlugins = [];
+  const entryFiles = glob.sync(
+    path.join(__dirname, "./src/study-webpack/*/index.js")
+  );
+
+  entryFiles.map((entryFile) => {
+    const match = entryFile.match(/study\-webpack\/(.*)\/index\.js/);
+    const pageName = match && match[1];
+
+    entry[pageName] = entryFile;
+    htmlWebpackPlugins.push(
+      new HtmlWebpackPlugin({
+        template: path.join(
+          __dirname,
+          `src/study-webpack/${pageName}/index.html`
+        ),
+        filename: `${pageName}.html`,
+        chunks: [`${pageName}`],
+        inject: true,
+        minify: {
+          html5: true,
+          collapseWhitespace: true,
+          preserveLineBreaks: false,
+          minifyCSS: true,
+          minifyJS: true,
+          removeComments: false,
+        },
+      })
+    );
+  });
+
+  return {
+    entry,
+    htmlWebpackPlugins,
+  };
+};
+
+const { entry, htmlWebpackPlugins } = setMPA();
+
+module.exports = {
+  entry,
+  plugins: [].concat(htmlWebpackPlugins)
+}
+```

@@ -1019,3 +1019,33 @@ require 是运行时的，可以在不同的情况下动态的 require 模块
 - import binding 是 immutable 的
 
 代码去处：uglify 阶段删除无用代码
+
+## ScopeHoisting 使用和原理解析
+
+现象：构建后的代码存在大量的闭包代码
+
+导致的问题
+
+- 大量的闭包包裹代码，导致体积增大（模块也多越明显）
+- 运行代码时创建的函数作用域变多，内存开销变大
+
+### scope hoisting 原理
+
+将所有的模块代码按照引用顺序放在一个函数作用域里，然后适当的重命名一些变量以防止变量名冲突
+对比：通过 scope hoisting 可以减少函数声明代码和内存开销
+
+### scope hoisting 使用
+
+插件是 ModuleConcatenationPlugin()
+
+webpack.config.js
+
+```javascript
+const webpack = require("webpack");
+module.exports = {
+  plugins: [new webpack.optimize.ModuleConcatenationPlugin()],
+};
+```
+
+mode: production 默认开启
+必须是 ES6 语法，CJS 不支持

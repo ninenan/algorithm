@@ -989,3 +989,33 @@ module.exports = {
   },
 };
 ```
+
+## tree shaking(摇树优化)
+
+概念：1 个模块可能有多个方法，只要其中的某个方法使用到了，则整个文件都会被打到 bundle 中，tree shaking 就是只把使用到的方法打入 bundle 中，没用到的方法会在 uglify 阶段被去除。
+
+使用：webpack 默认支持，在 .babelrc 里设置 modules: false。 mode: production 的情况下默认开启
+要求：必须是 ES6 语法，CJS 的方式不支持
+
+DCE(Elimination)
+
+什么样的代码会被去除掉
+
+- 代码是不能有副作用的
+- 代码不会被执行，不可达到
+- 代码执行的结果不会被用到
+- 代码只会影响死变量（只写不读）
+
+### Tree-shaking 原理
+
+最本质的还是对代码进行静态的分析，因此在编译阶段，代码是否被用到是要被确定下来的，而不是通过运行时候再去进行分析，哪些代码是否被用到
+
+require 是运行时的，可以在不同的情况下动态的 require 模块
+
+利用 ES6 模块的特点
+
+- 只能作为模块顶层的语句出现
+- import 的模块名只能是字符串变量
+- import binding 是 immutable 的
+
+代码去处：uglify 阶段删除无用代码

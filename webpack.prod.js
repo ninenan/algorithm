@@ -132,24 +132,24 @@ module.exports = {
         // })
     ].concat(htmlWebpackPlugins),
     optimization: {
-        // splitChunks: {
-        //     cacheGroups: {
-        //         commons: {
-        //             test: /(react|react-dom)/,
-        //             name: 'vendors',
-        //             chunks: 'all'
-        //         }
-        //     },
-        // },
         splitChunks: {
-            minSize: 0, // 会被打包出来的文件的最小大小
             cacheGroups: {
                 commons: {
-                    name: 'commons',
-                    chunks: 'all',
-                    minChunks: 2 // 最小的使用次数
+                    test: /(react|react-dom)/,
+                    name: 'vendors',
+                    chunks: 'all'
                 }
-            }
-        }
+            },
+        },
+        // splitChunks: {
+        //     minSize: 0, // 会被打包出来的文件的最小大小
+        //     cacheGroups: {
+        //         commons: {
+        //             name: 'commons',
+        //             chunks: 'all',
+        //             minChunks: 2 // 最小的使用次数
+        //         }
+        //     }
+        // }
     }
 }

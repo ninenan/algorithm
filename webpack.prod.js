@@ -4,6 +4,7 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const glob = require('glob')
+const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin')
 
 // 动态的设置 entry 和 htmlWebpackPlugin
 const setMPA = () => {
@@ -20,7 +21,7 @@ const setMPA = () => {
             new HtmlWebpackPlugin({
                 template: path.join(__dirname, `src/study-webpack/${pageName}/index.html`),
                 filename: `${pageName}.html`,
-                chunks: [`${pageName}`],
+                chunks: [pageName, 'vendors', 'commons'],
                 inject: true,
                 minify: {
                     html5: true,
@@ -114,6 +115,41 @@ module.exports = {
             filename: '[name]_[contenthash:8].css'
         }),
         new CssMinimizerPlugin(),
-        new CleanWebpackPlugin()
+        new CleanWebpackPlugin(),
+        // new HtmlWebpackExternalsPlugin({
+        //     externals: [
+        //         {
+        //             module: 'react',
+        //             entry: 'https://now8.gtimg.com/now/lib/16.8.6/react.min.js',
+        //             global: 'React',
+        //         },
+        //         {
+        //             module: 'react-dom',
+        //             entry: 'https://now8.gtimg.com/now/lib/16.8.6/react-dom.min.js',
+        //             global: 'ReactDom',
+        //         },
+        //     ],
+        // })
     ].concat(htmlWebpackPlugins),
+    optimization: {
+        // splitChunks: {
+        //     cacheGroups: {
+        //         commons: {
+        //             test: /(react|react-dom)/,
+        //             name: 'vendors',
+        //             chunks: 'all'
+        //         }
+        //     },
+        // },
+        splitChunks: {
+            minSize: 0, // 会被打包出来的文件的最小大小
+            cacheGroups: {
+                commons: {
+                    name: 'commons',
+                    chunks: 'all',
+                    minChunks: 2 // 最小的使用次数
+                }
+            }
+        }
+    }
 }

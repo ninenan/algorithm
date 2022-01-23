@@ -871,25 +871,121 @@ const { entry, htmlWebpackPlugins } = setMPA();
 
 module.exports = {
   entry,
-  plugins: [].concat(htmlWebpackPlugins)
-}
+  plugins: [].concat(htmlWebpackPlugins),
+};
 ```
 
 ## sourceMap
 
 ## 抽取页面公共资源
 
+### 基础库的分离
 
+将 react、react-dom 基础包通过 cdn 引入，不打包进 bundle 中
 
+#### 使用 html-webpack-externals-plugin
 
+webpack.config.js
 
+```javascript
+const HtmlWebpackExternalsPlugin = require("html-webpack-externals-plugin");
 
+module.exports = {
+  plugins: [
+    new HtmlWebpackExternalsPlugin({
+      externals: [
+        {
+          module: "react",
+          entry: "https://now8.gtimg.com/now/lib/16.8.6/react.min.js",
+          global: "React",
+        },
+        {
+          module: "react-dom",
+          entry: "https://now8.gtimg.com/now/lib/16.8.6/react-dom.min.js",
+          global: "ReactDom",
+        },
+      ],
+    }),
+  ],
+};
+```
 
+index.html 文件记得需要导入 cdn 文件
 
+#### SplitChunksPlugin
 
+> [webpack 官网](https://webpack.docschina.org/plugins/split-chunks-plugin#root)
 
+webpack4 内置的，替代 CommonsChunkPlugin 插件
 
+chunks 参数说明
 
+- async 异步引入的库进行分离（默认 比如说 Vue React 使用 import 引入 则会解析抽离出 chunk 出来）
+- initial 同步引入的库进行分离
+- all 所有引入的库进行分离（推荐）
 
+webpack.config.js
 
+```javascript
+module.exports = {
+  //...
+  optimization: {
+    splitChunks: {
+      chunks: "async",
+      minSize: 20000, // 生成 chunk 的最小体积
+      minRemainingSize: 0,
+      minChunks: 1, // 拆分前必须共享模块的最小 chunks 数。 最小的使用次数，这里的 1 表示 如果一个公共函数使用了 1 次，就会被独立打包
+      maxAsyncRequests: 30,
+      maxInitialRequests: 30,
+      enforceSizeThreshold: 50000,
+      cacheGroups: {
+        defaultVendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+          reuseExistingChunk: true,
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
+        },
+      },
+    },
+  },
+};
+```
 
+```javascript
+module.exports = {
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.join(
+        __dirname,
+        `src/study-webpack/${pageName}/index.html`
+      ),
+      filename: `${pageName}.html`,
+      chunks: [pageName, "vendors"], // 这里需要添加 vendors
+      inject: true,
+      minify: {
+        html5: true,
+        collapseWhitespace: true,
+        preserveLineBreaks: false,
+        minifyCSS: true,
+        minifyJS: true,
+        removeComments: false,
+      },
+    }),
+  ],
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          test: /(react|react-dom)/, // 解析 react 或者 react-dom
+          name: "vendors", // 将 react 或者 react-dom 都打包到 vendors 名称的 chunk 中
+          chunks: "all",
+        },
+      },
+    },
+  },
+};
+```

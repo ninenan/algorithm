@@ -1,2 +1,5 @@
 document.write('this is search page')
-console.log(222);
+import { getStr } from '../../common/utils';
+
+console.log(getStr());
+console.log(333);

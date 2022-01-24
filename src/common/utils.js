@@ -1,3 +1,1 @@
-export const getStr = () => {
-    return 'common utils'
-};
+export const getStr = () => 'common utils';

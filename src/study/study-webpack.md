@@ -1064,6 +1064,7 @@ mode: production 默认开启
 
 - CommonJS：require.ensure()
 - ES6：动态 import（需要 babel 支持）
+
 ### 如何动态 import
 
 ```base
@@ -1074,4 +1075,16 @@ npm i @babel/plugin-syntax-dynamic-import -D
 {
   "plugins": ["@babel/plugin-syntax-dynamic-import"]
 }
+```
+
+## webpack 结合 Eslint
+
+>[eslint-config-airbnb](https://www.npmjs.com/package/eslint-config-airbnb)
+
+```javascript
+module.exports = {
+  module: {
+    rules: [{ test: /\.js$/, use: ["babel-loader", "eslint-loader"] }],
+  },
+};
 ```

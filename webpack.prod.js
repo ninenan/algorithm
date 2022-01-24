@@ -5,7 +5,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const glob = require('glob')
 const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
-const { webpack } = require('webpack');
 
 // 动态的设置 entry 和 htmlWebpackPlugin
 const setMPA = () => {

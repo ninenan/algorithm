@@ -1049,3 +1049,29 @@ module.exports = {
 
 mode: production 默认开启
 必须是 ES6 语法，CJS 不支持
+
+## 代码分割和动态 import
+
+### 代码分割的意义
+
+对于大的 Web 应用来讲，将所有的代码都放在一个文件中显然不够有效，特别是当你的某些代码是在某些特殊的时候才会被使用到。webpack 有一个功能就是将代码分割成 chunks（语块），当代码运行到需要它们的时候再惊醒加载。
+适用的场景
+
+- 抽离相同代码到一个共享块
+- 脚本懒加载，使得初始下载得代码更小
+
+### 懒加载脚本的方式
+
+- CommonJS：require.ensure()
+- ES6：动态 import（需要 babel 支持）
+### 如何动态 import
+
+```base
+npm i @babel/plugin-syntax-dynamic-import -D
+```
+
+```json
+{
+  "plugins": ["@babel/plugin-syntax-dynamic-import"]
+}
+```

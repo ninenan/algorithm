@@ -83,3 +83,58 @@ console.log(str.match(RE2)); // [ '1', 's', 'A', '你', '=', '-', '、', '。', 
 console.log(str.match(RE3)); // [ '1', 's', 'A', '你', '=', '-', '、', '。', '‘', '；' ]
 console.log(str.match(RE4)); // [ '1', 's', 'A', '你', '=', '-', '、', '。', '‘', '；' ]
 ```
+
+贪婪匹配
+
+```javascript
+const RE = /\d{2,5}/g; // 数字连续出现 2 到 5 次。会匹配 2 位、3 位、4 位、5 位连续数字 会尽可能多的匹配
+const str = "12 123 12345 123456 ";
+
+console.log(str.match(RE)); // [ '12', '123', '12345', '12345' ]
+```
+
+惰性匹配
+
+```javascript
+const RE = /\d{2,5}?/g; // 数字出现 2 到 5 次都行，当 2 个就够的时候，就不再往下尝试了
+const str = "12 123 12345 123456 ";
+
+console.log(str.match(RE)); // [ '12', '12', '12', '34', '12', '34', '56' ]
+```
+
+通过**在量词后面加个问号**就能实现惰性匹配，因此所有惰性匹配情形如下
+
+| 惰性量词 | 贪婪量词 |
+| :------- | :------- |
+| {m,n}?   | {m,n}    |
+| {m,}?    | {m,}     |
+| ??       | ?        |
+| +?       | +        |
+| \_?      | \_       |
+
+多选分支
+
+```javascript
+const RE = /good|Nice/g; // 匹配字符 good 或者 Nice
+const str = "goodNice";
+
+console.log(str.match(RE)); // ['good', 'Nice']
+```
+
+分支结构是惰性的，即当前面的匹配上了，后面的就不再尝试了。
+
+```javascript
+const RE = /good|goodBye/g;
+const str = "goodBye, goodBye";
+
+console.log(str.match(RE)); // ['good', 'good']
+```
+
+分支结构是惰性的，即当前面的匹配上了，后面的就不再尝试了。
+
+```javascript
+const RE = /goodBye|good/g;
+const str = "goodBye, goodBye";
+
+console.log(str.match(RE)); // ['goodBye', 'goodBye']
+```

@@ -1,1 +1,3 @@
-export const getStr = () => 'common utils';
+export const getStr = () => {
+    console.log('common utils');
+};

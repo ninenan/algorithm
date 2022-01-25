@@ -4,7 +4,7 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const glob = require('glob');
-const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
+// const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 
 // 动态的设置 entry 和 htmlWebpackPlugin
@@ -13,7 +13,7 @@ const setMPA = () => {
     const htmlWebpackPlugins = [];
     const entryFiles = glob.sync(path.join(__dirname, './src/study-webpack/*/index.js'));
 
-    entryFiles.map((entryFile) => {
+    entryFiles.forEach((entryFile) => {
         const match = entryFile.match(/study\-webpack\/(.*)\/index\.js/);
         const pageName = match && match[1];
 
@@ -123,8 +123,8 @@ module.exports = {
         new ESLintPlugin({
             fix: true, // 自动帮助修复
             extensions: ['js'],
-            exclude: 'node_modules'
-        })
+            exclude: 'node_modules',
+        }),
 
         // new HtmlWebpackExternalsPlugin({
         //     externals: [

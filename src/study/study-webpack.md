@@ -1079,12 +1079,34 @@ npm i @babel/plugin-syntax-dynamic-import -D
 
 ## webpack 结合 Eslint
 
->[eslint-config-airbnb](https://www.npmjs.com/package/eslint-config-airbnb)
+> [eslint-config-airbnb](https://www.npmjs.com/package/eslint-config-airbnb)
+
+```base
+npm i babel-eslint -D
+```
+
+webpack.config.js
+
+```javascript
+const ESLintPlugin = require("eslint-webpack-plugin");
+module.exports = {
+  module: {
+    rules: [{ test: /\.js$/, use: ["babel-loader"] }],
+  },
+  plugins: [new ESlintPlugin()],
+};
+```
+
+.eslintrc.js
 
 ```javascript
 module.exports = {
-  module: {
-    rules: [{ test: /\.js$/, use: ["babel-loader", "eslint-loader"] }],
+  parser: "babel-eslint",
+  extends: "airbnb",
+  env: {
+    node: true,
+    es6: true,
+    browser: true,
   },
 };
 ```

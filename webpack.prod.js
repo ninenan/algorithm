@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const glob = require('glob');
 const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
-// const ESLintPlugin = require('eslint-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 // 动态的设置 entry 和 htmlWebpackPlugin
 const setMPA = () => {
@@ -120,11 +120,11 @@ module.exports = {
         }),
         new CssMinimizerPlugin(),
         new CleanWebpackPlugin(),
-        // new ESLintPlugin({
-        //     fix: true, // 自动帮助修复
-        //     extensions: ['js'],
-        //     exclude: 'node_modules'
-        // })
+        new ESLintPlugin({
+            fix: true, // 自动帮助修复
+            extensions: ['js'],
+            exclude: 'node_modules'
+        })
 
         // new HtmlWebpackExternalsPlugin({
         //     externals: [

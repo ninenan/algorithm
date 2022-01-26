@@ -1,22 +1,21 @@
-const path = require('path')
-const webpack = require('webpack')
+const path = require('path');
+const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const glob = require('glob')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const glob = require('glob');
 
 // 动态的设置 entry 和 htmlWebpackPlugin
 const setMPA = () => {
-    const entry = {}
-    const htmlWebpackPlugins = []
-    const entryFiles = glob.sync(path.join(__dirname, './src/study-webpack/*/index.js'))
+    const entry = {};
+    const htmlWebpackPlugins = [];
+    const entryFiles = glob.sync(path.join(__dirname, './src/study-webpack/*/index.js'));
 
-    entryFiles.map(entryFile => {
-        const match = entryFile.match(/study\-webpack\/(.*)\/index\.js/)
-        const pageName = match && match[1]
+    entryFiles.map((entryFile) => {
+        const match = entryFile.match(/study\-webpack\/(.*)\/index\.js/);
+        const pageName = match && match[1];
 
-        entry[pageName] = entryFile
+        entry[pageName] = entryFile;
         htmlWebpackPlugins.push(
             new HtmlWebpackPlugin({
                 template: path.join(__dirname, `src/study-webpack/${pageName}/index.html`),
@@ -29,19 +28,19 @@ const setMPA = () => {
                     preserveLineBreaks: false,
                     minifyCSS: true,
                     minifyJS: true,
-                    removeComments: false
-                }
-            })
-        )
-    })
+                    removeComments: false,
+                },
+            }),
+        );
+    });
 
     return {
         entry,
-        htmlWebpackPlugins
-    }
-}
+        htmlWebpackPlugins,
+    };
+};
 
-const { entry, htmlWebpackPlugins } = setMPA()
+const { entry, htmlWebpackPlugins } = setMPA();
 
 module.exports = {
     mode: 'development',
@@ -59,7 +58,7 @@ module.exports = {
     entry,
     output: {
         path: path.join(__dirname, 'dist'), // 指定文件路径
-        filename: '[name]_[chunkhash:8].js' // 指定文件名称
+        filename: '[name]_[chunkhash:8].js', // 指定文件名称
     },
     module: {
         rules: [
@@ -69,8 +68,8 @@ module.exports = {
                 test: /.css$/,
                 use: [
                     MiniCssExtractPlugin.loader,
-                    'css-loader'
-                ] // loader 的解析是从右到左，从下到上的 这里先解析了 css-loader 再解析了 style-loader
+                    'css-loader',
+                ], // loader 的解析是从右到左，从下到上的 这里先解析了 css-loader 再解析了 style-loader
             },
             {
                 test: /.less$/,
@@ -82,18 +81,18 @@ module.exports = {
                         loader: 'postcss-loader',
                         options: {
                             postcssOptions: {
-                                plugins: ['autoprefixer']
-                            }
-                        }
+                                plugins: ['autoprefixer'],
+                            },
+                        },
                     },
                     {
                         loader: 'px2rem-loader',
                         options: {
                             remUnit: 75,
-                            remPrecision: 8
-                        }
-                    }
-                ]
+                            remPrecision: 8,
+                        },
+                    },
+                ],
             },
             {
                 test: /.(png|jpg|jpeg|gif)$/,
@@ -103,33 +102,33 @@ module.exports = {
                     //     options: {
                     //         limit: 10240 // 小于 10k 的图片文件会自动转成 base64
                     //     }
-                    // } 
+                    // }
 
                     {
                         loader: 'file-loader',
                         options: {
-                            name: '[name]_[hash:8].[ext]'
-                        }
-                    }
-                ]
+                            name: '[name]_[hash:8].[ext]',
+                        },
+                    },
+                ],
             },
             {
                 test: /.(ttf|woff|woff2|otf|eot)$/,
                 use: [{
                     loader: 'file-loader',
                     options: {
-                        name: '[name]_[hash:8].[ext]'
-                    }
-                }]
-            }
-        ]
+                        name: '[name]_[hash:8].[ext]',
+                    },
+                }],
+            },
+        ],
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: '[name]_[contenthash:8].css'
+            filename: '[name]_[contenthash:8].css',
         }),
         new webpack.HotModuleReplacementPlugin(),
-        new CleanWebpackPlugin()
+        new CleanWebpackPlugin(),
     ].concat(htmlWebpackPlugins),
     devServer: {
         // 服务的基础目录
@@ -137,7 +136,7 @@ module.exports = {
             directory: path.join(__dirname, './dist'),
         },
         // 设置热更新
-        hot: true
+        hot: true,
     },
-    devtool: 'source-map'
-}
+    devtool: 'source-map',
+};

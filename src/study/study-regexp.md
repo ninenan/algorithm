@@ -313,8 +313,8 @@ console.log(str.replace(RE, ",")); // 123,123,123,123
 
 ```javascript
 const RE = /(?!^)(?=(\d{3})+$)/g;
-const RE1 = /(?!\b)(?=(\d{3})+$)/g;
-const RE2 = /\B(?=(\d{3})+$)/g;
+const RE1 = /(?!\b)(?=(\d{3})+\b)/g;
+const RE2 = /\B(?=(\d{3})+\b)/g;
 const str = "-123123123";
 
 console.log(str.replace(/\d+/, (s) => s.replace(RE, ","))); // -123,123,123

@@ -15,7 +15,8 @@
   "license": "ISC",
   "dependencies": {
     "commitizen": "^4.2.4",
-    "lib-flexible": "^0.3.2"
+    "lib-flexible": "^0.3.2",
+    "nnn-large-number": "^1.0.0"
   },
   "config": {
     "commitizen": {

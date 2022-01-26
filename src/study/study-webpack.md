@@ -1110,3 +1110,78 @@ module.exports = {
   },
 };
 ```
+
+## webpack 打包库和组件
+
+> [webpack 官网](https://webpack.docschina.org/configuration/output/#outputlibrarytarget)
+
+webpack.config.js
+
+```javascript
+module.exports = {
+  mode: "production",
+  entry: {
+    "large-number": "./src/index.js",
+    "large-number.min": "./srx/index.js",
+  },
+  output: {
+    filename: "[name].js",
+    library: "largeNumber", // 指定库的全局变量
+    libraryExport: "default",
+    libraryTarget: "umd", // 支持库的引入方式
+  },
+};
+```
+
+webpack.config.js
+
+```javascript
+const TerserPlugin = require("terser-webpack-plugin");
+
+module.exports = {
+  mode: "none",
+  entry: {
+    "large-number": "./src/index.js", // 开发版不压缩
+    "large-number.min": "./src/index.js", // 生产版本压缩
+  },
+  output: {
+    filename: "[name].js",
+    library: "largeNumberNNN",
+    libraryTarget: "umd",
+    libraryExport: "default",
+  },
+  // 自定义配置压缩 使用 terser-webpack-plugin 插件 压缩 .min.js 结尾的文件
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        include: /\.min\.js$/,
+      }),
+    ],
+  },
+};
+```
+
+配置入口文件
+
+package.json
+
+```json
+{
+  "main": "index.js"
+}
+```
+
+index.js
+
+```javascript
+if (process.env.NODE_ENV === "production") {
+  module.exports = require("./dist/large-number.min.js");
+} else {
+  module.exports = require("./dist/large-number.js");
+}
+```
+发布
+```base
+npm publish
+```

@@ -138,3 +138,200 @@ const str = "goodBye, goodBye";
 
 console.log(str.match(RE)); // ['goodBye', 'goodBye']
 ```
+
+```javascript
+// ^ 匹配开头
+// $ 匹配结尾
+
+const RE = /^|$/g;
+const res = "hello".replace(RE, "#");
+console.log(res); // #hello#
+```
+
+\b
+匹配单词边界（\w 和 \W 之间的位置，\w 与 ^ 之间的位置，和 \w 与 $ 之间的位置）
+
+\w 是字符组 [0-9a-zA-Z_] 的简写形式，即 \w 是字母数字或者下划线的中任何一个字 符。
+\W 是排除字符组 [^0-9a-za-z_] 的简写形式，即 \W 是 \w 以外的任何一个字符。
+
+```javascript
+const RE = /\b/g;
+const res = "[js]_my_friend.jpg".replace(RE, "#");
+
+console.log(res); // [#js#]#_my_friend#.#jpg#
+```
+
+\B
+\b 取反的意思
+
+```javascript
+const RE = /\B/g;
+const res = "[js]_my_friend.jpg".replace(RE, "#");
+
+console.log(res); // #[j#s]_#m#y#_#f#r#i#e#n#d.j#p#g
+```
+
+正向前瞻（条件后面一定要有什么`?=`）和反向前瞻（条件后面不能有什么` ?!`）
+
+```javascript
+const str = "123.jpg,456.jpg,789.gif";
+const reg1 = /\d+\.jpg/g;
+const reg2 = /\d+(?=\.jpg)/g;
+const reg3 = /\d+(?!\.jpg)/g;
+
+console.log(str.match(reg1)); // [ '123.jpg', '456.jpg' ]
+console.log(str.match(reg2)); // [ '123', '456' ]
+console.log(str.match(reg3)); // [ '12', '45', '789' ]
+```
+
+```javascript
+const RE = /(?=l)/g;
+const res = "hello".replace(RE, "#");
+
+console.log(res); // he#l#lo
+```
+
+```javascript
+const RE = /(?!l)/g;
+const res = "hello".replace(RE, "#");
+
+console.log(res); // #h#ell#o#
+```
+
+## 案例
+
+### 1. 匹配十六进制颜色
+
+```javascript
+const RE = /#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/g;
+const str = "#ffbbad,#ddd,#fff,#FFF,#Fc01DF";
+
+console.log(str.match(RE)); // [ '#ffbbad', '#ddd', '#fff', '#FFF', '#Fc01DF' ]
+```
+
+### 2. 匹配 24 小时时间
+
+```javascript
+// 23:59
+// 09:09
+// 19:59
+
+const RE = /(([01][0-9]|[2][0-3]):([0-5][0-9]))/g;
+const str1 = "23:59, 00:00, 01:01";
+
+console.log(str1.match(RE)); // [ '23:59', '00:00', '01:01' ]
+```
+
+### 3. 匹配 24 小时时间
+
+```javascript
+const RE = /^(0?[1-9]|1[0-9]|[2][0-3]):(0?[1-9]|1[0-9])$/;
+const str = "7:9";
+
+console.log(RE.test(str)); // true
+```
+
+### 4. 匹配日期
+
+格式 yyyy-mm-dd
+
+```javascript
+const RE = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
+const str1 = "2020-12-31";
+const str2 = "2020-09-01";
+const str3 = "2020-10-31";
+const str4 = "2020-01-01";
+
+console.log(RE.test(str1)); // true
+console.log(RE.test(str2)); // true
+console.log(RE.test(str3)); // true
+console.log(RE.test(str4)); // true
+```
+
+### 5.window 操作系统文件路径
+
+```javascript
+// F:\study\javascript\regex\regular expression.pdf
+// F:\study\javascript\regex\
+// F:\study\javascript
+// F:\
+
+// [^\\:*<>|"?\r\n/] 这里表示合法的字符
+// 另外它们的名字不能为空名，至少有一个字符，也就是要使用量词 +。因此匹配 文件夹\，可用[^\\:*<>|"?\r\n/]+\\。
+// 路径的最后一部分可以是 文件夹，没有 \，因此需要添加 ([^\\:*<>|"?\r\n/]+)?。
+
+const RE = /^[a-zA-z]:\\([^\\:*<>|"?\r\n/]+\\)*([^\\:*<>|"?\r\n/]+)?$/;
+const str1 = "F:\\study\\javascript\\regex\\regular expression.pdf";
+const str2 = "F:\\study\\javascript\\regex\\";
+const str3 = "F:\\study\\javascript";
+const str4 = "F:\\";
+
+console.log(RE.test(str1)); // true
+console.log(RE.test(str2)); // true
+console.log(RE.test(str3)); // true
+console.log(RE.test(str4)); // true
+```
+
+### 6. 匹配手机号
+
+```javascript
+const RE = /^1[34578]\d{9}$/g;
+const str = "15111111111";
+
+console.log(RE.test(str)); // true
+```
+
+### 7. 匹配标签中的 id
+
+```javascript
+const RE = /id=".*?"/;
+const RE1 = /id="[^"]*"/;
+const str = '<div id="container" class="main"></div>';
+
+console.log(str.match(RE)[0]); // ['id="container"']
+console.log(str.match(RE1)[0]); // ['id="container"']
+```
+
+### 8. 不匹配任何东西
+
+```javascript
+const RE = /.^/; // 匹配一个字符，但是该字符后面是开头
+```
+
+### 9. 数字千位分隔符
+
+#### 正整数
+
+```javascript
+const RE = /(?!^)(?=(\d{3})+$)/g;
+const str = "123123123123";
+
+console.log(str.replace(RE, ",")); // 123,123,123,123
+```
+
+#### 负数和小数
+
+```javascript
+const RE = /(?!^)(?=(\d{3})+$)/g;
+const RE1 = /(?!\b)(?=(\d{3})+$)/g;
+const RE2 = /\B(?=(\d{3})+$)/g;
+const str = "-123123123";
+
+console.log(str.replace(/\d+/, (s) => s.replace(RE, ","))); // -123,123,123
+console.log(str.replace(RE1, ",")); // -123,123,123
+console.log(str.replace(RE2, ",")); // -123,123,123
+```
+
+### 10. 货币格式化
+
+```javascript
+const num = 188;
+const format = (num: number) =>
+  num
+    .toFixed(2)
+    .replace(/\B(?=(\d{3})+\b)/g, ",")
+    .replace(/^/, "$$ ");
+
+console.log(format(188)); // $ 188.00
+console.log(format(-123123.123123)); // $ -123,123.12
+```

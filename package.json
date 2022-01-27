@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@soda/friendly-errors-webpack-plugin": "^1.8.1",
     "commitizen": "^4.2.4",
     "lib-flexible": "^0.3.2",
     "nnn-large-number": "^1.0.0"

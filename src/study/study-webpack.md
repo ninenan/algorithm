@@ -1189,3 +1189,35 @@ npm publish
 ```
 
 ## SSR 打包
+
+## 优化构建时命令行日志
+
+配置 stats
+
+> [webpack 官网](https://webpack.js.org/configuration/stats/#root)
+
+| Preset            | Alternative | Description                                                |
+| ----------------- | ----------- | ---------------------------------------------------------- |
+| 'errors-only'     | none        | Only output when errors happen                             |
+| 'errors-warnings' | none        | Only output errors and warnings happen                     |
+| 'minimal'         | none        | Only output when errors or new compilation happen          |
+| 'none'            | false       | Output nothing                                             |
+| 'normal'          | true        | Standard output                                            |
+| 'verbose'         | none        | Output everything                                          |
+| 'detailed'        | none        | Output everything except chunkModules and chunkRootModules |
+| 'summary'         | none        | Output webpack version, warnings count and errors count    |
+
+```base
+npm install @soda/friendly-errors-webpack-plugin --save-dev
+```
+
+webpack.config.js
+
+```javascript
+const FriendlyErrorsWebpackPlugin = require("@soda/friendly-errors-webpack-plugin");
+
+module.exports = {
+  stats: "errors-only",
+  plugins: [new FriendlyErrorsWebpackPlugin()],
+};
+```

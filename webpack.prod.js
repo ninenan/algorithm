@@ -6,7 +6,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const glob = require('glob');
 // const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
-
+const FriendlyErrorsWebpackPlugin = require('@soda/friendly-errors-webpack-plugin');
 // 动态的设置 entry 和 htmlWebpackPlugin
 const setMPA = () => {
     const entry = {};
@@ -125,6 +125,7 @@ module.exports = {
             extensions: ['js'],
             exclude: 'node_modules',
         }),
+        new FriendlyErrorsWebpackPlugin(),
 
         // new HtmlWebpackExternalsPlugin({
         //     externals: [
@@ -162,4 +163,5 @@ module.exports = {
         //     }
         // }
     },
+    stats: 'errors-only',
 };

@@ -4,6 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const glob = require('glob');
+const FriendlyErrorsWebpackPlugin = require('@soda/friendly-errors-webpack-plugin');
 
 // 动态的设置 entry 和 htmlWebpackPlugin
 const setMPA = () => {
@@ -129,6 +130,7 @@ module.exports = {
         }),
         new webpack.HotModuleReplacementPlugin(),
         new CleanWebpackPlugin(),
+        new FriendlyErrorsWebpackPlugin(),
     ].concat(htmlWebpackPlugins),
     devServer: {
         // 服务的基础目录
@@ -138,5 +140,6 @@ module.exports = {
         // 设置热更新
         hot: true,
     },
+    stats: 'errors-only',
     devtool: 'source-map',
 };

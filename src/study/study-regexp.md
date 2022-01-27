@@ -1,3 +1,7 @@
+# 学习正则的笔记
+
+> [文章来自《JS 正则迷你书》](https://github.com/qdlaoyao/js-regex-mini-book) > [文章来自《JS 正则迷你书》](https://github.com/qdlaoyao/js-regex-mini-book) > [文章来自《JS 正则迷你书》](https://github.com/qdlaoyao/js-regex-mini-book)
+
 ```javascript
 const RE = /ab{2,5}c/g; // 表示匹配 第一个字符是 a，2-5 的 b 最后一个字符是 c
 const string = "abc abbc abbbc abbbbc abbbbbc abbbbbbc";
@@ -198,6 +202,201 @@ const res = "hello".replace(RE, "#");
 console.log(res); // #h#ell#o#
 ```
 
+## 括号的作用
+
+### 分组和分支结构
+
+#### 分组
+
+```javascript
+const RE = /(ab)+/g; // 匹配连续出现的 ab
+const str = "ababa,abbb,ababab";
+
+console.log(str.match(RE)); // [ 'abab', 'ab', 'ababab' ]
+```
+
+#### 分支结构
+
+```javascript
+const RE = /study (javascript|regexp)/g;
+const str = "study javascript,study regexp,hello,world";
+
+console.log(str.match(RE)); // [ 'study javascript', 'study regexp' ]
+
+const RE1 = /study javascript|regexp/g;
+console.log(str.match(RE1)); // [ 'study javascript', 'regexp' ]
+```
+
+### 分组引用
+
+在匹配过程中，给每一个分组都开辟一个空间，用来存储每一个分组匹配到的数据
+
+match 返回的一个数组，第一个元素是整体匹配结果，然后是各个分组（括号里）匹配的
+内容，然后是匹配下标，最后是输入的文本。另外，正则表达式是否有修饰符 g，match
+返回的数组格式是不一样的。
+
+#### 提取数据
+
+```javascript
+const RE = /(\d{4})-(\d{2})-(\d{}2)/;
+const str = "2021-01-01";
+
+console.log(str.match(RE)); // [ '2020-01-01', '2020', '01', '01' ]
+```
+
+```javascript
+const RE = /(\d{4})-(\d{2})-(\d{}2)/g;
+const str = "20201-01-01";
+
+console.log(str.match(RE)); // [ '2020-01-01' ]
+```
+
+#### 替换
+
+yyyy-mm-dd 格式，替换成 mm/dd/yyyy
+
+replace 中 \$1、\$2、\$3 指对应的分组
+
+```javascript
+const RE = /(\d{4})-(\d{2})-(\d{2})/;
+const str = "2021-12-31";
+
+console.log(str.replace(RE, "$3/$2/$1")); // 31/12/2021
+```
+
+```javascript
+const RE = /(\d{4})-(\d{2})-(\d{2})/;
+const str = "2021-12-31";
+
+const res = str.replace(RE, (match, p1, p2, p3) => {
+  return `${p1}/${p2}/${p3}`;
+});
+
+console.log(res); // 2021/12/31
+```
+
+### 反向引用
+
+除了使用相应 API 来引用分组，也可以在正则本身里引用分组。但只能引用之前出现的分组，即反向引用。
+
+需要匹配下面的三种
+2016-06-12
+2016/06/12
+2016.06.12
+
+```javascript
+const RE = /\d{4}(-|\/|\.)\d{2}(-|\/|\.)\d{2}/;
+const str1 = "2020-12-31";
+const str2 = "2020/12/31";
+const str3 = "2020.12.31";
+
+console.log(RE.test(str1)); // true
+console.log(RE.test(str2)); // true
+console.log(RE.test(str3)); // true
+console.log(RE.test("2020-12/31")); // true 这里应该是 false
+```
+
+```javascript
+const RE = /\d{4}(-\/\.)\d{2}\1\d{2}/; // \1 表示使用前面的 (-\/\.) 前面匹配什么 这里也会匹配什么
+const str1 = "2020-12-31";
+const str2 = "2020/12/31";
+const str3 = "2020.12.31";
+
+console.log(RE.test(str1)); // true
+console.log(RE.test(str2)); // true
+console.log(RE.test(str3)); // true
+console.log(RE.test("2020-12/31")); // false
+```
+
+#### 括号嵌套
+
+以左括号（开括号）为准
+
+```javascript
+const RE = /^((\d)(\d(\d)))\1\2\3\4$/;
+const str = "1231231233";
+
+console.log(RE.test(str)); // true
+
+str.replace(RE, (match, p2, p3, p4, p5, p6, p7) => {
+  console.log(match); // 1231231233
+  console.log(p2); // 123
+  console.log(p3); // 1
+  console.log(p4); // 23
+  console.log(p5); // 3
+  console.log(p6); // 0
+  console.log(p7); // 3
+});
+```
+
+第一个字符是数字，比如说 "1"，
+第二个字符是数字，比如说 "2"，
+第三个字符是数字，比如说 "3"，
+接下来的是 \1，是第一个分组内容，那么看第一个开括号对应的分组是什么，是 "123"，
+接下来的是 \2，找到第 2 个开括号，对应的分组，匹配的内容是 "1"，
+接下来的是 \3，找到第 3 个开括号，对应的分组，匹配的内容是 "23"，
+最后的是 \4，找到第 3 个开括号，对应的分组，匹配的内容是 "3"。
+
+<img src="https://yw-dev-bucket.eos-ningbo-1.cmecloud.cn/b24bfd5b-a3f6-48e6-b827-112ab2df0acf.png">
+
+#### \10 代表什么
+
+\10 就是第 10 组
+
+```javascript
+const RE = /(1)(2)(3)(4)(5)(6)(7)(8)(9)(#) \10+/;
+const str = "123456789# ###";
+
+console.log(RE.test(str)); // true
+```
+
+#### 引用不存在的分组
+
+```javascript
+const RE = /\1\2\3\4\5\6/;
+const str = "\1\2\3\4\5\6";
+
+console.log(RE.test(str)); // true
+```
+
+#### 分组后面有量词
+
+分组后面有量词的话，分组最终捕获到的数据是最后一次的匹配。
+
+```javascript
+const RE = /(\d)+/;
+const str = "12345";
+
+console.log(str.match(RE)); // [ '12345', '5', index: 0, input: '12345', groups: undefined ]
+
+const RE1 = /(\d)+\1/;
+
+console.log(RE1.test("123455")); // true
+console.log(RE1.test("123451")); // false
+```
+
+### 非捕获括号
+
+只想要括号最原始的功能，但不会引用它，即，既不在 API 里引用，也不在正则里反向引用。
+此时可以使用非捕获括号 (?:p) 和 (?:p1|p2|p3)
+
+```javascript
+const RE = /(?:ab)+/g;
+const str = "ababa,abbb,ababab";
+
+console.log(str.match(RE)); // [ 'abab', 'ab', 'ababab' ]
+```
+
+```javascript
+const RE = /study (?:javascript|regexp)/g;
+const str = "study javascript,study regexp,hello,world";
+
+console.log(str.match(RE)); // [ 'study javascript', 'study regexp' ]
+
+const RE1 = /study javascript|regexp/g;
+console.log(str.match(RE1)); // [ 'study javascript', 'regexp' ]
+```
+
 ## 案例
 
 ### 1. 匹配十六进制颜色
@@ -225,7 +424,7 @@ console.log(str1.match(RE)); // [ '23:59', '00:00', '01:01' ]
 ### 3. 匹配 24 小时时间
 
 ```javascript
-const RE = /^(0?[1-9]|1[0-9]|[2][0-3]):(0?[1-9]|1[0-9])$/;
+const RE = /((0?[0-9]|1[0-9]|2[0-3]):([1-5][0-9]|0?[0-9]))/g;
 const str = "7:9";
 
 console.log(RE.test(str)); // true
@@ -237,15 +436,19 @@ console.log(RE.test(str)); // true
 
 ```javascript
 const RE = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
+const RE1 = /[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])/g;
+
 const str1 = "2020-12-31";
 const str2 = "2020-09-01";
 const str3 = "2020-10-31";
 const str4 = "2020-01-01";
+const str5 = "2020-01-01, 2020-10-31, 2020-09-01, 2020-12-31";
 
 console.log(RE.test(str1)); // true
 console.log(RE.test(str2)); // true
 console.log(RE.test(str3)); // true
 console.log(RE.test(str4)); // true
+console.log(str5.match(RE1)); // [ '2020-01-01', '2020-10-31', '2020-09-01', '2020-12-31' ]
 ```
 
 ### 5.window 操作系统文件路径
@@ -334,4 +537,39 @@ const format = (num: number) =>
 
 console.log(format(188)); // $ 188.00
 console.log(format(-123123.123123)); // $ -123,123.12
+```
+
+### 11. 验证密码问题
+
+密码长度 6-12 位，由数字、小写字符和大写字母组成，但必须至少包括 2 种字符。
+
+```javascript
+const RE = /^[a-zA-Z0-9]{6,12}$/; // 密码长度 6-12 位，由数字、小写字符和大写字母组成
+const RE1 = /(?=.*[0-9])/; // 判断是否包含数字
+const RE2 = /(?=.*[a-z])/; // 判断是否包含 a-z
+const RE3 = /(?=.*[A-Z])/; // 判断是否包含 A-Z
+
+// /?!^[0-9]{6,12}$/ 不能是 6-12 的纯数字
+// /?!^[a-z]{6,12}$/ 不能是 6-12 的 a-z
+// /?!^[A-Z]{6,12}$/ 不能是 6-12 的 A-Z
+
+const RE4 =
+  /((?=.*[0-9])(?=.*[a-z])|(?=.*[0-9])(?=.*[A-Z])|(?=.*[a-z])(?=.*[A-Z]))^[a-zA-Z0-9]{6,12}$/;
+
+const RE5 =
+  /(?!^[0-9]{6,12}$)(?!^[a-z]{6,12}$)(?!^[A-Z]{6,12}$)^[a-zA-Z0-9]{6,12}$/;
+
+console.log(RE4.test("1234567")); // false 全是数字
+console.log(RE4.test("abcdef")); // false 全是小写字母
+console.log(RE4.test("ABCDEFGH")); // false 全是大写字母
+console.log(RE4.test("ab23C")); // false 不足6位
+console.log(RE4.test("ABCDEF234")); // true 大写字母和数字
+console.log(RE4.test("abcdEF234")); // true 三者都有
+
+console.log(RE5.test("1234567")); // false 全是数字
+console.log(RE5.test("abcdef")); // false 全是小写字母
+console.log(RE5.test("ABCDEFGH")); // false 全是大写字母
+console.log(RE5.test("ab23C")); // false 不足6位
+console.log(RE5.test("ABCDEF234")); // true 大写字母和数字
+console.log(RE5.test("abcdEF234")); // true 三者都有
 ```

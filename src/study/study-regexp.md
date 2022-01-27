@@ -573,3 +573,82 @@ console.log(RE5.test("ab23C")); // false 不足6位
 console.log(RE5.test("ABCDEF234")); // true 大写字母和数字
 console.log(RE5.test("abcdEF234")); // true 三者都有
 ```
+
+### 12. 实现 trim
+
+去掉开头和结尾的空格
+
+```javascript
+const RE = /^\s+|\s+$/g;
+const str = "  123123 ";
+console.log(str.replace(RE, "")); // 123123
+console.log(str.replace(RE, "").length); // 6
+```
+
+```javascript
+const RE = /^\s*(.*?)\s*$/g; // (.*?) 惰性匹配任意字符
+const str = "  123123 ";
+console.log(str.replace(RE, "$1")); // 123123
+console.log(str.replace(RE, "$1").length); // 6
+```
+
+### 13. 将每个字符的首字母都大写
+
+```javascript
+const RE = /(?:^|\s)\w/g;
+const RE1 = /(^|\s)\w/g;
+const str = "regular is terrible";
+
+const res = str.toLocaleLowerCase().replace(RE, (p1) => p1.toLocaleUpperCase());
+const res1 = str
+  .toLocaleLowerCase()
+  .replace(RE1, (p1) => p1.toLocaleUpperCase());
+
+console.log(res); // Regular Is Terrible
+console.log(res1); // Regular Is Terrible
+```
+
+### 14. 驼峰化
+
+```javascript
+const RE = /[-_\s]+(.)?/g;
+const RE1 = /-(\w)/g;
+const str = "on-click";
+
+const res = str.replace(RE, (_, s) => {
+  return s && s.toLocaleUpperCase();
+});
+
+const res1 = str.replace(RE1, (_, s) => {
+  return s && s.toLocaleUpperCase();
+});
+
+console.log("res :>> ", res); // onClick
+console.log("res1 :>> ", res1); // onClick
+```
+
+### 15. 连字符
+
+```javascript
+const RE = /\B([A-Z])/g;
+const str = "onClick";
+const res = str.replace(RE, (match, p1) => {
+  return p1 && `-${p1.toLocaleLowerCase()}`;
+});
+const res1 = str.replace(RE, "-$1").toLocaleLowerCase();
+
+console.log(res); // on-click
+console.log(res1); // on-click
+```
+
+```javascript
+const RE = /([A-Z])/g;
+const str = "onClick";
+const res = str
+  .replace(RE, "-$1")
+  .replace(/[-_\s]+/g, "-")
+  .toLocaleLowerCase();
+// const res = str.replace(RE, '-$1').toLocaleLowerCase()
+
+console.log(res); // on-click
+```

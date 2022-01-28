@@ -7,6 +7,7 @@ const glob = require('glob');
 // const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const FriendlyErrorsWebpackPlugin = require('@soda/friendly-errors-webpack-plugin');
+
 // 动态的设置 entry 和 htmlWebpackPlugin
 const setMPA = () => {
     const entry = {};
@@ -126,7 +127,15 @@ module.exports = {
             exclude: 'node_modules',
         }),
         new FriendlyErrorsWebpackPlugin(),
-
+        // 用于捕获构建状态
+        function () {
+            this.hooks.done.tap('done', (stats) => {
+                // 构建失败会触发
+                if (stats.compilation.errors && stats.compilation.errors.length && process.argv.indexOf('--watch') === -1) {
+                    // process.exit(1);
+                }
+            });
+        },
         // new HtmlWebpackExternalsPlugin({
         //     externals: [
         //         {

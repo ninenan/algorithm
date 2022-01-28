@@ -1221,3 +1221,45 @@ module.exports = {
   plugins: [new FriendlyErrorsWebpackPlugin()],
 };
 ```
+
+## 构建异常和中断处理
+
+### 如何判断构建是否成功
+
+在 CI\CD 的 pipeline 或者发布系统需要知道当前构建状态
+可以在每次构建完成后输入 echo $? 获取错误码，不为 0 就是构建失败
+
+### 构建异常和中断处理
+
+webpack4 之前的版本构建失败不会抛出错误吗（error code）
+Nods.js 重点饿 process.exit 规范
+
+- 0，表示成功，回调函数中，err 为 null
+- 非 0。表示执行失败，回调函数中，err 不为 null，err.code 就是传给 exit 的数字
+
+### 如何主动捕获并处理构建错误
+
+compiler 在每次构建结束后会触发 done 这个 hook
+process.exit 主动处理构建报错
+
+webpack.config.js
+
+```javascript
+module.exports = {
+  plugins: [
+    function () {
+      this.hooks.done.tap("done", (stats) => {
+        if (
+          stats.compilation.errors &&
+          stats.compilation.errors.length &&
+          process.argv.indexOf("--watch") === -1
+        ) {
+          console.log(stats);
+          console.log("build error");
+          process.exit(1);
+        }
+      });
+    },
+  ],
+};
+```

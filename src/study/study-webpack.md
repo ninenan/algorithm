@@ -1254,6 +1254,7 @@ module.exports = {
           stats.compilation.errors.length &&
           process.argv.indexOf("--watch") === -1
         ) {
+          // 这里可以捕获到错误的状态和原因 做上报处理
           console.log(stats);
           console.log("build error");
           process.exit(1);
@@ -1263,3 +1264,69 @@ module.exports = {
   ],
 };
 ```
+
+## 配置构建包设计
+
+### 构建配置抽离成 npm 包的意义
+
+**通用性**
+
+- 业务开发者无需关注构建配置
+- 统一团队构建脚本
+
+**可维护性**
+
+- 构建配置合理的拆分
+- README 文档、ChangeLog 文档...
+
+**质量**
+
+- 冒烟测试、单元测试、测试覆盖率
+- 持续集成
+
+### 选方案
+
+- 通过多个配置文件管理不同的环境的构建，webpack --config 参数进行控制
+- 将后见配置设计成一个库，例如：hjs-webpack、webpack-blocks
+- 抽离成一个工具进行管理，比如 create-react-app、vue-cli（项目够大的话）
+- 将所有的配置文件放在一个文件，通过 --env 参数控制分支选择
+
+### 构建配置包设计
+
+**通过多个配置文件管理不同的环境的 webpack 配置**
+
+- 基础配置：webpack.base.js
+- 开发环境：webpack.dev.js
+- 生产环境：webpack.prod.js
+- SSR 环境：webpack.ssr.js
+- ......
+
+**抽离成一个 npm 包统一管理**
+
+- 规范：Git commit 日志、REMADE、ESLint 规范、Semver 规范
+- 质量：冒烟测试、单元测试、测试覆盖率、CI/CD...
+
+### 通过 webpack-merge 组合配置
+
+```javascript
+const merge = require("webpack-merge");
+module.exports = merge(baseConfig, devConfig);
+```
+
+## 功能模块设计和目录结构
+
+<img src="https://yw-dev-bucket.eos-ningbo-1.cmecloud.cn/96defbaf-a035-48c5-8268-98a6a7af49cd.png">
+
+### 目录结构
+
+- /test
+- /lib
+  - webpack.dev.js
+  - webpack.prod.js
+  - webpack.ssr.js
+  - webpack.base.js
+- README.md
+- CHANGELOG.md
+- .eslintrc.js
+- package.json
+- index.js

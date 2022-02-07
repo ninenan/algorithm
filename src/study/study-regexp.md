@@ -73,6 +73,15 @@ console.log(str.match(RE)); // [ 'd', 'e', 'f', 'g' ]
 | \t                | 查找制表符。                                                                      |
 | \v                | 查找垂直制表符。                                                                  |
 
+匹配标点符号
+
+```javascript
+const RE = /\p{P}/gu;
+const str = "你好，世界。,.,.";
+
+console.log(str.match(RE)); // [ '，', '。', ',', '.', ',', '.' ]
+```
+
 匹配任意字符
 
 ```javascript
@@ -415,7 +424,7 @@ console.log(str.match(RE)); // [ '#ffbbad', '#ddd', '#fff', '#FFF', '#Fc01DF' ]
 // 09:09
 // 19:59
 
-const RE = /(([01][0-9]|[2][0-3]):([0-5][0-9]))/g;
+const RE = /(([01][0-9]|2[0-3]):([0-5][0-9]))/g;
 const str1 = "23:59, 00:00, 01:01";
 
 console.log(str1.match(RE)); // [ '23:59', '00:00', '01:01' ]
@@ -463,7 +472,7 @@ console.log(str5.match(RE1)); // [ '2020-01-01', '2020-10-31', '2020-09-01', '20
 // 另外它们的名字不能为空名，至少有一个字符，也就是要使用量词 +。因此匹配 文件夹\，可用[^\\:*<>|"?\r\n/]+\\。
 // 路径的最后一部分可以是 文件夹，没有 \，因此需要添加 ([^\\:*<>|"?\r\n/]+)?。
 
-const RE = /^[a-zA-z]:\\([^\\:*<>|"?\r\n/]+\\)*([^\\:*<>|"?\r\n/]+)?$/;
+const RE = /^[a-zA-Z]:\\([^\\:*<>|"?\r\n/]+\\)*([^\\:*<>|"?\r\n/]+)?$/;
 const str1 = "F:\\study\\javascript\\regex\\regular expression.pdf";
 const str2 = "F:\\study\\javascript\\regex\\";
 const str3 = "F:\\study\\javascript";

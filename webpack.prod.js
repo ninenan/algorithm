@@ -128,7 +128,7 @@ module.exports = {
         }),
         new FriendlyErrorsWebpackPlugin(),
         // 用于捕获构建状态
-        function () {
+        function errorPlugin() {
             this.hooks.done.tap('done', (stats) => {
                 // 构建失败会触发
                 if (stats.compilation.errors && stats.compilation.errors.length && process.argv.indexOf('--watch') === -1) {

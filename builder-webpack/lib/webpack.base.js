@@ -11,7 +11,7 @@ const setMPA = () => {
     const entryFiles = glob.sync(path.join(__dirname, './src/study-webpack/*/index.js'));
 
     entryFiles.forEach((entryFile) => {
-        const match = entryFile.match(/study-webpack\/(.*)\/index\.js/);
+        const match = entryFile.match(/src\/(.*)\/index\.js/);
         const pageName = match && match[1];
 
         entry[pageName] = entryFile;
@@ -107,11 +107,11 @@ module.exports = {
         new CleanWebpackPlugin(),
         new FriendlyErrorsWebpackPlugin(),
         // 用于捕获构建状态
-        function () {
+        function errorPlugin() {
             this.hooks.done.tap('done', (stats) => {
                 // 构建失败会触发
                 if (stats.compilation.errors && stats.compilation.errors.length && process.argv.indexOf('--watch') === -1) {
-                    // process.exit(1);
+                    process.exit(1);
                 }
             });
         },

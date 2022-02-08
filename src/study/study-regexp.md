@@ -493,6 +493,13 @@ const str = "15111111111";
 console.log(RE.test(str)); // true
 ```
 
+```javascript
+const RE = /(1[345789]\d{9}\b)/g;
+const str = "15111655112, 15111111111111111";
+
+console.log(str.match(RE)); // [ '15111655112' ]
+```
+
 ### 7. 匹配标签中的 id
 
 ```javascript
@@ -653,11 +660,11 @@ console.log(res1); // on-click
 ```javascript
 const RE = /([A-Z])/g;
 const str = "onClick";
-const res = str
-  .replace(RE, "-$1")
-  .replace(/[-_\s]+/g, "-")
-  .toLocaleLowerCase();
-// const res = str.replace(RE, '-$1').toLocaleLowerCase()
+const res = str.replace(RE, "-$1").toLocaleLowerCase();
+// const res = str
+//   .replace(RE, "-$1")
+//   .replace(/[-_\s]+/g, "-")
+//   .toLocaleLowerCase();
 
 console.log(res); // on-click
 ```

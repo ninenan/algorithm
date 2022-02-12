@@ -5,10 +5,11 @@ const FriendlyErrorsWebpackPlugin = require('@soda/friendly-errors-webpack-plugi
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const glob = require('glob');
 
+const projectRoot = process.cwd();
 const setMPA = () => {
     const entry = {};
     const htmlWebpackPlugins = [];
-    const entryFiles = glob.sync(path.join(__dirname, './src/study-webpack/*/index.js'));
+    const entryFiles = glob.sync(path.join(projectRoot, './src/study-webpack/*/index.js'));
 
     entryFiles.forEach((entryFile) => {
         const match = entryFile.match(/src\/(.*)\/index\.js/);
@@ -17,7 +18,7 @@ const setMPA = () => {
         entry[pageName] = entryFile;
         htmlWebpackPlugins.push(
             new HtmlWebpackPlugin({
-                template: path.join(__dirname, `src/study-webpack/${pageName}/index.html`),
+                template: path.join(projectRoot, `src/study-webpack/${pageName}/index.html`),
                 filename: `${pageName}.html`,
                 chunks: [`${pageName}`],
                 inject: true,
@@ -43,6 +44,10 @@ const { entry, htmlWebpackPlugins } = setMPA();
 
 module.exports = {
     entry,
+    output: {
+        path: path.join(projectRoot, 'dist'), // 指定文件路径
+        filename: '[name]_[chunkhash:8].js', // 指定文件名称
+    },
     module: {
         rules: [
             // { test: /\.txt$/, use: 'raw-loader' }, // test 指定匹配规则 use 指定使用的 loader 名称

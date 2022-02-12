@@ -1330,3 +1330,15 @@ module.exports = merge(baseConfig, devConfig);
 - .eslintrc.js
 - package.json
 - index.js
+
+## 冒烟测试（smoke testing）
+
+对提交测试的软件在进行详细深入的测试之前进行的预测试，测试的主要目的是暴露导致如案件需要重新发布的基本功能失效等严重问题
+
+### 执行
+
+构建是否成功
+每次构建完成 build 目录是否有内容输出
+
+- 是否有 JS、CSS 等静态资源文件
+- 是否有 HTML 文件

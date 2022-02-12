@@ -6,7 +6,6 @@ module.exports = {
         es6: true,
         browser: true,
     },
-    plugins: ['eslint-plugin-react'],
     rules: {
         'import/prefer-default-export': 'off',
         'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
@@ -14,8 +13,8 @@ module.exports = {
         indent: ['error', 4],
         'react/jsx-indent': [2, 4, { checkAttributes: false, indentLogicalExpressions: false }],
         'jsx-a11y/no-noninteractive-element-interactions': [
+            0,
             {
-
                 handlers: [
                     'onClick',
                     'onMouseDown',

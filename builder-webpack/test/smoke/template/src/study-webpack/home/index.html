@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%=require('raw-loader!./meta.html')%>
+    <title>hello html webpack</title>
+    <script>
+      <%=require("raw-loader!babel-loader!../../../node_modules/lib-flexible/flexible.js")%>
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- <script src="https://now8.gtimg.com/now/lib/16.8.6/react.min.js"></script>
+    <script src="https://now8.gtimg.com/now/lib/16.8.6/react-dom.min.js"></script> -->
+  </body>
+</html>

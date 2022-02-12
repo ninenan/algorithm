@@ -1,4 +1,4 @@
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const webpack = require('webpack');
 const path = require('path');
 const baseConfig = require('./webpack.base');
@@ -19,4 +19,4 @@ const devConfig = {
     devtool: 'source-map',
 };
 
-merge.exports = merge(baseConfig, devConfig);
+module.exports = merge(baseConfig, devConfig);

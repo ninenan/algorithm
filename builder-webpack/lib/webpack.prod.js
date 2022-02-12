@@ -1,4 +1,4 @@
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
 const baseConfig = require('./webpack.base');
@@ -22,16 +22,18 @@ const productConfig = {
             ],
         }),
     ],
-    splitChunks: {
-        minSize: 0, // 会被打包出来的文件的最小大小
-        cacheGroups: {
-            commons: {
-                name: 'commons',
-                chunks: 'all',
-                minChunks: 2, // 最小的使用次数
+    optimization: {
+        splitChunks: {
+            minSize: 0, // 会被打包出来的文件的最小大小
+            cacheGroups: {
+                commons: {
+                    name: 'commons',
+                    chunks: 'all',
+                    minChunks: 2, // 最小的使用次数
+                },
             },
         },
     },
 };
 
-merge.exports = merge(baseConfig, productConfig);
+module.exports = merge(baseConfig, productConfig);

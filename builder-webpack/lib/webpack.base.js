@@ -18,7 +18,7 @@ const setMPA = () => {
         entry[pageName] = entryFile;
         htmlWebpackPlugins.push(
             new HtmlWebpackPlugin({
-                template: path.join(projectRoot, `src/study-webpack/${pageName}/index.html`),
+                template: path.join(projectRoot, `./src/study-webpack/${pageName}/index.html`),
                 filename: `${pageName}.html`,
                 chunks: [`${pageName}`],
                 inject: true,
@@ -116,7 +116,8 @@ module.exports = {
             this.hooks.done.tap('done', (stats) => {
                 // 构建失败会触发
                 if (stats.compilation.errors && stats.compilation.errors.length && process.argv.indexOf('--watch') === -1) {
-                    process.exit(1);
+                    console.log('stats :>> ', stats.compilation.errors);
+                    process.exit(2);
                 }
             });
         },

@@ -104,7 +104,6 @@ module.exports = {
                     //         limit: 10240 // 小于 10k 的图片文件会自动转成 base64
                     //     }
                     // }
-
                     {
                         loader: 'file-loader',
                         options: {

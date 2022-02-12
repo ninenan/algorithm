@@ -63,7 +63,7 @@ const debounce = (fn: Function, delay = 500, immediate = false) => {
   let timer: null | number = null;
   // let result: any = null;
 
-  const debounced = function (...args: unknown[]) {
+  const debounced = (...args: unknown[]) => {
     if (timer) {
       clearTimeout(timer);
     }
@@ -82,7 +82,6 @@ const debounce = (fn: Function, delay = 500, immediate = false) => {
         return fn.apply(this, args);
       }, delay);
     }
-    // return result;
   };
 
   /**
@@ -98,12 +97,14 @@ const debounce = (fn: Function, delay = 500, immediate = false) => {
   return debounced;
 };
 
-function testFn2(event: EventTarget) {
+// debounce
+
+/* function testFn2(event: EventTarget) {
   console.log("event :>> ", event);
+  console.log("debounce");
 }
 
-// debounce
-/* const clickTestFn = debounce(testFn2, 2000, false);
+const clickTestFn = debounce(testFn2, 2000, false);
 imgNode.addEventListener("click", clickTestFn);
 btn.addEventListener("click", () => clickTestFn.cancel()); */
 
@@ -186,24 +187,24 @@ interface IOptions {
  * @param options 选项
  * @returns 执行回调函数的执行结果
  */
-const throttle = function (
+const throttle = (
   fn: Function,
   delay: number,
   options: IOptions = { leading: true, trailing: true }
-) {
+) => {
   let timeout: number | null = null,
     context: any = null,
     previous: number = 0,
     args: any = null;
 
-  const later = function () {
+  const later = () => {
     previous = options.leading === false ? 0 : +new Date();
     timeout = null;
     fn.apply(context, args);
     if (!timeout) context = args = null;
   };
 
-  const throttled = function () {
+  const throttled = () => {
     const now = +new Date();
     if (!previous && options.leading === false) previous = now;
     const remaining = delay - (now - previous);
@@ -226,7 +227,7 @@ const throttle = function (
   /**
    * 取消
    */
-  throttled.cancel = function () {
+  throttled.cancel = () => {
     if (timeout) {
       clearTimeout(timeout);
     }
@@ -253,7 +254,8 @@ const throttle3 = (
   const later = function () {
     previous = options.leading === false ? 0 : +new Date();
     timer = null;
-    return fn.apply(self, args);
+    // return fn.apply(self, args);
+    return fn(self, args);
   };
 
   const throttled = function (...reset: unknown[]) {
@@ -286,3 +288,14 @@ const throttle3 = (
 
   return throttled;
 };
+
+// throttle
+/* const testFn2 = (event: Event) => {
+  console.log("event :>> ", event);
+  console.log("throttle");
+};
+const clickTestFn = throttle3(testFn2, 2000, {
+  leading: true,
+});
+imgNode.addEventListener("click", clickTestFn);
+btn.addEventListener("click", () => clickTestFn.cancel()); */

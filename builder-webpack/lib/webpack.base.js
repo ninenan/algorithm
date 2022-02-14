@@ -4,6 +4,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const FriendlyErrorsWebpackPlugin = require('@soda/friendly-errors-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const glob = require('glob');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 const projectRoot = process.cwd();
 const setMPA = () => {
@@ -12,7 +13,7 @@ const setMPA = () => {
     const entryFiles = glob.sync(path.join(projectRoot, './src/study-webpack/*/index.js'));
 
     entryFiles.forEach((entryFile) => {
-        const match = entryFile.match(/src\/(.*)\/index\.js/);
+        const match = entryFile.match(/study-webpack\/(.*)\/index\.js/);
         const pageName = match && match[1];
 
         entry[pageName] = entryFile;
@@ -110,6 +111,11 @@ module.exports = {
             filename: '[name]_[contenthash:8].css',
         }),
         new CleanWebpackPlugin(),
+        new ESLintPlugin({
+            fix: true, // 自动帮助修复
+            extensions: ['js'],
+            exclude: 'node_modules',
+        }),
         new FriendlyErrorsWebpackPlugin(),
         // 用于捕获构建状态
         function errorPlugin() {

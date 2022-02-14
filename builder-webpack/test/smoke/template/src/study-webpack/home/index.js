@@ -3,7 +3,7 @@ import ReactDom from 'react-dom';
 import largeNumber from 'nnn-large-number';
 import logo from '../../assets/image/logo.png';
 import { getStr } from '../../common/utils';
-import { helloWorld } from './hellowWorld';
+import { helloWorld } from './helloWorld';
 import './index.less';
 
 getStr();

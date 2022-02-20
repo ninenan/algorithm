@@ -1342,3 +1342,20 @@ module.exports = merge(baseConfig, devConfig);
 
 - 是否有 JS、CSS 等静态资源文件
 - 是否有 HTML 文件
+
+## 单元测试
+
+1. 安装 mocha + chai
+
+```base
+npm i mocha chai -D
+```
+
+2. 新建 test 目录，并增加 xxx.test.js 测试文件
+3. 在 package.json 中的 script 字段中增加 test 命令
+
+```json
+"script" : {
+  "test:": "node_modules/mocha/bin/_mocha"
+}
+```

@@ -1412,3 +1412,14 @@ package.json
   "test": "istanbul cover node_modules/mocha/bin/_mocha",
 }
 ```
+
+## 持续集成
+
+### 优点
+
+- 快速发现错误
+- 防止分支大幅偏离主干
+
+核心措施：代码集成到主干之前，必须通过自动化测试，只要有一个测试用例失败，就不能集成
+
+使用 Travis CI

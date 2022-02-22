@@ -1359,3 +1359,56 @@ npm i mocha chai -D
   "test:": "node_modules/mocha/bin/_mocha"
 }
 ```
+
+安装断言库
+
+```base
+npm i assert -D
+```
+
+test/index.js
+
+```javascript
+const path = require("path");
+
+process.chdir(path.join(__dirname, "smoke/template"));
+
+describe("builder-webpack test case", () => {
+  require("./unit/webpack-base-test");
+});
+```
+
+webpack-base-test.js
+
+```javascript
+const assert = require("assert");
+
+describe("webpack.base.js test case", () => {
+  const baseConfig = require("../../lib/webpack.base");
+
+  it("entry", () => {
+    assert.equal(
+      baseConfig.entry.home,
+      "/Users/ninenan/NNN/study_code/algorithm/builder-webpack/test/smoke/template/src/study-webpack/home/index.js"
+    );
+    assert.equal(
+      baseConfig.entry.search,
+      "/Users/ninenan/NNN/study_code/algorithm/builder-webpack/test/smoke/template/src/study-webpack/search/index.js"
+    );
+  });
+});
+```
+
+### 测试覆盖率
+
+```base
+npm i istanbul -D
+```
+
+package.json
+
+```json
+"scripts": {
+  "test": "istanbul cover node_modules/mocha/bin/_mocha",
+}
+```

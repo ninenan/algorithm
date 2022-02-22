@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "istanbul cover node_modules/mocha/bin/_mocha",
     "eslint": "eslint ./lib --fix"
   },
   "keywords": [],
@@ -45,5 +45,8 @@
     "webpack-dev-server": "^4.7.3",
     "webpack-merge": "^5.8.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "assert": "^2.0.0",
+    "istanbul": "^0.4.5"
+  }
 }

@@ -1192,6 +1192,11 @@ if (process.env.NODE_ENV === "production") {
 
 发布
 
+添加用户：npm adduser
+升级补丁版本：npm version patch
+升级小版本：npm version minor
+升级大版本号：npm version major
+
 ```base
 npm publish
 ```

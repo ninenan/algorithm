@@ -10,7 +10,7 @@ const FriendlyErrorsWebpackPlugin = require('@soda/friendly-errors-webpack-plugi
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
-const smp = new SpeedMeasurePlugin();
+const smp = new SpeedMeasurePlugin(); // 会导致 MiniCssExtractPlugin 报错
 // 动态的设置 entry 和 htmlWebpackPlugin
 const setMPA = () => {
     const entry = {};
@@ -18,7 +18,7 @@ const setMPA = () => {
     const entryFiles = glob.sync(path.join(__dirname, './src/study-webpack/*/index.js'));
 
     entryFiles.forEach((entryFile) => {
-        const match = entryFile.match(/study\-webpack\/(.*)\/index\.js/);
+        const match = entryFile.match(/study-webpack\/(.*)\/index\.js/);
         const pageName = match && match[1];
 
         entry[pageName] = entryFile;
@@ -60,7 +60,16 @@ module.exports = smp.wrap({
             // { test: /\.txt$/, use: 'raw-loader' }, // test 指定匹配规则 use 指定使用的 loader 名称
             {
                 test: /.js$/,
-                use: ['babel-loader'],
+                use:
+                    [
+                        {
+                            loader: 'thread-loader',
+                            options: {
+                                workers: 3,
+                            },
+                        },
+                        'babel-loader',
+                    ],
             }, // 解析 js 文件，使用 babel-loader
             {
                 test: /.css$/,

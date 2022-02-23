@@ -912,6 +912,10 @@ module.exports = {
 
 index.html 文件记得需要导入 cdn 文件
 
+##### 缺点
+
+如果 CDN 过多的话 index.html 页面会有多个 script 标签
+
 #### SplitChunksPlugin
 
 > [webpack 官网](https://webpack.docschina.org/plugins/split-chunks-plugin#root)
@@ -989,6 +993,10 @@ module.exports = {
   },
 };
 ```
+
+##### 缺点
+
+每次打包还是会对相应的文件进行分析
 
 ## tree shaking(摇树优化)
 
@@ -1544,3 +1552,210 @@ const webpackConfig = smp.wrap({
 可以看到每个 loader 和插件的执行耗时
 
 采用高版本的 Node 和 webpack 可以优化速度
+
+## 多进程/多实例构建
+
+thread-loader 解析资源
+
+原理
+每次 webpack 解析一个模块，thread-loader 会将它及它的依赖分配给 worker 线程中
+
+```javascript
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /.js$/,
+        use: [
+          {
+            loader: "thread-loader",
+            options: {
+              workers: 3,
+            },
+          },
+          "babel-loader",
+        ],
+      },
+    ],
+  },
+};
+```
+
+## 多进程/多实例 并行压缩
+
+### parallel-uglify-plugin
+
+```javascript
+import ParallelUglifyPlugin from "webpack-parallel-uglify-plugin";
+
+module.exports = {
+  plugins: [
+    new ParallelUglifyPlugin({
+      // Optional regex, or array of regex to match file against. Only matching files get minified.
+      // Defaults to /.js$/, any file ending in .js.
+      test,
+      include, // Optional regex, or array of regex to include in minification. Only matching files get minified.
+      exclude, // Optional regex, or array of regex to exclude from minification. Matching files are not minified.
+      cacheDir, // Optional absolute path to use as a cache. If not provided, caching will not be used.
+      workerCount, // Optional int. Number of workers to run uglify. Defaults to num of cpus - 1 or asset count (whichever is smaller)
+      sourceMap, // Optional Boolean. This slows down the compilation. Defaults to false.
+      uglifyJS: {
+        // These pass straight through to uglify-js@3.
+        // Cannot be used with terser.
+        // Defaults to {} if not neither uglifyJS or terser are provided.
+        // You should use this option if you need to ensure es5 support. uglify-js will produce an
+        // error message if it comes across any es6 code that it can't parse.
+      },
+      terser: {
+        // These pass straight through to terser.
+        // Cannot be used with uglifyJS.
+        // terser is a fork of uglify-es, a version of uglify that supports ES6+ version of uglify
+        // that understands newer es6 syntax. You should use this option if the files that you're
+        // minifying do not need to run in older browsers/versions of node.
+      },
+    }),
+  ],
+};
+```
+
+### uglifyjs-webpack-plugin
+
+```base
+yarn add uglifyjs-webpack-plugin --save-dev
+```
+
+```javascript
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+
+module.exports = {
+  optimization: {
+    minimizer: [new UglifyJsPlugin(
+      warnings: false,
+      parse: {},
+      compress: {},
+      mangle: true,
+      output: null,
+      toplevel: false,
+      nameCache: null,
+      ie8: false,
+      keep_fnames: false
+      parallel: true, // 开启了 才会支持并行压缩
+    )],
+  },
+};
+```
+
+### terser-webpack-plugin（推荐）
+
+这种的并行压缩的方式和 uglifyjs-webpack-plugin 最大区别在于不支持压缩代码中的 ES6 的语法
+
+```base
+npm install terser-webpack-plugin --save-dev
+```
+
+```javascript
+const TerserPlugin = require("terser-webpack-plugin");
+
+module.exports = {
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        parallel: 4, //  这里开启 4 个进程
+      }),
+    ],
+  },
+};
+```
+
+## 分包 预编译资源模块
+
+### 设置 Externals
+
+将 react、react-dom 基础包通过 cdn 引入， 不打入 bundle 中
+
+方法
+
+html-webpack-externals-plugin
+
+```javascript
+const HtmlWebpackExternalsPlugin = require("html-webpack-externals-plugin");
+
+module.exports = {
+  plugins: [
+    new HtmlWebpackExternalsPlugin({
+      externals: [
+        {
+          module: "react",
+          entry: "https://now8.gtimg.com/now/lib/16.8.6/react.min.js",
+          global: "React",
+        },
+        {
+          module: "react-dom",
+          entry: "https://now8.gtimg.com/now/lib/16.8.6/react-dom.min.js",
+          global: "ReactDom",
+        },
+      ],
+    }),
+  ],
+};
+```
+
+### SplitChunksPlugin
+
+> [webpack 官网](https://webpack.docschina.org/plugins/split-chunks-plugin#root)
+
+webpack4 内置的，替代 CommonsChunkPlugin 插件
+
+chunks 参数说明
+
+- async 异步引入的库进行分离（默认 比如说 Vue React 使用 import 引入 则会解析抽离出 chunk 出来）
+- initial 同步引入的库进行分离
+- all 所有引入的库进行分离（推荐）
+
+webpack.config.js
+
+```javascript
+module.exports = {
+  //...
+  optimization: {
+    splitChunks: {
+      chunks: "async",
+      minSize: 20000, // 生成 chunk 的最小体积
+      minRemainingSize: 0,
+      minChunks: 1, // 拆分前必须共享模块的最小 chunks 数。 最小的使用次数，这里的 1 表示 如果一个公共函数使用了 1 次，就会被独立打包
+      maxAsyncRequests: 30,
+      maxInitialRequests: 30,
+      enforceSizeThreshold: 50000,
+      cacheGroups: {
+        defaultVendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+          reuseExistingChunk: true,
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
+        },
+      },
+    },
+  },
+};
+```
+
+### 进一步分包：预编译资源模块（推荐）
+
+思路：将 react、react-dom、react-redux 基础包和业务包打包成一个文件
+
+方法：使用 DLLPlugin 进行分包，DLLReferencePlugin 对 manifest.json 引用
+
+```json
+"script":{
+  "dll": "webpack --config webpack.dll.js"
+}
+```
+
+```javascript
+
+```

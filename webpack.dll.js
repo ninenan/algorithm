@@ -13,7 +13,7 @@ module.exports = {
     },
     output: {
         filename: '[name]_[chunkhash].dill.js',
-        path: path.join(__dirname, 'build/library;'),
+        path: path.join(__dirname, 'build/library'),
         library: '[name]',
     },
     plugins: [

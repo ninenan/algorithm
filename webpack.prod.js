@@ -9,6 +9,7 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 const FriendlyErrorsWebpackPlugin = require('@soda/friendly-errors-webpack-plugin');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const webpack = require('webpack');
 
 const smp = new SpeedMeasurePlugin(); // 会导致 MiniCssExtractPlugin 报错
 // 动态的设置 entry 和 htmlWebpackPlugin
@@ -48,7 +49,8 @@ const setMPA = () => {
 
 const { entry, htmlWebpackPlugins } = setMPA();
 
-module.exports = smp.wrap({
+// module.exports = smp.wrap({
+module.exports = {
     mode: 'production',
     entry,
     output: {
@@ -139,7 +141,7 @@ module.exports = smp.wrap({
             exclude: 'node_modules',
         }),
         new FriendlyErrorsWebpackPlugin(),
-        new BundleAnalyzerPlugin(),
+        // new BundleAnalyzerPlugin(),
         // 用于捕获构建状态
         function errorPlugin() {
             this.hooks.done.tap('done', (stats) => {
@@ -149,6 +151,11 @@ module.exports = smp.wrap({
                 }
             });
         },
+        new webpack.DllReferencePlugin({
+            context: path.join(__dirname, 'build/library'),
+            manifest: require('./build/library/library.json'),
+        }),
+        new webpack.SourceMapDevToolPlugin({}),
         // new HtmlWebpackExternalsPlugin({
         //     externals: [
         //         {
@@ -165,15 +172,15 @@ module.exports = smp.wrap({
         // })
     ].concat(htmlWebpackPlugins),
     optimization: {
-        splitChunks: {
-            cacheGroups: {
-                commons: {
-                    test: /(react|react-dom)/,
-                    name: 'vendors',
-                    chunks: 'all',
-                },
-            },
-        },
+        // splitChunks: {
+        //     cacheGroups: {
+        //         commons: {
+        //             test: /(react|react-dom)/,
+        //             name: 'vendors',
+        //             chunks: 'all',
+        //         },
+        //     },
+        // },
         // splitChunks: {
         //     minSize: 0, // 会被打包出来的文件的最小大小
         //     cacheGroups: {
@@ -185,5 +192,6 @@ module.exports = smp.wrap({
         //     }
         // }
     },
-    stats: 'errors-only',
-});
+    // stats: 'errors-only',
+};
+// });

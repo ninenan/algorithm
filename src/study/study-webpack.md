@@ -1762,5 +1762,39 @@ module.exports = {
 ```
 
 ```javascript
+const path = require("path");
+const webpack = require("webpack");
 
+webpack.dll.js;
+module.exports = {
+  mode: "production",
+  entry: {
+    library: ["react", "react-dom"],
+  },
+  output: {
+    filename: "[name]_[chunkhash].dill.js",
+    path: path.join(__dirname, "build/library"),
+    library: "[name]",
+  },
+  plugins: [
+    new webpack.DllPlugin({
+      context: __dirname,
+      name: "[name]_[hash]",
+      path: path.join(__dirname, "build/library/[name].json"),
+    }),
+  ],
+};
+```
+
+webpack.prod.js
+
+```javascript
+module.exports = {
+  plugins: [
+    new webpack.DllReferencePlugin({
+      context: path.join(__dirname, "build/library"), // 很关键的代码
+      manifest: require("./build/library.json"),
+    }),
+  ],
+};
 ```

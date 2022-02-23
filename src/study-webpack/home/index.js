@@ -2,11 +2,10 @@ import React from 'react';
 import ReactDom from 'react-dom';
 import largeNumber from 'nnn-large-number';
 import logo from '../../assets/image/logo.png';
-import { getStr } from '../../common/utils';
+// import { getStr } from '../../common/utils';
 import { helloWorld } from './hellowWorld';
 import './index.less';
 
-getStr();
 class Search extends React.Component {
     constructor(...reset) {
         super(reset);

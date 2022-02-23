@@ -1415,6 +1415,8 @@ package.json
 
 ## 持续集成
 
+使用 Travis CI
+
 ### 优点
 
 - 快速发现错误
@@ -1422,4 +1424,123 @@ package.json
 
 核心措施：代码集成到主干之前，必须通过自动化测试，只要有一个测试用例失败，就不能集成
 
-使用 Travis CI
+## Git 规范和 Changelog 生成
+
+良好的 Git commit 优势
+
+- 加快 code review 流程
+- 根据 Git Commit 的元数据生成 Changelog
+- 后续维护者可以知道 feature 修改的内容
+
+统一团队 Git commit 日志标准，便于后续代码的 review 和版本发布
+使用 angular 的 Git commit 日志作为基本规范
+日志提交时候的友好类型提示 - commitizen
+不符合要求格式的日志拒绝提交的保障机制 validate-commit-msg （客户端和 gitlab server hook 都要做）
+统一 changelog 文档信息生成 - conventional-changelog-cli
+
+### 本地开发阶段增加 precommit 钩子
+
+```base
+npm i husky -S
+```
+
+通过 commitmsg 钩子校验信息
+
+```json
+"script": {
+  "commitmsg": "validate-commit-msg",
+  "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
+}
+```
+
+## 版本化规范
+
+> [semantic versioning](https://semver.org/lang/zh-CN/)
+
+软件版本通常由三位组成，形如：X.Y.Z
+
+版本是严格递增的，16.2.0 -> 16.3.0 -> 16.3.1
+
+在发布重要版本时，可以发布 alpha，rc 等先行版本 16.2.0-beta.1
+
+### 先行版本号
+
+可以作为发布正式版本之前的版本，格式是修订版本号后面加上一个连接号（-），再加上一连串以点（.）分割的标识符，标识符可以由英文、数字和连接号（[0-9a-zA-Z]）组成
+
+- alpha：内部测试版，不向外部发布，会有很多 Bug，只有测试人员使用
+- beta：也是测试版本，这个阶段的版本会一直加入新的功能，在 alpha 版本之后推出
+- rc：Release Candidate 系统平台是就是发行候选版本， RC 版本不会再加入新的功能，主要着重于出错
+
+### 优势
+
+- 避免出现循环依赖
+- 依赖冲突减少
+
+### 规范格式
+
+主版本号：当你做了不兼容 API 的修改
+次版本号：当你做了向下兼容的功能性新增
+修订号：当你做了向下兼容的问题修正
+
+## 分析 webpack 构建的体积和速度
+
+### 初级分析：使用 webpack 内置的 stats
+
+stats：构建的统计信息
+
+```json
+"script": {
+  "build:stats": "webpack --config webpack.prod.js --json > stats.json"
+}
+```
+
+Node.js 中使用
+
+```javascript
+const webpack = require("webpack");
+const config = require("./webpack.config.js")("production");
+
+webpack(config, (err, stats) => {
+  if (err) return console.error(err);
+
+  if (stats.jasErrors()) return console.log(stats.toString("errors-only"));
+
+  console.log(stats); // 需要的就是这个信息
+});
+```
+
+以上两种方法颗粒度比较，并不能看出某模块的大小
+
+### 最终方案
+
+webpack-bundle-analyzer 分析体积
+
+```base
+yarn add -D webpack-bundle-analyzer
+```
+
+```javascript
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+
+module.exports = {
+  plugins: [new BundleAnalyzerPlugin()],
+};
+```
+
+### 速度分析
+
+speed-measure-webpack-plugin
+
+```javascript
+const SpeedMeasureWebpackPlugin = require("speed-measure-webpack-plugin");
+const smp = new SpeedMeasureWebpackPlugin();
+
+const webpackConfig = smp.wrap({
+  plugins: [new MyPlugin(), new MYOtherPlugin()],
+});
+```
+
+可以看到每个 loader 和插件的执行耗时
+
+采用高版本的 Node 和 webpack 可以优化速度

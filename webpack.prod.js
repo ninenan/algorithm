@@ -7,7 +7,10 @@ const glob = require('glob');
 // const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const FriendlyErrorsWebpackPlugin = require('@soda/friendly-errors-webpack-plugin');
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
+const smp = new SpeedMeasurePlugin();
 // 动态的设置 entry 和 htmlWebpackPlugin
 const setMPA = () => {
     const entry = {};
@@ -45,7 +48,7 @@ const setMPA = () => {
 
 const { entry, htmlWebpackPlugins } = setMPA();
 
-module.exports = {
+module.exports = smp.wrap({
     mode: 'production',
     entry,
     output: {
@@ -127,6 +130,7 @@ module.exports = {
             exclude: 'node_modules',
         }),
         new FriendlyErrorsWebpackPlugin(),
+        new BundleAnalyzerPlugin(),
         // 用于捕获构建状态
         function errorPlugin() {
             this.hooks.done.tap('done', (stats) => {
@@ -173,4 +177,4 @@ module.exports = {
         // }
     },
     stats: 'errors-only',
-};
+});

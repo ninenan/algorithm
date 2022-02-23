@@ -27,5 +27,6 @@ module.exports = {
         ],
         'jsx-a11y/click-events-have-key-events': [0],
         'func-names': [0],
+        'linebreak-style': [0],
     },
 };

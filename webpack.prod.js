@@ -134,10 +134,11 @@ module.exports = {
             filename: '[name]_[contenthash:8].css',
         }),
         new CssMinimizerPlugin(),
-        new CleanWebpackPlugin(),
+        new CleanWebpackPlugin({
+            cleanOnceBeforeBuildPatterns: ['**/*', '!library', '!library/**'],
+        }),
         new ESLintPlugin({
-            fix: true, // 自动帮助修复
-            extensions: ['js'],
+            fix: true, // 自动帮助修复 extensions: ['js'],
             exclude: 'node_modules',
         }),
         new FriendlyErrorsWebpackPlugin(),
@@ -152,8 +153,8 @@ module.exports = {
             });
         },
         new webpack.DllReferencePlugin({
-            context: path.join(__dirname, 'build/library'),
-            manifest: require('./build/library/library.json'),
+            context: __dirname,
+            manifest: require('./dist/library/library.json'),
         }),
         new webpack.SourceMapDevToolPlugin({}),
         // new HtmlWebpackExternalsPlugin({

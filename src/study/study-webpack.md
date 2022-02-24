@@ -1770,20 +1770,27 @@ module.exports = {
   mode: "production",
   entry: {
     library: ["react", "react-dom"],
+    // 这里还可以添加比的业务基础包
   },
   output: {
-    filename: "[name]_[chunkhash].dill.js",
-    path: path.join(__dirname, "build/library"),
-    library: "[name]",
+    filename: "[name].dill.js",
+    path: path.join(__dirname, "dist/library"),
+    library: "[name]_[hash]",
   },
   plugins: [
     new webpack.DllPlugin({
       context: __dirname,
+      path: path.join(__dirname, "dist/library/[name].json"),
       name: "[name]_[hash]",
-      path: path.join(__dirname, "build/library/[name].json"),
     }),
   ],
 };
+```
+
+记得引入
+index.html
+```html
+<script src="./library/library.dll.js"></script>
 ```
 
 webpack.prod.js
@@ -1791,9 +1798,12 @@ webpack.prod.js
 ```javascript
 module.exports = {
   plugins: [
+    new CleanWebpackPlugin({
+      cleanOnceBeforeBuildPatterns: ["**/*", "!library", "!library/**"], // 忽略 dist 文件下面的 library 文件夹
+    }),
     new webpack.DllReferencePlugin({
-      context: path.join(__dirname, "build/library"), // 很关键的代码
-      manifest: require("./build/library.json"),
+      context: __dirname,
+      manifest: require("./dist/library/library.json"),
     }),
   ],
 };

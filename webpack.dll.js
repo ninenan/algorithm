@@ -1,26 +1,22 @@
-const path = require('path');
 const webpack = require('webpack');
+const path = require('path');
 
 module.exports = {
     mode: 'production',
     entry: {
-        library: [
-            'react',
-            'react-dom',
-        ],
-        // 这里可以添加别的分包的内容
-        // businessLibrary: [] // 业务包
+        library: ['react', 'react-dom'],
+        // 这里还可以添加比的业务基础包
     },
     output: {
-        filename: '[name]_[chunkhash].dill.js',
-        path: path.join(__dirname, 'build/library'),
-        library: '[name]',
+        filename: '[name].dll.js',
+        path: path.join(__dirname, 'dist/library'),
+        library: '[name]_[hash]',
     },
     plugins: [
         new webpack.DllPlugin({
             context: __dirname,
+            path: path.join(__dirname, 'dist/library/[name].json'),
             name: '[name]_[hash]',
-            path: path.join(__dirname, 'build/library/[name].json'),
         }),
     ],
 };

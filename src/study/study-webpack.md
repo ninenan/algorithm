@@ -1808,3 +1808,25 @@ module.exports = {
   ],
 };
 ```
+
+### HardSourceWebpackPlugin（推荐 webpack5 默认支持）
+
+HardSourceWebpackPlugin 为模块提供中间缓存，缓存默认的存放路径是: node_modules/.cache/hard-source。
+
+配置 hard-source-webpack-plugin，首次构建时间没有太大变化，但是第二次开始，构建时间大约可以节约 80%。
+
+```base
+npm install hard-source-webpack-plugin -D
+```
+
+webpack.prod.js/webpack.config.js
+```javascript
+const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
+
+module.exports = {
+    //...
+    plugins: [
+        new HardSourceWebpackPlugin()
+    ]
+}
+```

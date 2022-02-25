@@ -1789,6 +1789,7 @@ module.exports = {
 
 记得引入
 index.html
+
 ```html
 <script src="./library/library.dll.js"></script>
 ```
@@ -1809,10 +1810,65 @@ module.exports = {
 };
 ```
 
-### HardSourceWebpackPlugin（推荐 webpack5 默认支持）
+## 缓存
+
+目的
+提升二次构建速度
+
+缓存思路
+
+- babel-loader 开启缓存
+- terser-webpack-plugin 开启缓存
+- cache-loader 或者 hard-source-webpack-plugin
+- webpack5 直接开启 cache
+
+第一次打包 node_modules 文件夹下面会生成 .cache 文件夹，二次打包会直接从 .cache 里面获取相应打包内容
+
+### babel-loader
+
+webpack.prod.js
+
+```javascript
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /.js$/,
+        use: [
+          {
+            loader: "babel-loader",
+            options: {
+              cacheDirectory: true,
+            },
+          },
+        ],
+      },
+    ],
+  },
+};
+```
+
+### 开启 cache（webpack5）
+
+webpack.prod.js
+
+```javascript
+module.exports = {
+  // ...
+  cache: {
+    type: "filesystem",
+    cacheDirectory: path.resolve(__dirname, ".temp_cache"),
+  },
+};
+```
+
+上述代码会在根目录下面生成 .temp_cache 文件，二次构建的时候会从 .temp_cache 中直接获取缓存
+
+### HardSourceWebpackPlugin（推荐）
+
+webpack5 默认支持
 
 HardSourceWebpackPlugin 为模块提供中间缓存，缓存默认的存放路径是: node_modules/.cache/hard-source。
-
 配置 hard-source-webpack-plugin，首次构建时间没有太大变化，但是第二次开始，构建时间大约可以节约 80%。
 
 ```base
@@ -1820,13 +1876,12 @@ npm install hard-source-webpack-plugin -D
 ```
 
 webpack.prod.js/webpack.config.js
+
 ```javascript
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
+const HardSourceWebpackPlugin = require("hard-source-webpack-plugin");
 
 module.exports = {
-    //...
-    plugins: [
-        new HardSourceWebpackPlugin()
-    ]
-}
+  //...
+  plugins: [new HardSourceWebpackPlugin()],
+};
 ```

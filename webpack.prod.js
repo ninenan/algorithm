@@ -11,6 +11,7 @@ const FriendlyErrorsWebpackPlugin = require('@soda/friendly-errors-webpack-plugi
 // const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer'); // 查看打包之后的文件占比大小可优化的地方
 // const smp = new SpeedMeasurePlugin(); // 会导致 MiniCssExtractPlugin 报错
 const webpack = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin');
 
 // 动态的设置 entry 和 htmlWebpackPlugin
 const setMPA = () => {
@@ -46,7 +47,6 @@ const setMPA = () => {
         htmlWebpackPlugins,
     };
 };
-yarn.lock;
 const { entry, htmlWebpackPlugins } = setMPA();
 
 // module.exports = smp.wrap({
@@ -70,7 +70,12 @@ module.exports = {
                                 workers: 3,
                             },
                         },
-                        'babel-loader',
+                        {
+                            loader: 'babel-loader',
+                            options: {
+                                cacheDirectory: true,
+                            },
+                        },
                     ],
             }, // 解析 js 文件，使用 babel-loader
             {
@@ -198,6 +203,10 @@ module.exports = {
                 parallel: 4,
             }),
         ],
+    },
+    cache: {
+        type: 'filesystem',
+        cacheDirectory: path.resolve(__dirname, '.temp_cache'),
     },
     // stats: 'errors-only',
 };

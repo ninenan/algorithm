@@ -2,7 +2,7 @@
 node_modules
 /dist
 /build
-
+/.temp_cache
 
 # local env files
 .env.local

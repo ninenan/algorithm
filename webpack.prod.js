@@ -4,14 +4,14 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const glob = require('glob');
-// const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
+// const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin'); // CDN 忽略和使用
 const ESLintPlugin = require('eslint-webpack-plugin');
 const FriendlyErrorsWebpackPlugin = require('@soda/friendly-errors-webpack-plugin');
-const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+// const SpeedMeasurePlugin = require('speed-measure-webpack-plugin'); // 查看每个模块的打包时间 从而优化打包时间
+// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer'); // 查看打包之后的文件占比大小可优化的地方
+// const smp = new SpeedMeasurePlugin(); // 会导致 MiniCssExtractPlugin 报错
 const webpack = require('webpack');
 
-const smp = new SpeedMeasurePlugin(); // 会导致 MiniCssExtractPlugin 报错
 // 动态的设置 entry 和 htmlWebpackPlugin
 const setMPA = () => {
     const entry = {};

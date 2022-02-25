@@ -46,7 +46,7 @@ const setMPA = () => {
         htmlWebpackPlugins,
     };
 };
-
+yarn.lock;
 const { entry, htmlWebpackPlugins } = setMPA();
 
 // module.exports = smp.wrap({
@@ -192,6 +192,12 @@ module.exports = {
         //         }
         //     }
         // }
+        minimize: true,
+        minimizer: [
+            new TerserPlugin({
+                parallel: 4,
+            }),
+        ],
     },
     // stats: 'errors-only',
 };

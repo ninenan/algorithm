@@ -62,6 +62,8 @@ module.exports = {
             // { test: /\.txt$/, use: 'raw-loader' }, // test 指定匹配规则 use 指定使用的 loader 名称
             {
                 test: /.js$/,
+                include: path.resolve('src'),
+                exclude: path.resolve('node_modules'), // 忽略 node_modules 文件
                 use:
                     [
                         {
@@ -119,6 +121,29 @@ module.exports = {
                             name: '[name]_[hash:8].[ext]',
                         },
                     },
+                    {
+                        loader: 'image-webpack-loader',
+                        options: {
+                            mozjpeg: {
+                                progressive: true,
+                            },
+                            // optipng.enabled: false will disable optipng
+                            optipng: {
+                                enabled: false,
+                            },
+                            pngquant: {
+                                quality: [0.65, 0.90],
+                                speed: 4,
+                            },
+                            gifsicle: {
+                                interlaced: false,
+                            },
+                            // the webp option will enable WEBP
+                            webp: {
+                                quality: 75,
+                            },
+                        },
+                    },
                 ],
             },
             {
@@ -162,6 +187,7 @@ module.exports = {
             manifest: require('./dist/library/library.json'),
         }),
         new webpack.SourceMapDevToolPlugin({}),
+
         // new HtmlWebpackExternalsPlugin({
         //     externals: [
         //         {
@@ -209,5 +235,13 @@ module.exports = {
         cacheDirectory: path.resolve(__dirname, '.temp_cache'),
     },
     // stats: 'errors-only',
+    resolve: {
+        // alias: {
+        //     react: path.resolve(__dirname, './node_modules/react/umd/react.production.min.js'),
+        //     'react-dom': path.resolve(__dirname, './node_modules/react-dom/umd/react-dom.production.min.js'),
+        // }, // 这里已经用了 DLLPlugin 预打包好了
+        extensions: ['.js'],
+        mainFields: ['main'],
+    },
 };
 // });

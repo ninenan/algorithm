@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDom from 'react-dom';
 import largeNumber from 'nnn-large-number';
 import logo from '../../assets/image/logo.png';
+import bg from '../../assets/image/bg.jpeg';
+
 // import { getStr } from '../../common/utils';
 import { helloWorld } from './hellowWorld';
 import './index.less';
@@ -30,6 +32,7 @@ class Search extends React.Component {
                 {Text ? <Text /> : null}
                 Search Text
                 {num}
+                <img src={bg} alt="背景图" />
                 <img src={logo} onClick={() => this.loadComponent()} alt="" />
             </div>
         );

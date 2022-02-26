@@ -1824,7 +1824,9 @@ module.exports = {
 
 第一次打包 node_modules 文件夹下面会生成 .cache 文件夹，二次打包会直接从 .cache 里面获取相应打包内容
 
-### babel-loader
+### webpack 4
+
+#### babel-loader
 
 webpack.prod.js
 
@@ -1848,7 +1850,75 @@ module.exports = {
 };
 ```
 
-### 开启 cache（webpack5）
+#### terser-webpack-plugin
+
+```base
+npm install terser-webpack-plugin --save-dev
+```
+
+webpack.prod.js
+
+```javascript
+const TerserPlugin = require("terser-webpack-plugin");
+module.exports = {
+  optimization: {
+    minimizer: [
+      new TerserPlugin({
+        parallel: 4,
+        cache: true,
+      }),
+    ],
+  },
+};
+```
+
+#### hard-source-webpack-plugin
+
+HardSourceWebpackPlugin 为模块提供中间缓存，缓存默认的存放路径是: node_modules/.cache/hard-source。
+配置 hard-source-webpack-plugin，首次构建时间没有太大变化，但是第二次开始，构建时间大约可以节约 80%。
+
+```base
+npm install hard-source-webpack-plugin -D
+```
+
+webpack.prod.js/webpack.config.js
+
+```javascript
+const HardSourceWebpackPlugin = require("hard-source-webpack-plugin");
+
+module.exports = {
+  //...
+  plugins: [new HardSourceWebpackPlugin()],
+};
+```
+
+### webpack 5
+
+#### babel-loader
+
+webpack.prod.js
+
+```javascript
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /.js$/,
+        use: [
+          {
+            loader: "babel-loader",
+            options: {
+              cacheDirectory: true,
+            },
+          },
+        ],
+      },
+    ],
+  },
+};
+```
+
+#### 开启 cache
 
 webpack.prod.js
 
@@ -1883,5 +1953,104 @@ const HardSourceWebpackPlugin = require("hard-source-webpack-plugin");
 module.exports = {
   //...
   plugins: [new HardSourceWebpackPlugin()],
+};
+```
+
+## 缩小构建目标（优化构建速度）
+
+目的：尽可能少构建模块
+比如 babel-loader 不解析 node_modules
+
+```javascript
+module.exports = {
+  rules: {
+    test: /.js$/,
+    loader: "happypack/loader",
+    exclude: "node_modules", // 忽略 node_modules 下的文件
+  },
+};
+```
+
+### 减少文件搜索范围
+
+1. 优化 resolve.modules 配置（减少模块搜索层级）
+2. 优化 resolve.mainFields 配置 （入口文件）
+3. 优化 resolve.extensions 配置
+
+```javascript
+module.exports = {
+  resolve: {
+    alias: {
+      react: path.resolve(__dirname, "./node_modules/react/dist/react.min.js"), // 直接设置 react 的导入位置 减少查询时间
+    },
+    modules: [path.resolve(__dirname, "node_modules")],
+    extensions: [".js"], // 引入文件忽略后缀直接默认是 js 文件 减少查询时间，也可以设置多个，但是相应的查询时间也会增加
+    mainFields: ["main"], // 默认入口文件是 main 文件 如果设置的话 并且项目下面没有 main 文件的话 先找项目下面的 index 然后再去 找 lib 下面的 index 文件
+  },
+};
+```
+
+## 体积大小优化
+
+### 图片压缩
+
+#### image-webpack-loader
+
+基于 Node 的 imagemin 或者 tinypng API
+使用：配置 image-webpack-loader
+
+**推荐使用 imagemin 对应的是 image-webpack-loader**
+
+##### imagemin 优点
+
+1. 有很多的定制选项
+2. 可以引入更多的第三方优化插件，例如 pngquant
+3. 可以处理多种图片格式
+
+##### png 图片压缩原理
+
+pngquant：一款 PNG 压缩器，通过将图像转换为具有 aipha 通道（通常比 24/32 位 PNG 文件小 60-80%）的更高效的 8 位 PNG 格式，可以显著减小文件大小
+pngcrush：主要是通过尝试不同的压缩级别和 PNG 过滤方法来降低 PNG IDAT 数据流的大小
+tinypng：将 24 位 png 文件转换为更小有索引的 8 位图片，同时所有非必要的 metadata 也会被剥离掉
+
+> [为什么要用 cnpm](https://www.cxybb.com/article/qq_45448489/117413993)
+
+```base
+cnpm install image-webpack-loader --save-dev
+```
+
+```javascript
+module.exports = {
+  rules: [
+    {
+      test: /\.(gif|png|jpe?g|svg)$/i,
+      use: [
+        "file-loader",
+        {
+          loader: "image-webpack-loader",
+          options: {
+            mozjpeg: {
+              progressive: true,
+            },
+            // optipng.enabled: false will disable optipng
+            optipng: {
+              enabled: false,
+            },
+            pngquant: {
+              quality: [0.65, 0.9],
+              speed: 4,
+            },
+            gifsicle: {
+              interlaced: false,
+            },
+            // the webp option will enable WEBP
+            webp: {
+              quality: 75,
+            },
+          },
+        },
+      ],
+    },
+  ],
 };
 ```

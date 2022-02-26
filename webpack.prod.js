@@ -12,6 +12,11 @@ const FriendlyErrorsWebpackPlugin = require('@soda/friendly-errors-webpack-plugi
 // const smp = new SpeedMeasurePlugin(); // 会导致 MiniCssExtractPlugin 报错
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
+const PurgecssPlugin = require('purgecss-webpack-plugin');
+
+const PATHS = {
+    src: path.join(__dirname, 'src/study-webpack'),
+};
 
 // 动态的设置 entry 和 htmlWebpackPlugin
 const setMPA = () => {
@@ -187,6 +192,9 @@ module.exports = {
             manifest: require('./dist/library/library.json'),
         }),
         new webpack.SourceMapDevToolPlugin({}),
+        new PurgecssPlugin({
+            paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
+        }),
 
         // new HtmlWebpackExternalsPlugin({
         //     externals: [

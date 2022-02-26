@@ -2009,7 +2009,7 @@ module.exports = {
 
 ##### png 图片压缩原理
 
-pngquant：一款 PNG 压缩器，通过将图像转换为具有 aipha 通道（通常比 24/32 位 PNG 文件小 60-80%）的更高效的 8 位 PNG 格式，可以显著减小文件大小
+pngquant：一款 PNG 压缩器，通过将图像转换为具有 alpha 通道（通常比 24/32 位 PNG 文件小 60-80%）的更高效的 8 位 PNG 格式，可以显著减小文件大小
 pngcrush：主要是通过尝试不同的压缩级别和 PNG 过滤方法来降低 PNG IDAT 数据流的大小
 tinypng：将 24 位 png 文件转换为更小有索引的 8 位图片，同时所有非必要的 metadata 也会被剥离掉
 
@@ -2051,6 +2051,66 @@ module.exports = {
         },
       ],
     },
+  ],
+};
+```
+
+## tree shaking 删除多余的 css 代码
+
+PurifyCSS：遍历代码，识别已经用到的 CSS class
+
+uncss：HTML 需要通过 jsdom 加载，所有的样式通过 postCSS 解析，通过 document.querySelector 来识别在 html 文件里面不存在的选择器
+
+### purgecss-webpack-plugin
+
+使用 purgecss-webpack-plugin 和 mini-css-extract-plugin 一起使用
+
+```base
+npm i purgecss-webpack-plugin -D
+```
+
+webpack.prod.js
+
+```javascript
+const PurgecssPlugin = require("purgecss-webpack-plugin");
+
+const PATHS = {
+  src: path.join(__dirname, "src"),
+};
+
+module.exports = {
+  entry: "./src/index.js",
+  output: {
+    filename: "bundle.js",
+    path: path.join(__dirname, "dist"),
+  },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        styles: {
+          name: "styles",
+          test: /\.css$/,
+          chunks: "all",
+          enforce: true,
+        },
+      },
+    },
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
+      },
+    ],
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: "[name].css",
+    }),
+    new PurgecssPlugin({
+      paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
+    }),
   ],
 };
 ```

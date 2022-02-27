@@ -2114,3 +2114,36 @@ module.exports = {
   ],
 };
 ```
+
+## 构建体积优化：动态 Polyfill
+
+| 方案                           | 优点                                       | 缺点                                                                                                                       | 是否采用 |
+| ------------------------------ | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | -------- |
+| babel-polyfill                 | React16 官方推荐                           | 1. 包体积 200K+，难以单独抽离 Map、Set<br/>2. 项目里 React 是单独引用的 CDN，如果要用它，需要单独构建一份放在 React 前加载 | ❌       |
+| babel-plugin-transform-runtime | 能只 polyfill 用到的类或方法，相对体积较小 | 不能 polyfill 原型上的方法，不适用于业务项目的复杂开发环境                                                                 | ❌       |
+| 自己写 Map、Set 的 Polyfill    | 定制化高，体积小                           | 1. 重复造轮子，容易在日后年久失修成为坑<br/>2. 即使体积小，依然所有用户都要加载                                            | ❌       |
+| polyfill-service               | 只给用户返回需要的 polyfill，社区维护      | 部分国内奇葩浏览器 UA 可能无法识别（但可以降级返回所需全部 Polyfill）                                                      | ✅       |
+
+### Polyfill Service 原理
+
+> [Polyfill Service](https://polyfill.io/v3/)
+
+通过分析请求头信息中的 UserAgent 实现自动加载浏览器所需的 polyfill。
+
+polyfill.io 官方提供的服务
+
+```javascript
+<script src="https://polyfill.io/v3/polyfill.min.js"></script>
+```
+
+### 高级用法
+
+通过传递 features 参数来自定义功能列表：
+
+```javascript
+<!-- 加载 es6 -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+<!-- 加载所有 ES2016&ES2017&2018 新特性 -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es2016%2Ces2017%2Ces2018"></script>
+```

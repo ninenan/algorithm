@@ -2147,3 +2147,383 @@ polyfill.io 官方提供的服务
 <!-- 加载所有 ES2016&ES2017&2018 新特性 -->
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es2016%2Ces2017%2Ces2018"></script>
 ```
+
+## webpack 启动过程分析
+
+### 查找 webpack 入口文件
+
+在命令行运行以上命令后，npm 会让命令行工具进入 node_modules\.bin 目录查找是否存在 webpack.sh 或者 webpack.cmd 文件，如果存在，就执行，不存在，就抛出错
+
+**实际的入口文件：** node_modules\webpack\bin\webpack.js
+
+### 分析 webpack 的如口文件：webpack.js
+
+```javascript
+// 运行某个命令
+const runCommand = (command, args) => {};
+// 判断某个包是否安装
+const isInstalled = (packageName) => {};
+// 判断可执行的包
+const runCli = (cli) => {};
+// webpack 可用的CLI webpack-cli
+const cli = {
+  name: "webpack-cli",
+  package: "webpack-cli",
+  binName: "webpack-cli",
+  installed: isInstalled("webpack-cli"),
+  url: "https://github.com/webpack/webpack-cli",
+};
+// 根据安装的包进行处理
+if (!cli.installed) {
+} else {
+}
+```
+
+### 启动后的结果
+
+webpack 最终找到 webpack-cli 这个 npm 包，并且执行 CLI
+
+## webpack-cli 启动分析
+
+### webpack-cli 做的事情
+
+- 引入 yargs，对命令进行定制
+- 分析命令行参数，对各个参数进行转换，组成编译配置项
+- 引用 webpack，根据配置项进行编译和构建
+
+### webpack-cli 执行的结果
+
+webpack-cli 对配置文件和命令行参数进行转换最终生成配置选项参数 options，最终会根据配置参数实例化 webapck 对象，然后执行构建流程
+
+## webpack 核心模块 Tapable 插件
+
+### webpack 的本质
+
+webpack 你可以理解是一种基于事件流的编程范例，一系列的插件运行。
+
+**Compiler 核心 是 Tapable**
+
+```javascript
+// 代码只截取了部分
+const {
+  SyncHook,
+  SyncBailHook,
+  AsyncParallelHook,
+  AsyncSeriesHook,
+} = require("tapable");
+
+class Compiler {
+  /**
+   * @param {string} context the compilation path
+   * @param {WebpackOptions} options options
+   */
+  constructor(context, options = /** @type {WebpackOptions} */ ({})) {
+    this.hooks = Object.freeze({
+      /** @type {SyncHook<[]>} */
+      initialize: new SyncHook([]),
+
+      /** @type {SyncBailHook<[Compilation], boolean>} */
+      shouldEmit: new SyncBailHook(["compilation"]),
+      /** @type {AsyncSeriesHook<[Stats]>} */
+      done: new AsyncSeriesHook(["stats"]),
+      /** @type {SyncHook<[Stats]>} */
+      afterDone: new SyncHook(["stats"]),
+      // ...
+    });
+  }
+}
+```
+
+**Compilation 核心 是 Tapable**
+
+```javascript
+// 代码只截取了部分
+const {
+  HookMap,
+  SyncHook,
+  SyncBailHook,
+  SyncWaterfallHook,
+  AsyncSeriesHook,
+  AsyncSeriesBailHook,
+  AsyncParallelHook,
+} = require("tapable");
+
+class Compilation {
+  constructor(compiler, params) {
+    this.hooks = Object.freeze({
+      /** @type {SyncHook<[Module]>} */
+      buildModule: new SyncHook(["module"]),
+      /** @type {SyncHook<[Module]>} */
+      rebuildModule: new SyncHook(["module"]),
+      /** @type {SyncHook<[Module, WebpackError]>} */
+      failedModule: new SyncHook(["module", "error"]),
+      /** @type {SyncHook<[Module]>} */
+      succeedModule: new SyncHook(["module"]),
+      /** @type {SyncHook<[Module]>} */
+      stillValidModule: new SyncHook(["module"]),
+      // ...
+    });
+  }
+}
+```
+
+### Tapable 是什么
+
+Tapable 是一个类似于 Node.js 的 EventEmitter 的库，主要是控制钩子函数的发布与订阅，控制着 webpack 的插件系统
+
+Tapable 库暴露了很多的 Hook（钩子）类，为插件提供挂在的钩子
+
+```javascript
+const {
+  SyncHook, // 同步钩子
+  SyncBailHook, // 同步熔断钩子
+  SyncWaterfallHook, // 同步流水钩子
+  SyncLoopHook, // 通过循环钩子
+  AsyncParallelHook, // 异步并发钩子
+  AsyncParallelBailHook, // 异步并发熔断钩子
+  AsyncSeriesHook, // 异步串行钩子
+  AsyncSeriesBailHook, // 异步串行熔断钩子
+  AsyncSeriesWaterfallHook, // 异步串行流水钩子
+} = require("tapable");
+```
+
+#### Tapable 的使用
+
+##### new Hook 新建钩子
+
+Tapable 暴露出来的都是类方法，new 一个类方法获得所需要的钩子
+
+class 接受数组参数 options，非必传，类方法会根据传参，接受同样数量的参数
+
+```javascript
+const hook1 = new SyncHook(["arg1", "arg2", "arg3"]);
+```
+
+##### 钩子的绑定和执行
+
+Tapable 提供了同步&异步绑定钩子的方法，并且他们都有绑定事件和执行事件对应的方法
+
+| Async                                                    | Sync       |
+| -------------------------------------------------------- | ---------- |
+| 绑定：tapAsync / tapPromise / tap （相当于 Emmiter on ） | 绑定：tap  |
+| 执行：callAsync / promise （相当于 Emmiter emit）        | 执行：call |
+
+##### Tapable 例子演示
+
+定义一个 Car 方法，在内部 hooks 上新建钩子，分别是同步钩子 accelerate、brake（accelerate 接受一个参数）、异步钩子 calculateRoutes
+
+使用钩子对应的绑定和执行方法
+
+calculateRoutes 使用 tapPromise 可以返回一个 promise 对象
+
+```base
+npm install --save tapable
+```
+
+```javascript
+const { SyncHook } = require("tapable");
+
+const hook = new SyncHook(["arg1", "arg2", "arg3"]);
+
+hook.tap("hook1", (param1, param2, param3) => {
+  console.log(param1, param2, param3);
+});
+
+hook.call(1, 2, 3); // 1 2 3
+```
+
+```javascript
+const { SyncHook, AsyncParallelHook } = require("tapable");
+
+class Car {
+  constructor() {
+    this.hooks = {
+      accelerate: new SyncHook(["newSpeed"]),
+      brake: new SyncHook(),
+      calculateRoutes: new AsyncParallelHook([
+        "source",
+        "target",
+        "routesList",
+      ]),
+    };
+  }
+  /* ... */
+}
+
+const myCar = new Car();
+
+// 绑定同步钩子
+myCar.hooks.accelerate.tap("accelerate", (newSpeed) =>
+  console.log(`Accelerating to ${newSpeed}`)
+);
+myCar.hooks.brake.tap("brake", () => {
+  console.log("brake");
+});
+
+// 绑定异步钩子
+myCar.hooks.calculateRoutes.tapPromise(
+  "calculateRoutes tapPromise",
+  (source, target, routesList, callback) => {
+    console.log("source :>> ", source);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log(`tapPromise to ${source}-${target}-${routesList}`);
+        resolve();
+      }, 1000);
+    });
+  }
+);
+
+// 执行同步钩子
+myCar.hooks.brake.call();
+myCar.hooks.accelerate.call(10);
+
+console.time("cost");
+
+// 执行异步钩子
+myCar.hooks.calculateRoutes.promise("Async", "hook", "demo").then(
+  () => {
+    console.timeEnd("cost");
+  },
+  (err) => {
+    console.error(err);
+    console.timeEnd("cost");
+  }
+);
+
+// brake
+// Accelerating to 10
+// source :>>  Async
+// tapPromise to Async-hook-demo
+// cost: 1.006s
+```
+
+#### Tapable 是如何和 Webpack 进行关联的
+
+node_modules/webpack/lib/webpack.js
+
+```javascript
+/**
+ * @param {WebpackOptions} rawOptions options object
+ * @returns {Compiler} a compiler
+ */
+const createCompiler = (rawOptions) => {
+  const options = getNormalizedWebpackOptions(rawOptions);
+  applyWebpackOptionsBaseDefaults(options);
+  const compiler = new Compiler(options.context, options);
+  new NodeEnvironmentPlugin({
+    infrastructureLogging: options.infrastructureLogging,
+  }).apply(compiler);
+  // plugins 也就是 webapck.config.js 中的 插件
+  if (Array.isArray(options.plugins)) {
+    for (const plugin of options.plugins) {
+      if (typeof plugin === "function") {
+        plugin.call(compiler, compiler);
+      } else {
+        plugin.apply(compiler);
+      }
+    }
+  }
+  applyWebpackOptionsDefaults(options);
+  compiler.hooks.environment.call();
+  compiler.hooks.afterEnvironment.call();
+  new WebpackOptionsApply().process(options, compiler);
+  compiler.hooks.initialize.call();
+  return compiler;
+};
+```
+
+##### 模拟 compiler
+
+```javascript
+class Compiler {
+  constructor() {
+    this.hooks = {
+      accelerate: new SyncHook(["newSpeed"]),
+      brake: new SyncHook(),
+      calculateRoutes: new AsyncParallelHook([
+        "source",
+        "target",
+        "routesList",
+      ]),
+    };
+  }
+
+  run() {
+    this.accelerate(10);
+    this.brake();
+    this.calculateRoutes("Async", "hook", "demo");
+  }
+
+  accelerate(speed) {
+    this.hooks.accelerate.call(speed);
+  }
+
+  brake() {
+    this.hooks.brake.call();
+  }
+
+  calculateRoutes() {
+    this.hooks.calculateRoutes.promise(...arguments).then(
+      () => {},
+      (err) => {
+        console.error(err);
+      }
+    );
+  }
+}
+```
+
+##### 模拟 plugin
+
+```javascript
+class MyPlugin {
+  constructor() {}
+
+  apply(compiler) {
+    // 绑定同步钩子
+    compiler.hooks.accelerate.tap("accelerate", (newSpeed) =>
+      console.log(`Accelerating to ${newSpeed}`)
+    );
+    compiler.hooks.brake.tap("brake", () => {
+      console.log("brake");
+    });
+    // // 绑定异步钩子
+    compiler.hooks.calculateRoutes.tapPromise(
+      "calculateRoutes tapPromise",
+      (source, target, routesList, callback) => {
+        console.log("source :>> ", source);
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            console.log(`tapPromise to ${source}-${target}-${routesList}`);
+            resolve();
+          }, 1000);
+        });
+      }
+    );
+  }
+}
+```
+##### 模拟 webpack 的执行流程
+```javascript
+const myPlugin = new MyPlugin()
+const options = {
+    plugins: [myPlugin]
+}
+const compiler = new Compiler()
+for (const plugin of options.plugins) {
+    if (typeof plugin === 'function') {
+        plugin.call(compiler, compiler)
+    } else {
+        plugin.apply(compiler)
+    }
+}
+
+compiler.run()
+
+
+// Accelerating to 10
+// brake
+// source :>>  Async
+// tapPromise to Async-hook-demo
+```

@@ -2287,6 +2287,16 @@ const {
 } = require("tapable");
 ```
 
+| type          | function                                                    |
+| ------------- | ----------------------------------------------------------- |
+| Hook          | 所有钩子的后缀                                              |
+| WaterFall     | 同步方法，但是它的值回传给下一个函数                        |
+| Bail          | 熔断：当函数有任何返回值，就会在当前执行函数停止            |
+| Loop          | 监听函数返回 true 表示继续循环，返回 undefined 表示结束循环 |
+| Sync          | 同步方法                                                    |
+| AsyncSeries   | 异步串行钩子                                                |
+| AsyncParallel | 异步并行执行钩子                                            |
+
 #### Tapable 的使用
 
 ##### new Hook 新建钩子
@@ -2488,7 +2498,7 @@ class MyPlugin {
     compiler.hooks.brake.tap("brake", () => {
       console.log("brake");
     });
-    // // 绑定异步钩子
+    // 绑定异步钩子
     compiler.hooks.calculateRoutes.tapPromise(
       "calculateRoutes tapPromise",
       (source, target, routesList, callback) => {
@@ -2504,23 +2514,24 @@ class MyPlugin {
   }
 }
 ```
+
 ##### 模拟 webpack 的执行流程
+
 ```javascript
-const myPlugin = new MyPlugin()
+const myPlugin = new MyPlugin();
 const options = {
-    plugins: [myPlugin]
-}
-const compiler = new Compiler()
+  plugins: [myPlugin],
+};
+const compiler = new Compiler();
 for (const plugin of options.plugins) {
-    if (typeof plugin === 'function') {
-        plugin.call(compiler, compiler)
-    } else {
-        plugin.apply(compiler)
-    }
+  if (typeof plugin === "function") {
+    plugin.call(compiler, compiler);
+  } else {
+    plugin.apply(compiler);
+  }
 }
 
-compiler.run()
-
+compiler.run();
 
 // Accelerating to 10
 // brake

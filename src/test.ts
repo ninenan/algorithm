@@ -58,7 +58,6 @@ proxyImg.setSrc("https://cdn2.thecatapi.com/images/ced.jpg");
  */
 const debounce = (fn: Function, delay = 500, immediate = false) => {
   let timer: null | number = null;
-  // let result: any = null;
 
   const debounced = (...args: unknown[]) => {
     if (timer) {
@@ -72,7 +71,6 @@ const debounce = (fn: Function, delay = 500, immediate = false) => {
       }, delay);
       if (callNow) {
         fn.apply(this, args);
-        // result = fn.apply(this, args);
       }
     } else {
       timer = setTimeout(() => {
@@ -95,15 +93,14 @@ const debounce = (fn: Function, delay = 500, immediate = false) => {
 };
 
 // debounce
+// function testFn2(event: EventTarget) {
+//   console.log("event :>> ", event);
+//   console.log("debounce");
+// }
 
-/* function testFn2(event: EventTarget) {
-  console.log("event :>> ", event);
-  console.log("debounce");
-}
-
-const clickTestFn = debounce(testFn2, 2000, false);
-imgNode.addEventListener("click", clickTestFn);
-btn.addEventListener("click", () => clickTestFn.cancel()); */
+// const clickTestFn = debounce(testFn2, 2000, false);
+// imgNode.addEventListener("click", clickTestFn);
+// btn.addEventListener("click", () => clickTestFn.cancel());
 
 // 单位时间内执行一次，如果单位时间内重复执行，则只执行一次
 // 定时器版本
@@ -248,14 +245,13 @@ const throttle3 = (
   let timer: null | number = null;
   let previous = 0;
 
-  const later = function () {
+  const later = () => {
     previous = options.leading === false ? 0 : +new Date();
     timer = null;
-    // return fn.apply(self, args);
-    return fn(self, args);
+    return fn.apply(self, args);
   };
 
-  const throttled = function (...reset: unknown[]) {
+  const throttled = (...reset: unknown[]) => {
     self = this;
     args = reset;
     const now = +new Date();
@@ -275,7 +271,7 @@ const throttle3 = (
     }
   };
 
-  throttled.cancel = function () {
+  throttled.cancel = () => {
     if (timer) {
       clearTimeout(timer);
     }
@@ -287,7 +283,7 @@ const throttle3 = (
 };
 
 // throttle
-/* const testFn2 = (event: Event) => {
+const testFn2 = (event: Event) => {
   console.log("event :>> ", event);
   console.log("throttle");
 };
@@ -295,4 +291,4 @@ const clickTestFn = throttle3(testFn2, 2000, {
   leading: true,
 });
 imgNode.addEventListener("click", clickTestFn);
-btn.addEventListener("click", () => clickTestFn.cancel()); */
+btn.addEventListener("click", () => clickTestFn.cancel());

@@ -533,14 +533,14 @@ instance1.colors.push("blue");
 console.log(instance1.property); // true
 console.log(instance1.colors); // [ 'red', 'white', 'blue' ]
 console.log(instance1.getSuperValue()); // true
-console.log(instance1.getSubValue()); // fasle
+console.log(instance1.getSubValue()); // false
 
 let instance2 = new SubType();
 
 console.log(instance1.property); // true
 console.log(instance1.colors); // ['red', 'white', 'blue']
 console.log(instance1.getSuperValue()); // true
-console.log(instance1.getSubValue()); // fasle
+console.log(instance1.getSubValue()); // false
 ```
 
 **缺点**

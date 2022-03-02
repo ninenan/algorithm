@@ -275,7 +275,7 @@ console.log(testObj2.friend); // xxx
 const debounce = function (fn, delay = 500) {
   let timer = null;
 
-  return function (...args) {
+  const debounced = (...args) => {
     if (timer) {
       clearTimeout(timer);
     }
@@ -283,6 +283,13 @@ const debounce = function (fn, delay = 500) {
       return fn.apply(this, args);
     }, delay);
   };
+
+  debounced.cancel = () => {
+    if (timer) clearTimeout(timer);
+    timer = null;
+  };
+
+  return debounced
 };
 
 // demo

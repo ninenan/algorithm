@@ -289,7 +289,7 @@ const debounce = function (fn, delay = 500) {
     timer = null;
   };
 
-  return debounced
+  return debounced;
 };
 
 // demo

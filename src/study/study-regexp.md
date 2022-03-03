@@ -406,12 +406,102 @@ const RE1 = /study javascript|regexp/g;
 console.log(str.match(RE1)); // [ 'study javascript', 'regexp' ]
 ```
 
+## 正则表达式的拆分
+
+### 结构和操作符
+
+| 结构   | 说明                                                                                                                                                                                                    |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 字面量 | 匹配一个具体字符，包括不用转义的和需要转义的。比如 a 匹配字符 "a"， 又比如 \n 匹配换行符，又比如 \. 匹配小数点。                                                                                        |
+| 字符组 | 匹配一个字符，可以是多种可能之一，比如 [0-9]，表示匹配一个数字。也有 \d 的简写形式。 另外还有反义字符组，表示可以是除了特定字符之外任何一个字符，比如 [^0-9]， 表示一个非数字字符，也有 \D 的简写形式。 |
+| 量词   | 表示一个字符连续出现，比如 a{1,3} 表示 "a" 字符连续出现 3 次。 另外还有常见的简写形式，比如 a+ 表示 "a" 字符连续出现至少一次。                                                                          |
+| 锚     | 匹配一个位置，而不是字符。比如 ^ 匹配字符串的开头，又比如 \b 匹配单词边界， 又比如 (?=\d) 表示数字前面的位置。                                                                                          |
+| 分组   | 用括号表示一个整体，比如 (ab)+，表示 "ab" 两个字符连续出现多次， 也可以使用非捕获分组 (?:ab)+。                                                                                                         |
+| 分支   | 多个子表达式多选一，比如 abc \| bcd，表达式匹配 "abc" 或者 "bcd" 字符子串。 反向引用，比如 \2，表示引用第 2 个分组。                                                                                    |
+
+| 操作符描述     | 操作符                        | 优先级 |
+| -------------- | ----------------------------- | ------ |
+| 转义符         | \                             | 1      |
+| 括号和方括号   | (…)、(?:…)、(?=…)、(?!…)、[…] | 2      |
+| 量词限定符     | {m}、{m,n}、{m,}、?、\*、+    | 3      |
+| 位置和序列     | ^、$、\元字符、一般字符       | 4      |
+| 管道符（竖杠） | \|                            | 5      |
+
+### 注意要点
+
+#### 匹配字符串整体
+
+需要匹配 hello 或者 world
+
+```javascript
+const RE = /^(hello|world)$/;
+
+console.log(RE.test("hello")); // true
+console.log(RE.test("world")); // true
+
+const RE1 = /^hello|world$/; // 这个正则就不正确
+
+console.log(RE1.test("h1231231world")); // true
+```
+
+#### 量词连缀
+
+1. 每个字符为 "a"，"b"，"c" 任选其一
+2. 字符串的长度是 3 的倍数
+
+```javascript
+const RE = /([abc]{3})+/;
+
+console.log(RE.test("aaa")); // true
+console.log(RE.test("bbb")); // true
+console.log(RE.test("ccc")); // true
+```
+
+#### 元字符转义
+
+元字符：正则中有特殊含义的字符
+^、$、.、\*、+、?、|、\、/、(、)、[、]、{、}、=、!、:、-
+
+```javascript
+const str = "^$.*+?|/[]{}=!:-,";
+const RE = /\^\$\.\*\+\?\|\\\/\[\]\{\}\=\!\:\-\,/;
+
+console.log(RE.test(str)); // true
+```
+
+##### 字符组中的元字符
+
+```javascript
+const str = "^$.*+?|\\/[]{}=!:-,";
+const RE = /[\^$.*+?|\\/\[\]{}=!:\-,]/g;
+
+console.log(str.match(RE)); // ["^", "$", ".", "*", "+", "?", "|", "\", "/", "[", "]", "{", "}", "=", "!", ":","-", ","]
+```
+
+##### 匹配 "[abc]" 和 "{3,5}"
+
+```javascript
+const RE1 = /\[abc]/;
+const RE2 = /\[abc\]/;
+
+console.log("[abc]".match(RE1)[0]); // "[abc]"
+console.log("[abc]".match(RE2)[0]); // "[abc]"
+```
+
+```javascript
+const RE1 = /\{3,5}/;
+const RE2 = /\{3,5\}/;
+
+console.log("{3,5}".match(RE1)[0]); // "{3,5}"
+console.log("{3,5}".match(RE2)[0]); // "{3,5}"
+```
+
 ## 案例
 
 ### 1. 匹配十六进制颜色
 
 ```javascript
-const RE = /#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/g;
+const RE = /#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})/g;
 const str = "#ffbbad,#ddd,#fff,#FFF,#Fc01DF";
 
 console.log(str.match(RE)); // [ '#ffbbad', '#ddd', '#fff', '#FFF', '#Fc01DF' ]
@@ -667,4 +757,27 @@ const res = str.replace(RE, "-$1").toLocaleLowerCase();
 //   .toLocaleLowerCase();
 
 console.log(res); // on-click
+```
+
+### 16. 匹配成对的标签
+
+```javascript
+const RE = /<([^>]+)>[\d\D]*<\/\1>/;
+
+const str1 = "<div>123123</div>";
+const str2 = "<div>baba</div>";
+const str3 = "<title>wrong!</p>";
+
+console.log(RE.test(str1)); // true
+console.log(RE.test(str2)); // true
+console.log(RE.test(str3)); // false
+```
+
+### IPV4 地址
+
+```javascript
+const RE =
+  /^((0{0,2}\d|0?\d{2}|1\d{2}|2[0-4]\d|25[0-5])\.){3}(0{0,2}\d|0?\d{2}|1\d{2}|2[0-4]\d|25[0-5])$/;
+
+console.log(RE.test("192.168.1.1"));
 ```

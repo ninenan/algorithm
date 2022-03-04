@@ -781,3 +781,85 @@ const RE =
 
 console.log(RE.test("192.168.1.1"));
 ```
+
+### 匹配浮点数
+
+```javascript
+// 1.23、+1.23、-1.23
+// 10、+10、-10
+// .2、+.2、-.2
+const RE = /^[+-]?(\d+\.\d+|\.\d+)$/;
+
+console.log(RE.test("-1.1"));
+console.log(RE.test("-1"));
+console.log(RE.test("1"));
+console.log(RE.test(".2"));
+```
+
+### demo
+
+index.html
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    .test-img {
+      width: 200px;
+      height: 200px;
+    }
+  </style>
+  <body>
+    <div class="test">111</div>
+    <div class="test">222</div>
+    <p>333</p>
+    <script src="./index.js"></script>
+  </body>
+</html>
+```
+
+index.js
+
+```javascript
+function getElementByClassName(className) {
+  const elements = document.getElementsByTagName("*");
+  const RE = new RegExp("(^|\\s)" + className + "(\\s|$)");
+  let res = [];
+
+  for (let index = 0; index < elements.length; index++) {
+    const element = elements[index];
+    if (RE.test(element.className)) res.push(element);
+  }
+
+  return res;
+}
+
+const testEl = getElementByClassName("test");
+
+testEl.forEach((item) => {
+  item.style.color = "red";
+});
+```
+
+### 使用字符串保存数据
+
+```javascript
+const utils = {};
+
+"Boolean|Number|String|Function|Array|Date|RegExp|Object|Error"
+  .split("|")
+  .forEach((item) => {
+    utils[`is${item}`] = function (param) {
+      return Object.prototype.toString.call(param).slice(8, -1) === item;
+    };
+  });
+
+console.log(utils.isArray([1, 2, 3])); // true
+console.log(utils.isBoolean(false)); // false
+```

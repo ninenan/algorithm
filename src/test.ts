@@ -292,3 +292,23 @@ const clickTestFn = throttle3(testFn2, 2000, {
 });
 imgNode.addEventListener("click", clickTestFn);
 btn.addEventListener("click", () => clickTestFn.cancel());
+
+function getElementByClassName(className: string) {
+  const elements = document.getElementsByTagName("*");
+  const RE = new RegExp("(^|\\s)" + className + "(\\s|$)");
+  let res: Element[] = [];
+
+  for (let index = 0; index < elements.length; index++) {
+    const element = elements[index];
+    if (RE.test(element.className)) res.push(element);
+  }
+
+  return res;
+}
+
+const testEl = getElementByClassName("test");
+console.log("testEl :>> ", testEl);
+
+testEl.forEach((item) => {
+  item.style.color = "red";
+});

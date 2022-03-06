@@ -2401,6 +2401,36 @@ Object.create2 = function (proto, propertiesObject = undefined) {
 };
 ```
 
+## Object.entries()
+
+```javascript
+const hasOwn = Object.prototype.hasOwnProperty;
+Object.prototype.myEntries = function (obj) {
+  let res = [];
+  for (const key in obj) {
+    if (hasOwn.call(obj, key)) {
+      res.push([key, obj[key]]);
+    }
+  }
+  return res;
+};
+```
+
+```javascript
+if (!Object.entries) {
+  Object.myEntries = function (obj) {
+    let ownProps = Object.keys(obj),
+      len = ownProps.length,
+      resArr = new Array(len);
+    while (len--) {
+      resArr[len] = [ownProps[len], obj[ownProps[len]]];
+    }
+
+    return resArr;
+  };
+}
+```
+
 ## 实现有并行限制的 Promise
 
 > [参考链接](https://juejin.cn/post/7018337760687685669)

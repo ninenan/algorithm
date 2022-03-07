@@ -2643,3 +2643,20 @@ lazyMan("Hank").sleep(1).eat("dinner");
 lazyMan("Hank").eat("dinner").eat("supper");
 lazyMan("Hank").eat("supper").sleepFirst(5);
 ```
+
+### await-to-js
+
+```typescript
+const to = <T, U = Error>(promise: Promise<T>, errorExt?: object) => {
+  return promise
+    .then<[null, T]>((data: T) => [null, data])
+    .catch<[U, undefined]>((err: U) => {
+      if (errorExt) {
+        const parsedError = Object.assign({}, err, errorExt);
+        return [parsedError, undefined];
+      }
+
+      return [err, undefined];
+    });
+};
+```

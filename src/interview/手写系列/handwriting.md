@@ -2646,6 +2646,8 @@ lazyMan("Hank").eat("supper").sleepFirst(5);
 
 ### await-to-js
 
+> [源码地址](https://github.com/scopsy/await-to-js/blob/master/src/await-to-js.ts)
+
 ```typescript
 const to = <T, U = Error>(promise: Promise<T>, errorExt?: object) => {
   return promise

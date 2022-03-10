@@ -57,7 +57,7 @@ proxyImg.setSrc("https://cdn2.thecatapi.com/images/ced.jpg");
  * @returns 返回毁掉函数执行的结果
  */
 const debounce = (fn: Function, delay = 500, immediate = false) => {
-  let timer: null | number = null;
+  let timer: null | ReturnType<typeof setTimeout> = null;
 
   const debounced = (...args: unknown[]) => {
     if (timer) {
@@ -186,7 +186,7 @@ const throttle = (
   delay: number,
   options: IOptions = { leading: true, trailing: true }
 ) => {
-  let timeout: number | null = null,
+  let timeout: ReturnType<typeof setTimeout> | null = null,
     context: any = null,
     previous: number = 0,
     args: any = null;
@@ -198,12 +198,12 @@ const throttle = (
     if (!timeout) context = args = null;
   };
 
-  const throttled = () => {
+  const throttled = (...rest: unknown[]) => {
     const now = +new Date();
     if (!previous && options.leading === false) previous = now;
     const remaining = delay - (now - previous);
     context = this;
-    args = arguments;
+    args = rest;
     // 如果没有剩余时间了或者用户修改了系统时间
     if (remaining <= 0 || remaining > delay) {
       if (timeout) {
@@ -242,7 +242,7 @@ const throttle3 = (
 ) => {
   let args: unknown[] = [];
   let self: unknown = null;
-  let timer: null | number = null;
+  let timer: null | ReturnType<typeof setTimeout> = null;
   let previous = 0;
 
   const later = () => {

@@ -861,15 +861,17 @@ const unique = (arr: any[]): any[] => {
 ```javascript
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 const objectToString = Object.prototype.toString;
+const hasOwn = (obj, key) => hasOwnProperty.call(obj, key);
 const isObject = (val) => objectToString.call(val).slice(8, -1) === "Object";
+
 const deepClone = (source) => {
   if (!isObject(source)) return source;
 
   const target = {};
   for (const key in source) {
-    if (hasOwnProperty.call(source, key)) {
+    if (hasOwn(source, key)) {
       if (isObject(source[key])) {
-        target[key] = deepClone1(source[key]);
+        target[key] = deepClone(source[key]);
       } else {
         target[key] = source[key];
       }
@@ -914,9 +916,9 @@ const deepClone = (source) => {
             key,
             data: data[key],
           });
+        } else {
+          res[key] = data[key];
         }
-      } else {
-        res[key] = data[key];
       }
     }
   }
@@ -2217,14 +2219,14 @@ function pAll(_promises) {
     const len = promises.length;
     let count = 0;
 
-    for (let index = 0; index < len; index++) {
-      Promise.resolve(promises[index])
-        .then((data) => {
-          result[index] = data;
+    promises.forEach((item) => {
+      Promise.resolve(item)
+        .then((res) => {
+          result.push(res);
           if (++count === len) resolve(result);
         })
-        .catch((err) => reject(err));
-    }
+        .catch((reason) => reject(reason));
+    });
   });
 }
 

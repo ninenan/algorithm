@@ -1550,6 +1550,16 @@ const curry = (fn, ...reset) => {
     return fn.apply(this, [].concat.call(args, reset));
   };
 };
+
+// demo
+const addCurry = curry(add, 1, 2);
+console.log(addCurry()); // 3
+//或者
+const addCurry1 = curry(add, 1);
+console.log(addCurry1(2)); // 3
+//或者
+const addCurry2 = curry(add);
+console.log(addCurry2(1, 2)); // 3
 ```
 
 ### medium
@@ -1711,6 +1721,22 @@ function addEvent(type, el, fn) {
   }
 
   addEvent(type, el, fn);
+}
+```
+
+```javascript
+function addEvent(type, el, fn) {
+  if (window.addEventListener) {
+    el.addEventListener(type, fn, false);
+    addEvent = function (type, el, fn) {
+      el.addEventListener(type, fn, false);
+    };
+  } else if (window.attachEvent) {
+    el.attachEvent("on" + type, fn);
+    addEvent = function (type, el, fn) {
+      el.attachEvent("on" + type, fn);
+    };
+  }
 }
 ```
 

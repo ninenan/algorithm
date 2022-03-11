@@ -247,3 +247,170 @@ MyPromise.deger = MyPromise.deferred = function () {
 };
 
 module.exports = MyPromise;
+
+/** demo */
+// const promise = new Promise((resolve, reject) => {
+//    resolve('success')
+//    reject('err')
+// })
+
+// promise.then(value => {
+//   console.log('resolve', value)
+// }, reason => {
+//   console.log('reject', reason)
+// })
+
+/** demo */
+// const promise = new MyPromise((resolve, reject) => {
+//   setTimeout(() => {
+//     resolve('success')
+//   }, 2000);
+// })
+
+// promise.then(value => {
+//   console.log('resolve', value)
+// }, reason => {
+//   console.log('reject', reason)
+// })
+
+/** demo */
+// const promise = new MyPromise((resolve, reject) => {
+//   setTimeout(() => {
+//     resolve('success')
+//   }, 2000);
+// })
+
+// promise.then(value => {
+//   console.log(1)
+//   console.log('resolve', value)
+// })
+
+// promise.then(value => {
+//   console.log(2)
+//   console.log('resolve', value)
+// })
+
+// promise.then(value => {
+//   console.log(3)
+//   console.log('resolve', value)
+// })
+
+/** demo */
+// then 方法要链式调用那么就需要返回一个 Promise 对象
+// then 方法里面 return 一个返回值作为下一个 then 方法的参数，
+// 如果是 return 一个 Promise 对象，那么就需要判断它的状态
+
+/** demo */
+// const promise = new MyPromise((resolve, reject) => {
+//   // 目前这里只处理同步的问题
+//   resolve('success')
+// })
+
+// function other () {
+//   return new MyPromise((resolve, reject) =>{
+//     resolve('other')
+//   })
+// }
+// promise.then(value => {
+//   console.log(1)
+//   console.log('resolve', value)
+//   return other()
+// }).then(value => {
+//   console.log(2)
+//   console.log('resolve', value)
+// })
+
+/** demo */
+// 如果 then 方法返回的是自己的 Promise 对象，则会发生循环调用，这个时候程序会报错
+// const promise = new MyPromise((resolve, reject) => {
+//     resolve('success')
+// })
+
+// // 这个时候将promise定义一个p1，然后返回的时候返回p1这个promise
+// const p1 = promise.then(value => {
+//    console.log(1)
+//    console.log('resolve', value)
+//    return p1
+// })
+
+// // 运行的时候会走reject
+// p1.then(value => {
+//   console.log(2)
+//   console.log('resolve', value)
+// }, reason => {
+//   console.log(3)
+//   console.log(reason.message)
+// })
+
+/** demo */
+// 捕获执行器中的代码，如果执行器中有代码错误，那么 Promise 的状态要变为失败
+// const promise = new MyPromise((resolve, reject) => {
+//     throw new Error('执行器错误')
+// })
+
+// promise.then(value => {
+//   console.log(1)
+//   console.log('resolve', value)
+// }, reason => {
+//   console.log(2)
+//   console.log(reason.message)
+// })
+
+// const promise = new MyPromise((resolve, reject) => {
+//     resolve('success')
+//     // throw new Error('执行器错误')
+//  })
+
+// // 第一个then方法中的错误要在第二个then方法中捕获到
+// promise.then(value => {
+//   console.log(1)
+//   console.log('resolve', value)
+//   throw new Error('then error')
+// }, reason => {
+//   console.log(2)
+//   console.log(reason.message)
+// }).then(value => {
+//   console.log(3)
+//   console.log(value);
+// }, reason => {
+//   console.log(4)
+//   console.log(reason.message)
+// })
+
+/** demo */
+// const promise = new Promise((resolve, reject) => {
+//   resolve(100)
+// })
+
+// promise
+//   .then()
+//   .then()
+//   .then()
+//   .then(value => console.log(value))
+
+// const promise = new MyPromise((resolve, reject) => {
+//   reject('err')
+// })
+
+// promise.then().then().then(value => console.log(value), reason => console.log(reason))
+
+/** demo */
+// resolve 和 reject 的静态调用
+// MyPromise.resolve().then(() => {
+//     console.log(0);
+//     return MyPromise.resolve(4);
+// }).then((res) => {
+//     console.log(res)
+// })
+
+// MyPromise.resolve()
+//   .then(() => {
+//     console.log(0);
+//     return MyPromise.reject(4);
+//   })
+//   .then(
+//     (res) => {
+//       console.log(res);
+//     },
+//     (err) => console.log("err :>> ", err)
+//   );

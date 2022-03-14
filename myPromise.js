@@ -329,7 +329,7 @@ class MyPromise {
         return new MyPromise((resolve, reject) => {
             if (!len) return;
             promiseList.forEach((item) => {
-                MyPromise, resolve(item).then((value) => resolve(value), (reason) => {
+                MyPromise.resolve(item).then((value) => resolve(value), () => {
                     if (++count === len) {
                         reject(new AggregateError('All Promise were rejected'));
                     }
@@ -394,17 +394,19 @@ class MyPromise {
 
 function resolvePromise(prePromise, x, resolve, reject) {
     if (prePromise === x) {
-        return reject(new TypeError('Chaining cycle detected for promise #<Promise>'));
+        return reject(
+            new TypeError('Chaining cycle detected for promise #<Promise>'),
+        );
     }
     if (typeof x === 'function' || typeof x === 'object') {
         if (x === null) {
-            return resolve(x);
+            resolve(x);
         }
         let then;
         try {
             then = x.then;
         } catch (error) {
-            return reject(error);
+            reject(error);
         }
         if (typeof then === 'function') {
             let called = false;
@@ -423,8 +425,8 @@ function resolvePromise(prePromise, x, resolve, reject) {
                     },
                 );
             } catch (error) {
-                if (called) return null;
-                return reject(error);
+                if (called) return;
+                reject(error);
             }
         } else {
             resolve(x);
@@ -432,7 +434,6 @@ function resolvePromise(prePromise, x, resolve, reject) {
     } else {
         resolve(x);
     }
-    return null;
 }
 
 MyPromise.deferred = function () {

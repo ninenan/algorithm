@@ -273,7 +273,7 @@ console.log(testObj2.friend); // xxx
 
 ```javascript
 const debounce = function (fn, delay = 500) {
-  let timer = null;
+  let timer: null | ReturnType<typeof setTimeout> = null;
 
   const debounced = (...args) => {
     if (timer) {
@@ -316,7 +316,7 @@ document.getElementsByTagName("img")[0].addEventListener(
  * @returns 返回回调函数执行的结果
  */
 const debounce = (fn: Function, delay = 500, immediate = false) => {
-  let timer: null | number = null;
+  let timer: null | ReturnType<typeof setTimeout> = null;
 
   const debounced = function (...args: unknown[]) {
     if (timer) {
@@ -410,7 +410,7 @@ const throttle = function (fn: Function, delay: number) {
 // 有头有尾
 // 事件立即触发，停止触发之后还会再次触发一次
 const throttle = function (fn: Function, delay: number) {
-  let timeout: number | null = null,
+  let timer: null | ReturnType<typeof setTimeout> = null,
     previous = 0,
     args: any = null,
     context: any = null;
@@ -458,7 +458,7 @@ const throttle4 = function (
   delay: number,
   options: IOptions = { leading: true }
 ) {
-  let timeout: number | null = null,
+  let timeout: null | ReturnType<typeof setTimeout> = null,
     context: any = null,
     previous: number = 0,
     args: any = null;
@@ -1800,15 +1800,20 @@ const shuffle = (arr: unknown[]): unknown[] => {
 
 ```typescript
 const mySetInterval = (fn: Function, delay: number) => {
-  let timer = null;
-  function interval() {
+  let timer: null | ReturnType<typeof setTimeout> = null;
+  let interval = () => {
     fn();
     timer = setTimeout(interval, delay);
-  }
+  };
+
   interval();
+
   return {
-    cancel: function () {
-      clearTimeout(timer);
+    cancel: () => {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
     },
   };
 };

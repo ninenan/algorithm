@@ -284,8 +284,7 @@ const throttle3 = (
 
 // throttle
 const testFn2 = (event: Event) => {
-  console.log("event :>> ", event);
-  console.log("throttle");
+  console.log("event-throttle :>> ", event[0].altitudeAngle);
 };
 const clickTestFn = throttle3(testFn2, 2000, {
   leading: true,

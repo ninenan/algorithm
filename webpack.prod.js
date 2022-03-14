@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
@@ -13,6 +14,7 @@ const FriendlyErrorsWebpackPlugin = require('@soda/friendly-errors-webpack-plugi
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const PurgecssPlugin = require('purgecss-webpack-plugin');
+const library = require('./dist/library/library.json');
 
 const PATHS = {
     src: path.join(__dirname, 'src/study-webpack'),
@@ -189,7 +191,7 @@ module.exports = {
         },
         new webpack.DllReferencePlugin({
             context: __dirname,
-            manifest: require('./dist/library/library.json'),
+            manifest: library,
         }),
         new webpack.SourceMapDevToolPlugin({}),
         new PurgecssPlugin({
@@ -243,10 +245,12 @@ module.exports = {
     },
     // stats: 'errors-only',
     resolve: {
+        // 这里已经用了 DLLPlugin 预打包好了
         // alias: {
         //     react: path.resolve(__dirname, './node_modules/react/umd/react.production.min.js'),
-        //     'react-dom': path.resolve(__dirname, './node_modules/react-dom/umd/react-dom.production.min.js'),
-        // }, // 这里已经用了 DLLPlugin 预打包好了
+        //     'react-dom':
+        //         path.resolve(__dirname, './node_modules/react-dom/umd/react-dom.production.min.js'),
+        // },
         extensions: ['.js'],
         mainFields: ['main'],
     },

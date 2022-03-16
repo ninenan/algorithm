@@ -283,8 +283,8 @@ const throttle3 = (
 };
 
 // throttle
-const testFn2 = (event: Event) => {
-  console.log("event-throttle :>> ", event[0].altitudeAngle);
+const testFn2 = (event: PointerEvent) => {
+  console.log("event-throttle :>> ", event);
 };
 const clickTestFn = throttle3(testFn2, 2000, {
   leading: true,
@@ -306,8 +306,21 @@ function getElementByClassName(className: string) {
 }
 
 const testEl = getElementByClassName("test");
-console.log("testEl :>> ", testEl);
 
 testEl.forEach((item) => {
-  item.style.color = "red";
+  if (item instanceof HTMLElement) {
+    item.style.color = "red";
+  }
+});
+
+const oul = document.getElementById("list");
+oul?.addEventListener("click", (e) => {
+  const target = e.target;
+  // e 可以获取到具体的点击元素
+  console.log("e :>> ", e);
+  console.log("target :>> ", target);
+  if (target) {
+    const tagName = target.nodeName.toLocaleLowerCase();
+    console.log("tagName :>> ", tagName);
+  }
 });

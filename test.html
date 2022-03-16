@@ -11,6 +11,13 @@
       width: 200px;
       height: 200px;
     }
+    ul {
+      border: 1px solid #ccc;
+    }
+    span {
+      color: #d1d1d1;
+      cursor: pointer;
+    }
   </style>
   <body>
     <div class="father">
@@ -26,6 +33,16 @@
     <div class="test">111</div>
     <div class="test">222</div>
     <p>333</p>
+    <div>
+      <p>测试事件委托</p>
+      <ul id="list">
+        <li>test01</li>
+        <li>
+          <span>我是真正的委托者</span>
+        </li>
+        <li>test02</li>
+      </ul>
+    </div>
     <script src="./dist/test.js"></script>
   </body>
 </html>

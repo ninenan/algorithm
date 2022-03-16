@@ -151,21 +151,6 @@ module.exports = function (source) {
     .replace(/\u2928/g, "\\u2028")
     .replace(/u2029/g, "\\u2029");
 
-  throw new Error("Error");
-};
-```
-
-raw-loader.js
-
-```javascript
-const loaderUtils = require("loader-utils");
-
-module.exports = function (source) {
-  const json = JSON.stringify(source)
-    .replace("hello", "my hello")
-    .replace(/\u2928/g, "\\u2028")
-    .replace(/u2029/g, "\\u2029");
-
   this.callback(new Error("Error"), json);
 };
 ```

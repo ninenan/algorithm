@@ -105,15 +105,15 @@ Loader 的解析是从右到左，从下到上
 
 #### 常用的 loaders
 
-| 名称          | 描述                         |
-| ------------- | ---------------------------- |
-| babel-loader  | 转换 ES6、ES7 等新语法       |
-| css-loader    | 支持 .css 文件的加载和我解析 |
-| less-loader   | 支持 .less 文件的加载和解析  |
-| ts-loader     | 将 TS 转换成 JS              |
-| file-loader   | 进行图片、字体等的打包       |
-| raw-loader    | 将文件以字符串的形式导入     |
-| thread-loader | 多进程打包 JS 和 CSS         |
+| 名称          | 描述                        |
+| ------------- | --------------------------- |
+| babel-loader  | 转换 ES6、ES7 等新语法      |
+| css-loader    | 支持 .css 文件的加载和解析  |
+| less-loader   | 支持 .less 文件的加载和解析 |
+| ts-loader     | 将 TS 转换成 JS             |
+| file-loader   | 进行图片、字体等的打包      |
+| raw-loader    | 将文件以字符串的形式导入    |
+| thread-loader | 多进程打包 JS 和 CSS        |
 
 ```javascript
 const path = require("path");
@@ -137,7 +137,7 @@ module.exports = {
 
 | 名称                     | 描述                                             |
 | ------------------------ | ------------------------------------------------ |
-| COmmonsChunkPlugin       | 将 chunks 相同的模块代码提取成公共 js            |
+| CommonsChunkPlugin       | 将 chunks 相同的模块代码提取成公共 js            |
 | CleanWebpackPlugin       | 清理构建目录                                     |
 | ExtractTextWebpackPlugin | 将 CSS 从 bundle 文件里提取成一个独立的 css 文件 |
 | CopyWebpackPlugin        | 将文件或者文件夹拷贝到构建的输出目录             |
@@ -1062,7 +1062,7 @@ mode: production 默认开启
 
 ### 代码分割的意义
 
-对于大的 Web 应用来讲，将所有的代码都放在一个文件中显然不够有效，特别是当你的某些代码是在某些特殊的时候才会被使用到。webpack 有一个功能就是将代码分割成 chunks（语块），当代码运行到需要它们的时候再惊醒加载。
+对于大的 Web 应用来讲，将所有的代码都放在一个文件中显然不够有效，特别是当你的某些代码是在某些特殊的时候才会被使用到。webpack 有一个功能就是将代码分割成 chunks（语块），当代码运行到需要它们的时候再进行加载。
 适用的场景
 
 - 抽离相同代码到一个共享块
@@ -2156,7 +2156,7 @@ polyfill.io 官方提供的服务
 
 **实际的入口文件：** node_modules\webpack\bin\webpack.js
 
-### 分析 webpack 的如口文件：webpack.js
+### 分析 webpack 的入口文件：webpack.js
 
 ```javascript
 // 运行某个命令

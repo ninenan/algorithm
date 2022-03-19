@@ -2301,10 +2301,12 @@ console.log(sum(1, 2)(3).sumOf()); // 6
 ```typescript
 const sleep = (timer) => new Promise((resolve) => setTimeout(resolve, timer));
 
-const composePromise = (fns) => {
-  return fns.reduceRight((pre, cur) => {
-    return pre.then(cur);
-  }, Promise.resolve());
+const composePromise = (...fns) => {
+  return function (...rest) {
+    return fns.reduceRight((pre, cur) => {
+      return pre.then(cur);
+    }, Promise.resolve(rest));
+  };
 };
 
 const fn1 = (...rest) => {
@@ -2325,7 +2327,10 @@ const fn2 = () => {
     })
 }
 
-composePromise([fn1, fn2]).then((res) => console.log(res));
+const fn = composePromise(fn1, fn2)
+fn('fn2').then(res => {
+    console.log(res);
+})
 // fn2 fn1 success-end
 ```
 

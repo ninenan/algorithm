@@ -2296,6 +2296,39 @@ console.log(sum(2, 3)(2).sumOf()); // 7
 console.log(sum(1, 2)(3).sumOf()); // 6
 ```
 
+## composePromise
+
+```typescript
+const sleep = (timer) => new Promise((resolve) => setTimeout(resolve, timer));
+
+const composePromise = (fns) => {
+  return fns.reduceRight((pre, cur) => {
+    return pre.then(cur);
+  }, Promise.resolve());
+};
+
+const fn1 = (...rest) => {
+    return new Promise(resolve => {
+        sleep(5_000).then(() => {
+            console.log(rest[0]);
+            resolve('success-end')
+        })
+    })
+}
+
+const fn2 = () => {
+    return new Promise(resolve => {
+        sleep(1_000).then(() => {
+            console.log('fn2');
+            resolve('fn1')
+        })
+    })
+}
+
+composePromise([fn1, fn2]).then((res) => console.log(res));
+// fn2 fn1 success-end
+```
+
 ## 手写 Promise.all
 
 ```javascript

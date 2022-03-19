@@ -392,7 +392,7 @@ class MyPromise {
     }
 }
 
-function resolvePromise(prePromise, x, resolve, reject) {
+const resolvePromise = (prePromise, x, resolve, reject) => {
     if (prePromise === x) {
         return reject(
             new TypeError('Chaining cycle detected for promise #<Promise>'),
@@ -400,14 +400,15 @@ function resolvePromise(prePromise, x, resolve, reject) {
     }
     if (typeof x === 'function' || typeof x === 'object') {
         if (x === null) {
-            resolve(x);
+            return resolve(x);
         }
         let then;
         try {
             then = x.then;
         } catch (error) {
-            reject(error);
+            return reject(error);
         }
+
         if (typeof then === 'function') {
             let called = false;
             try {
@@ -429,12 +430,17 @@ function resolvePromise(prePromise, x, resolve, reject) {
                 reject(error);
             }
         } else {
-            resolve(x);
+            return resolve(x);
         }
     } else {
-        resolve(x);
+        return resolve(x);
     }
-}
+    // if (x instanceof MyPromise) {
+    //     x.then(resolve, reject)
+    // } else {
+    //     resolve(x)
+    // }
+};
 
 MyPromise.deferred = function () {
     const result = {};

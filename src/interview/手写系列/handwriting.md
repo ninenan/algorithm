@@ -2127,7 +2127,14 @@ cl.method("第一次调用").method("第二次链式调用").method("第三次�
 
 > [参考链接](https://github.com/lgwebdream/FE-Interview/issues/35)
 
-```javascript
+```typescript
+interface INode {
+    id:number
+    val: string
+    parentId: null | number
+}
+
+
 let arr: INode[] = [
   {
     id: 1,

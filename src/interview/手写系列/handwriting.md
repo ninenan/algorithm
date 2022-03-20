@@ -2129,11 +2129,10 @@ cl.method("第一次调用").method("第二次链式调用").method("第三次�
 
 ```typescript
 interface INode {
-    id:number
-    val: string
-    parentId: null | number
+  id: number;
+  val: string;
+  parentId: null | number;
 }
-
 
 let arr: INode[] = [
   {
@@ -2249,6 +2248,27 @@ const listToTree = (arr: INode[]): ITreeNode | undefined => {
 };
 ```
 
+## 树转数组
+
+```javascript
+const tree2List = (tree) => {
+  let res = [];
+  let queue = [...tree];
+
+  while (queue.length) {
+    const node = queue.shift();
+    const children = node.children;
+    if (children.length) {
+      queue.push(...children);
+    }
+    delete node.children;
+    res.push(node);
+  }
+
+  return res;
+};
+```
+
 ## 把一个 JSON 对象的 key 从下划线形式（Pascal）转换到小驼峰形式（Camel）
 
 > [参考链接](https://github.com/zcxiaobao/everyday-insist/blob/master/21interview/baseJS/_tocamel.md)
@@ -2317,27 +2337,27 @@ const composePromise = (...fns) => {
 };
 
 const fn1 = (...rest) => {
-    return new Promise(resolve => {
-        sleep(5_000).then(() => {
-            console.log(rest[0]);
-            resolve('success-end')
-        })
-    })
-}
+  return new Promise((resolve) => {
+    sleep(5_000).then(() => {
+      console.log(rest[0]);
+      resolve("success-end");
+    });
+  });
+};
 
 const fn2 = () => {
-    return new Promise(resolve => {
-        sleep(1_000).then(() => {
-            console.log('fn2');
-            resolve('fn1')
-        })
-    })
-}
+  return new Promise((resolve) => {
+    sleep(1_000).then(() => {
+      console.log("fn2");
+      resolve("fn1");
+    });
+  });
+};
 
-const fn = composePromise(fn1, fn2)
-fn('fn2').then(res => {
-    console.log(res);
-})
+const fn = composePromise(fn1, fn2);
+fn("fn2").then((res) => {
+  console.log(res);
+});
 // fn2 fn1 success-end
 ```
 

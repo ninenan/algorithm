@@ -1834,10 +1834,10 @@ const mySetTimeout = function (fn: Function, delay: number) {
 
 ```typescript
 class EventEmitter {
-  handlers: any[][];
+  handlers: object;
   constructor() {
     // handlers 是一个 map 用于存储事件与回调之间的对应关系
-    this.handlers = [];
+    this.handlers = {};
   }
   // 安装事件监听器，接受目标事件名和回调函数作为参数
   on(eventName, cb: Function) {

@@ -1543,6 +1543,7 @@ console.log(eq(a, b)); // true
 ### easy
 
 ```javascript
+const add = (a, b) => a + b;
 const curry = (fn, ...reset) => {
   const args = reset;
 

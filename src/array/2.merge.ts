@@ -35,4 +35,35 @@ const _merge = (
   return numArr1;
 };
 
+const merge = (
+  numArr1: number[],
+  numArr1Length: number,
+  numArr2: number[],
+  numArr2Length: number
+): number[] => {
+  let totalLen = numArr1Length + numArr2Length - 1;
+  let lLen = numArr1Length - 1;
+  let rLen = numArr2Length - 1;
+
+  while (lLen >= 0 && rLen >= 0) {
+    if (numArr1[lLen] >= numArr2[rLen]) {
+      numArr1[totalLen] = numArr1[lLen];
+      lLen--;
+    } else {
+      numArr1[totalLen] = numArr2[rLen];
+      rLen--;
+    }
+    totalLen--;
+  }
+
+  while (rLen >= 0) {
+    numArr1[totalLen] = numArr2[rLen];
+    totalLen--;
+    rLen--;
+  }
+
+  return numArr1;
+};
+
 console.log(_merge([1, 2, 3, 4], 4, [2, 5, 6], 3)); // [1, 2, 2, 3, 4, 5, 6]
+console.log(merge([1, 2, 3, 4], 4, [2, 5, 6], 3)); // [1, 2, 2, 3, 4, 5, 6]

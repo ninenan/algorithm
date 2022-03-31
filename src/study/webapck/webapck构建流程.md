@@ -63,7 +63,7 @@ Compilation 是编译阶段的主要执行者，（是 Tapable 的实例），�
 ##### 流程相关
 
 - before-run
-- before/after0-compile
+- before/after-compile
 - make
 - after-emit
 - done

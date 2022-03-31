@@ -38,3 +38,19 @@ const isPalindrome = (num: number): boolean => {
 
   return result;
 };
+
+const isPalindrome2 = (num: number): boolean => {
+  if (num < 0) return false;
+  if (num < 10) return true;
+
+  const str = num + "";
+  const len = str.length;
+
+  for (let index = 0; index < len / 2; index++) {
+    if (str[index] !== str[len - index - 1]) {
+      return false;
+    }
+  }
+
+  return true;
+};

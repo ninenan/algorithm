@@ -15,4 +15,18 @@ const getKthFromEnd = (head: ListNode | null, k: number): ListNode | null => {
   return res;
 };
 
+const getKthFromEnd2 = (head: ListNode | null, k: number): ListNode | null => {
+  let fast = head,
+    slow = head;
+
+  while (fast && k > 0) {
+    [fast, k] = [fast.next, k - 1];
+  }
+
+  while (fast) {
+    [fast, slow] = [fast.next, slow?.next as null];
+  }
+  return slow;
+};
+
 export {};

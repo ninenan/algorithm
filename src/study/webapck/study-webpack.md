@@ -2437,6 +2437,7 @@ const createCompiler = (rawOptions) => {
   applyWebpackOptionsDefaults(options);
   compiler.hooks.environment.call();
   compiler.hooks.afterEnvironment.call();
+  // 注入内部插件
   new WebpackOptionsApply().process(options, compiler);
   compiler.hooks.initialize.call();
   return compiler;

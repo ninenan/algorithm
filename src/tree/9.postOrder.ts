@@ -42,3 +42,26 @@ const postOrderTraversal = (root: TreeNode | null): number[] => {
 
   return res;
 };
+
+const postOrderTraversal2 = (root: TreeNode | null): number[] => {
+  const res: number[] = []
+  if (!root) return res
+
+  const stack = []
+  stack.push(root)
+
+  while (stack.length) {
+    const cur = stack.pop()
+    if (cur?.val) {
+      res.unshift(cur.val)
+    }
+    if (cur?.left) {
+      stack.push(cur.left)
+    }
+    if (cur?.right) {
+      stack.push(cur.right)
+    }
+  }
+
+  return res
+}

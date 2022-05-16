@@ -47,3 +47,5 @@ const deleteNode = (head: ListNode | null, val: number): ListNode | null => {
 
   return result.next;
 };
+
+export {}

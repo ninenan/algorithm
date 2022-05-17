@@ -33,6 +33,14 @@ const isValidBST = (root: TreeNode | null): boolean => {
   return true;
 };
 
+/**
+ * 思想：左 < 根 < 右的比较方式
+ * 1. 可以是一棵空树
+ * 2. 可以是一棵由根节点、左子树、右子树组成的树，同时左子树和右子树都是二叉搜索树，并且左子树的所有节点的数据都小于等于根节点的数据
+ *    右子树所有及诶单的数据都大于等于根节点的数据
+ * @param {TreeNode} root 
+ * @returns {boolean}
+ */
 const isValidBST2 = (root: TreeNode | null): boolean => {
   const dfs = (root: TreeNode | null, minVal: number, maxVal: number): boolean => {
     if (!root) return true

@@ -1,5 +1,7 @@
+// 快速排序
 // https://juejin.cn/book/6844733800300150797/section/6844733800367259655
 
+// 理解下思想 其实 排序要做到 arr === arr.sort()
 const quickSort = (arr: number[]): number[] => {
     if (arr.length <= 1) return arr
 

@@ -52,4 +52,26 @@ const climbStairs2 = (n: number): number => {
   return f[n]
 }
 
+// 会爆栈 多了很多重复的计算
+const climbStairs3 = (n: number): number => {
+  if (n <= 2) return n
+
+  return climbStairs3(n - 1) + climbStairs3(n - 2)
+}
+
+// 对 climbStairs3 的优化
+const climbStairs4 = (n: number): number => {
+  // 使用 fns 对已经计算过的做了缓存
+  const fns: number[] = []
+  const add = (n: number) => {
+      if (n <= 2) return n
+
+      if (!fns[n]) fns[n] = add(n - 1) + add(n - 2)
+
+      return fns[n]
+  }    
+
+  return add(n)
+}
+
 export {}

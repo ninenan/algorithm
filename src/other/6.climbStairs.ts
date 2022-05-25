@@ -38,3 +38,18 @@ const climbStairs = (n: number): number => {
 
   return r;
 };
+
+const climbStairs2 = (n: number): number => {
+  if (n <= 2) return n
+  const f = []
+  f[1] = 1
+  f[2] = 2
+
+  for (let index = 3; index <= n; index++) {
+    f[index] = f[index - 2] + f[index - 1]
+  }
+
+  return f[n]
+}
+
+export {}

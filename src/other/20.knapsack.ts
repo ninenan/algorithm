@@ -6,10 +6,10 @@ const knapsack = (
   w: number[],
   value: number[]
 ): number => {
-  const dp = new Array(c + 1).fill(0);
+  const dp = new Array(c).fill(0);
   let res = -Infinity;
 
-  for (let index = 1; index <= n; index++) {
+  for (let index = 0; index < n; index++) {
     for (let v = c; v >= w[index]; v--) {
       dp[v] = Math.max(dp[v], dp[v - w[index]] + value[index]);
 

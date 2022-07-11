@@ -35,4 +35,30 @@ const singleNumbers2 = (nums: number[]): number[] => {
   return [eor ^ eorl, eorl];
 };
 
+const singleNumbers3 = (nums: number[]): number[] => {
+  if (!nums.length) {
+    return [];
+  }
+
+  let map = new Map<number, number>();
+  let len = nums.length;
+  let res = [];
+
+  for (let index = 0; index < len; index++) {
+    if (map.get(nums[index])) {
+      map.set(nums[index], (map.get(nums[index]) as number) + 1);
+    } else {
+      map.set(nums[index], 1)
+    }
+  }
+
+  for (const [key, value] of map.entries()) {
+    if (value === 1) {
+      res.push(key)
+    }
+  }
+
+  return res;
+}
+
 export {};

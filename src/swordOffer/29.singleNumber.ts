@@ -1,6 +1,6 @@
 // https://leetcode.cn/problems/WGki4K/
 
-// 为满足题目要求
+// 未满足题目要求
 const singleNumber = (nums: number[]): number => {
   if (!nums.length) {
     return 0;

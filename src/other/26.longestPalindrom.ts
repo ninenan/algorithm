@@ -20,7 +20,7 @@ const longestPalindrome = (str: string): string => {
   for (let index = 0; index < len - 1; index++) {
     if (str[index] === str[index + 1]) {
       dp[index][index + 1] = 1;
-      start = 1;
+      start = index;
       end = index + 1;
     }
   }
@@ -43,3 +43,4 @@ const longestPalindrome = (str: string): string => {
 
 console.log(longestPalindrome('babad')) // "aba" / "bab"
 console.log(longestPalindrome('cbbd')) // "bb"
+console.log(longestPalindrome('bb')) // "bb"

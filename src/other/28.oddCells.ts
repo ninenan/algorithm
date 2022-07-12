@@ -20,3 +20,31 @@ const oddCells = (m: number, n: number, indices: number[][]): number => {
 
   return res;
 }
+
+const oddCells2 = (m: number, n: number, indices: number[][]): number => {
+  let oddx = 0;
+  let oddy = 0;
+  const rows = (new Array(m)).fill(0);
+  const cols = (new Array(n)).fill(0);
+
+  for (const [row, col] of indices) {
+    rows[row]++;
+    cols[col]++;
+  }
+
+  for (let index = 0; index < rows.length; index++) {
+    if ((rows[index] & 1) !== 0) {
+      oddx++;
+    }
+  }
+
+  for (let index = 0; index < cols.length; index++) {
+    if ((cols[index] & 1) !== 0) {
+      oddy++;
+    }
+  }
+
+  return oddx * (n - oddy) + oddy * (m - oddx);
+}
+
+export {}

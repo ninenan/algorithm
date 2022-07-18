@@ -19,14 +19,7 @@ const asteroidCollision = (asteroids: number[]): number[] => {
     }
   }
 
-  const len = stack.length;
-  const res = (new Array(len)).fill(0);
-
-  for (let index = len - 1; index >= 0; index--) {
-    res[index] = stack.pop();
-  }
-
-  return res;
+  return stack;
 }
 
 console.log(asteroidCollision([-1, -2, 1, 2]));

@@ -2,7 +2,7 @@
 
 // 暴力解
 class MyCalendar {
-  books: number[][]
+  books: number[][];
 
   constructor() {
     this.books = [];

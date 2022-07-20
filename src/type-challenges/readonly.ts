@@ -30,3 +30,5 @@ const person2: Readonly<IPerson> = {
 }
 
 // person2.name = 'nnn4' // 无法分配到 "name" ，因为它是只读属性。
+
+export {}

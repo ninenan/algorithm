@@ -46,5 +46,5 @@ const shiftGrid2 = (grid: number[][], k: number): number[][] => {
   return ret;
 }
 
-export {}
+export {};
 

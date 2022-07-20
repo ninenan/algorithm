@@ -4,6 +4,8 @@
 type Length<T extends any> = T extends { length: number } ? T['length'] : never;
 
 // 5
-type res1 = Length<[1, 2, 3, 4, 5]>
+type res1 = Length<[1, 2, 3, 4, 5]>;
 // 10
-type res2 = Length<{length: 10}>
+type res2 = Length<{length: 10}>;
+
+export {};

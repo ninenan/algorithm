@@ -1,3 +1,6 @@
+// Exclude<UnionType, ExcludedMembers>
+// 用于构造一个类型，它是从UnionType联合类型里面排除了所有可以赋给ExcludedMembers的类型。
+
 // T1 返回的类型是 'name' | 'sex'
 type T1 = Exclude<'name' | 'sex' | 'age', 'sex' | 'address'>;
 // T2 返回的类型是 string | number
@@ -15,3 +18,5 @@ type MyExclude<T, U> = T extends U ? never : T;
 type T3 = MyExclude<'a' | 'b' | 'c', 'c' | 'd'>;
 // T4 类型是 string
 type T4 = MyExclude<string | number, number>;
+
+export {};

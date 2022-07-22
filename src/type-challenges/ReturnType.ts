@@ -18,3 +18,4 @@ type T5 = MyReturnType<() => number>
 // T6 = number[]
 type T6 = MyReturnType<<T extends U, U extends number[]>() => T>
 
+export {}

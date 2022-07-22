@@ -16,3 +16,5 @@ type result3 = First1<[3, 2, 1]>;
 // never
 type result2 = First<[]>;
 type result4 = First1<[]>;
+
+export {}

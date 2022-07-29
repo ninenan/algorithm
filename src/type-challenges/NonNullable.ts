@@ -6,3 +6,5 @@ type T1 = NonNullable<string | number | null | undefined>;
 type MyNonNullable<T> = T extends null | undefined ? never : T;
 
 type T2 = MyNonNullable<string | number | null | undefined>;
+
+export {}

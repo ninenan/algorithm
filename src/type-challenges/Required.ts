@@ -1,5 +1,5 @@
 // Required<Types>
-// 用于构造一个Type下面的所有属性全都设置为必填的类型，这个工具类型跟 Partial (opens new window)相反。
+// 用于构造一个Type下面的所有属性全都设置为必填的类型，这个工具类型跟 Partial 相反。
 
 interface IPerson {
   name: string;

@@ -1,5 +1,5 @@
 // DeepReadonly<Types>
-// DeepReadonly用来将一个嵌套对象类型中所有字段全部添加readonly关键词
+// DeepReadonly 用来将一个嵌套对象类型中所有字段全部添加 readonly 关键词
 
 interface IX {
   a: string;

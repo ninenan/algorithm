@@ -1,4 +1,4 @@
-// ReplaceAl// ReplaceAll<StringTypes, StringTypes, StringTypes>
+// ReplaceAll<StringTypes, StringTypes, StringTypes>
 // ReplaceAll是用来将字符串中指定字符全部替换
 
 type ReplaceAll<

@@ -1,4 +1,3 @@
-// 'b' extends 'c' | 'd' ? never : 'b'
 // First 返回数组的的第一个元素
 
 // T extends any[] 约束 T 的类型是数组

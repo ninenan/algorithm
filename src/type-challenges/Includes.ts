@@ -1,5 +1,5 @@
 // Includes<Types, Types>
-// Includes<T, U> 用来判断U是否在数组 T 中，类似实现数组的 includes 方法
+// Includes<T, U> 用来判断 U 是否在数组 T 中，类似实现数组的 includes 方法
 
 type Includes<T extends any[], U> = U extends T[number] ? true : false;
 

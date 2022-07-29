@@ -1,5 +1,5 @@
-// Replace<StringTypes, StringTypes, StringTypes// Replace<StringTypes, StringTypes, StringTypes>
-// Replace是用来将字符串中第一次出现的某段内容，使用指定的字符串进行替换
+// Replace<StringTypes, StringTypes, StringTypes>
+// Replace 将字符串中第一次出现的某段内容，使用指定的字符串进行替换
 
 type Replace<
   T extends string,

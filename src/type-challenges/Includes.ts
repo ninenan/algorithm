@@ -3,9 +3,9 @@
 
 type Includes<T extends any[], U> = U extends T[number] ? true : false;
 
-type Equal<X, Y> = <T>() => T extends X
+type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y
   ? 1
-  : 2 extends <T>() => T extends Y ? 1 : 2
+  : 2
   ? true
   : false;
 
@@ -16,8 +16,12 @@ type MyIncludes<T extends any[], U> = T extends [infer R, ...infer L]
   : false;
 
 // T1 = false
-type T1 = Includes<[1, 2, 3], 4>;
+type T1 = Includes<[5, 6, 3], 4>;
 // T2 = true
-type T2 = Includes<[1, 2, 3], 2>;
-
+type T2 = MyIncludes<[1, 2, 3], 2>;
+// isPillarMen = true
+type isPillarMen = MyIncludes<
+  ["Kars", "Esidisi", "Wamuu", "Santana"],
+  "Santana"
+>;
 export {};

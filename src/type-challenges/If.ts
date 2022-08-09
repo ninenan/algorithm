@@ -9,3 +9,4 @@ type T1 = If<true, "a", "b">;
 type T2 = If<false, 1, 2>;
 
 export {};
+

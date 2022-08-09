@@ -9,6 +9,7 @@ type KebabCase<T extends string> = T extends `${infer S1}${infer S2}`
 
 // T1 = foo-bar-ts
 type T1 = KebabCase<'FooBarTs'>
-type T2 = KebabCase<'HelloWrold'>
+// T2 = hello-world
+type T2 = KebabCase<'HelloWorld'>
 
 export {}

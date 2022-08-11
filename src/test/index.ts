@@ -79,9 +79,9 @@ const debounce = (fn: Function, delay = 500, immediate = false): any => {
     } else {
       timer = setTimeout(() => {
         fn.apply(this, rest);
-      }, delay)
+      }, delay);
     }
-  }
+  };
 
   debounced.cancel = () => {
     if (timer) {
@@ -89,10 +89,10 @@ const debounce = (fn: Function, delay = 500, immediate = false): any => {
     }
 
     timer = null;
-  }
+  };
 
   return debounced;
-}
+};
 
 const imgNode = document.getElementsByTagName("img")[0];
 const preLoadImg = new PreLoadImg(imgNode);
@@ -107,6 +107,10 @@ const fn = (e: any) => {
 imgNode.addEventListener("click", debounce(fn, 2000, true));
 
 proxyImg.setSrc("https://cdn2.thecatapi.com/images/ced.jpg");
+
+const imgs = document.getElementById("root")?.getElementsByTagName("img");
+
+console.log(imgs);
 
 // interface T1 {
 //   title?: string;

@@ -13,8 +13,10 @@ interface User {
   address: string
 }
 
-type UserPartialName = PartialByKeys<User, 'name'> // { name?:string; age:number; address:string }
-type UserPartialName2 = PartialByKeys<User, 'name' | 'address'> // { name?:string; age:number; address:string }
+// UserPartialName = { name?:string; age:number; address:string }
+type UserPartialName = PartialByKeys<User, 'name'>
+// UserPartialName2 = { name?:string; age:number; address:string }
+type UserPartialName2 = PartialByKeys<User, 'name' | 'address'>
 
 const obj: UserPartialName = {
   age: 18,

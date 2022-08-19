@@ -3,9 +3,9 @@
 
 type If<T extends boolean, U, R> = T extends true ? U : R;
 
-// 'a'
+// T1 = 'a'
 type T1 = If<true, "a", "b">;
-// 2
+// T2 = 2
 type T2 = If<false, 1, 2>;
 
 export {};

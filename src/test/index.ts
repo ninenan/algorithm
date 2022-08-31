@@ -111,3 +111,59 @@ proxyImg.setSrc("https://cdn2.thecatapi.com/images/ced.jpg");
 const imgs = document.getElementById("root")?.getElementsByTagName("img");
 
 console.log(imgs);
+
+
+
+export class TimeDown {
+  sysTime: number;
+  targetTime: number;
+  setTimeFun: (...args: unknown[]) => void;
+  /**
+   * 倒计时构造函数
+   * @param {系统时间} sysTime
+   * @param {目标时间} targetTime
+   */
+  constructor(sysTime, targetTime, setTimeFun: (...args: unknown[]) => void) {
+    // 系统时间
+    this.sysTime = sysTime;
+    this.targetTime = targetTime;
+    this.setTimeFun = setTimeFun;
+    console.log('setTimeFun', setTimeFun(), this);
+  }
+
+  startTimeDown = () => {
+    // 相差的总秒数
+    const totalSeconds = parseInt((this.targetTime - this.sysTime) / 1000);
+
+    totalSeconds === 0 && this.clearTimeDown(); // 倒计时结束  清空倒计时
+
+    // 天数
+    const days = Math.floor(totalSeconds / (60 * 60 * 24));
+
+    // 取模（余数）
+    let modulo = totalSeconds % (60 * 60 * 24);
+
+    // 小时数
+    const hours = Math.floor(modulo / (60 * 60));
+
+    modulo = modulo % (60 * 60);
+
+    // 分钟
+    const minutes = Math.floor(modulo / 60);
+
+    // 秒
+    const seconds = modulo % 60;
+    this.clearTimeDown();
+    this.timer = setTimeout(() => {
+      this.sysTime += 1000;
+      this.startTimeDown();
+    }, 1000);
+
+    this.setTimeFun(days, hours, minutes, seconds);
+  };
+
+  clearTimeDown() {
+    clearTimeout(this.timer);
+    this.timer = null;
+  }
+}

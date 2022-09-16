@@ -554,3 +554,10 @@ it('should not get stuck on the passed in next', () => {
   })
 })
 ```
+
+## 3. 总结
+
+1. `koa-compose` 通过递归调用的方式，结合 `Promise.resolve` 来使用下一个中间件的函数（感觉就像是套娃）
+2. `TDD` 和 [责任链模式](https://refactoringguru.cn/design-patterns/chain-of-responsibility)
+3. 完全没想到一个函数会有这么多的测试用例，但是通过测试用例来学习代码的话，会理解的更加到位（果然 `TDD` 真香）
+

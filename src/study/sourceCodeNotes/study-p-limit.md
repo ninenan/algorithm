@@ -3,6 +3,7 @@
 ## 使用方式
 
 [源码地址](https://github.com/sindresorhus/p-limit)
+[yocto-queue](https://github.com/sindresorhus/yocto-queue)
 
 ```javascript
 import pLimit from 'p-limit';

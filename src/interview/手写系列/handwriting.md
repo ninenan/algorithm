@@ -2657,11 +2657,7 @@ class Scheduler {
   }
 }
 
-const timeout = (time) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, time);
-  });
-};
+const timeout = time => new Promise(resolve => setTimeout(resolve, time))
 
 const scheduler = new Scheduler();
 
@@ -2799,7 +2795,7 @@ lazyMan("Hank").eat("dinner").eat("supper");
 lazyMan("Hank").eat("supper").sleepFirst(5);
 ```
 
-### await-to-js
+## await-to-js
 
 > [源码地址](https://github.com/scopsy/await-to-js/blob/master/src/await-to-js.ts)
 
@@ -2818,7 +2814,7 @@ const to = <T, U = Error>(promise: Promise<T>, errorExt?: object) => {
 };
 ```
 
-### koa-compose
+## koa-compose
 
 > [源码地址](https://github.com/koajs/compose/blob/master/index.js)
 

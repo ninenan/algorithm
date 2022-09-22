@@ -1,9 +1,13 @@
 # p-limit
 
-## 使用方式
-
 [源码地址](https://github.com/sindresorhus/p-limit)
 [yocto-queue](https://github.com/sindresorhus/yocto-queue)
+
+## 为什么使用
+
+如果一次性请求多个请求的话，会对服务器产生压力，因为可以使用 `p-limit` 限制并发的请求数量。
+
+## 使用方式
 
 ```javascript
 import pLimit from 'p-limit';
@@ -37,9 +41,10 @@ limit.pendingCount
 limit.clearQueue()
 ```
 
-### 源码
+### 源码解析
 
 ```javascript
+// Queue 是一个队列（先进先出）
 import Queue from 'yocto-queue';
 
 export default function pLimit(concurrency) {
@@ -134,3 +139,4 @@ export default function pLimit(concurrency) {
   return generator;
 }
 ```
+

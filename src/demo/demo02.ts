@@ -45,5 +45,3 @@ const pLimit = (concurrency: number) => {
 };
 
 const delay = (timer: number) => new Promise((resolve) => setTimeout(resolve, timer));
-
-const limit = pLimit(1);

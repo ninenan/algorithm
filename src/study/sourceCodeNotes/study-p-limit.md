@@ -1,11 +1,12 @@
 # p-limit
 
 [源码地址](https://github.com/sindresorhus/p-limit)
+
 [yocto-queue](https://github.com/sindresorhus/yocto-queue)
 
 ## 为什么使用
 
-如果一次性请求多个请求的话，会对服务器产生压力，因为可以使用 `p-limit` 限制并发的请求数量。
+如果一次性请求多个请求的话，会对服务器产生压力，可以使用 `p-limit` 限制并发的请求数量。
 
 ## 使用方式
 
@@ -140,3 +141,6 @@ export default function pLimit(concurrency) {
 }
 ```
 
+### 执行顺序图
+
+<img style="width: 100%;" src="https://intranetproxy.alipay.com/skylark/lark/0/2022/png/58556699/1663926651491-28972073-91c9-4523-a50c-27a543283c3e.png?x-oss-process=image%2Fresize%2Cw_1434%2Climit_0">

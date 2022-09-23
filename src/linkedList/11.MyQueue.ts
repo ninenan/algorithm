@@ -12,7 +12,7 @@ class MyQueue {
   }
 
   pop(): number {
-    if (this.stack2.length > 0) {
+    if (this.stack2.length <= 0) {
       while (this.stack1.length > 0) {
         this.stack2.push(this.stack1.pop() as number)
       }
@@ -22,7 +22,7 @@ class MyQueue {
   }
 
   peek() {
-    if (this.stack2.length > 0) {
+    if (this.stack2.length <= 0) {
       while (this.stack1.length > 0) {
         this.stack2.push(this.stack1.pop() as number)
       }

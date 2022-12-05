@@ -8,5 +8,8 @@ type T1 = If<true, "a", "b">;
 // T2 = 2
 type T2 = If<false, 1, 2>;
 
-export {};
+type Data<T = unknown> = T & {
+  value: string;
+};
 
+export {};

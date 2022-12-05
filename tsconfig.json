@@ -1,14 +1,12 @@
 {
-    "compilerOptions": {
-        "target": "ES2015",
-        "watch": true,
-        "outDir": "./dist",
-        "strictNullChecks": true,
-        "noImplicitAny": true,
-        "experimentalDecorators": false,
-        "skipLibCheck": true,
-    },
-    "include": [
-        "./src/**/*"
-    ]
+  "compilerOptions": {
+    "target": "ES2015",
+    "watch": true,
+    "outDir": "./dist",
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "experimentalDecorators": false,
+    "skipLibCheck": true
+  },
+  "include": ["./src/**/*"]
 }

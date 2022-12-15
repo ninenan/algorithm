@@ -208,246 +208,265 @@
 // }
 // queueMicrotask()
 class MyPromise {
-    #PENDING = 'pending';
+  #PENDING = "pending";
 
-    #FULFILLED = 'fulfilled';
+  #FULFILLED = "fulfilled";
 
-    #REJECTED = 'rejected';
+  #REJECTED = "rejected";
 
-    constructor(executor) {
-        try {
-            executor(this.resolve, this.reject);
-        } catch (error) {
-            this.reject(error);
-        }
+  constructor(executor) {
+    try {
+      executor(this.resolve, this.reject);
+    } catch (error) {
+      this.reject(error);
     }
+  }
 
-    // 当前状态
-    status = this.#PENDING;
+  // 当前状态
+  status = this.#PENDING;
 
-    // 成功之后返回的值
-    value = null;
+  // 成功之后返回的值
+  value = null;
 
-    // 失败之后返回的值
-    reason = null;
+  // 失败之后返回的值
+  reason = null;
 
-    // 成功需要执行的回调函数
-    onFulfilledCallbacks = [];
+  // 成功需要执行的回调函数
+  onFulfilledCallbacks = [];
 
-    // 失败需要执行的回调函数
-    onRejectedCallbacks = [];
+  // 失败需要执行的回调函数
+  onRejectedCallbacks = [];
 
-    // 成功之后的回调
-    resolve = (value) => {
-        if (this.status === this.#PENDING) {
-            this.status = this.#FULFILLED;
-            this.value = value;
-            while (this.onFulfilledCallbacks.length) {
-                this.onFulfilledCallbacks.shift()(value);
-            }
-        }
-    };
-
-    // 失败之后的回调
-    reject = (reason) => {
-        if (this.status === this.#PENDING) {
-            this.status = this.#REJECTED;
-            this.reason = reason;
-            while (this.onRejectedCallbacks.length) {
-                this.onRejectedCallbacks.shift()(reason);
-            }
-        }
-    };
-
-    static resolve(param) {
-        if (param instanceof MyPromise) {
-            return param;
-        }
-        return new MyPromise((resolve) => resolve(param));
+  // 成功之后的回调
+  resolve = (value) => {
+    if (this.status === this.#PENDING) {
+      this.status = this.#FULFILLED;
+      this.value = value;
+      while (this.onFulfilledCallbacks.length) {
+        this.onFulfilledCallbacks.shift()(value);
+      }
     }
+  };
 
-    static reject(param) {
-        return new MyPromise((resolve, reject) => reject(param));
+  // 失败之后的回调
+  reject = (reason) => {
+    if (this.status === this.#PENDING) {
+      this.status = this.#REJECTED;
+      this.reason = reason;
+      while (this.onRejectedCallbacks.length) {
+        this.onRejectedCallbacks.shift()(reason);
+      }
     }
+  };
 
-    static all(promiseList) {
-        return new MyPromise((resolve, reject) => {
-            const promiseArr = [...promiseList];
-            const result = [];
-            const len = promiseList.length;
-            let count = 0;
-
-            if (!len) {
-                return resolve(result);
-            }
-
-            for (let index = 0; index < promiseArr.length; index++) {
-                MyPromise.resolve(promiseArr[index]).then((data) => {
-                    result[index] = data;
-                    if (++count === len) resolve(result);
-                }).catch((err) => reject(err));
-            }
-        });
+  static resolve(param) {
+    if (param instanceof MyPromise) {
+      return param;
     }
+    return new MyPromise((resolve) => resolve(param));
+  }
 
-    static allSettled(promiseList) {
-        return new MyPromise((resolve) => {
-            const len = promiseList.length;
-            const result = [];
+  static reject(param) {
+    return new MyPromise((resolve, reject) => reject(param));
+  }
 
-            if (!len) {
-                return resolve(result);
-            }
-            promiseList.forEach((data) => {
-                MyPromise.resolve(data).then((value) => {
-                    result.push({
-                        status: 'fulfilled',
-                        value,
-                    });
-                }).catch((reason) => {
-                    result.push({
-                        status: 'rejected',
-                        reason,
-                    });
-                });
-                if (result.length === len) resolve(result);
+  static all(promiseList) {
+    return new MyPromise((resolve, reject) => {
+      const promiseArr = [...promiseList];
+      const result = [];
+      const len = promiseList.length;
+      let count = 0;
+
+      if (!len) {
+        return resolve(result);
+      }
+
+      for (let index = 0; index < promiseArr.length; index++) {
+        MyPromise.resolve(promiseArr[index])
+          .then((data) => {
+            result[index] = data;
+            if (++count === len) resolve(result);
+          })
+          .catch((err) => reject(err));
+      }
+    });
+  }
+
+  static allSettled(promiseList) {
+    return new MyPromise((resolve) => {
+      const len = promiseList.length;
+      const result = [];
+
+      if (!len) {
+        return resolve(result);
+      }
+      promiseList.forEach((data) => {
+        MyPromise.resolve(data)
+          .then((value) => {
+            result.push({
+              status: "fulfilled",
+              value,
             });
-        });
-    }
-
-    static race(promiseList) {
-        return new MyPromise((resolve, reject) => {
-            promiseList.forEach((item) => {
-                MyPromise.resolve(item).then((res) => resolve(res)).catch((reason) => reject(reason));
+          })
+          .catch((reason) => {
+            result.push({
+              status: "rejected",
+              reason,
             });
-        });
-    }
+          });
+        if (result.length === len) resolve(result);
+      });
+    });
+  }
 
-    static any(promiseList) {
-        let count = 0;
-        const len = promiseList.length;
-        return new MyPromise((resolve, reject) => {
-            if (!len) return;
-            promiseList.forEach((item) => {
-                MyPromise.resolve(item).then((value) => resolve(value), () => {
-                    if (++count === len) {
-                        reject(new AggregateError('All Promise were rejected'));
-                    }
-                });
-            });
-        });
-    }
+  static race(promiseList) {
+    return new MyPromise((resolve, reject) => {
+      promiseList.forEach((item) => {
+        MyPromise.resolve(item)
+          .then((res) => resolve(res))
+          .catch((reason) => reject(reason));
+      });
+    });
+  }
 
-    then(onFulfilled, onRejected) {
-        const realOnFulfilled = typeof onFulfilled === 'function' ? onFulfilled : (value) => value;
-        const realOnRejected = typeof onRejected === 'function' ? onRejected : (reason) => { throw reason; };
-
-        // 要支持链式调用 返回新的 promise
-        const promise2 = new MyPromise((resolve, reject) => {
-            const fulfilledMicrotask = () => {
-                queueMicrotask(() => {
-                    try {
-                        const x = realOnFulfilled(this.value);
-                        resolvePromise(promise2, x, resolve, reject);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-            };
-
-            const rejectedMicrotask = () => {
-                queueMicrotask(() => {
-                    try {
-                        const x = realOnRejected(this.reason);
-                        resolvePromise(promise2, x, resolve, reject);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-            };
-
-            if (this.status === this.#FULFILLED) {
-                fulfilledMicrotask();
+  static any(promiseList) {
+    let count = 0;
+    const len = promiseList.length;
+    return new MyPromise((resolve, reject) => {
+      if (!len) return;
+      promiseList.forEach((item) => {
+        MyPromise.resolve(item).then(
+          (value) => resolve(value),
+          () => {
+            if (++count === len) {
+              reject(new AggregateError("All Promise were rejected"));
             }
-            if (this.status === this.#REJECTED) {
-                rejectedMicrotask();
-            }
-            if (this.status === this.#PENDING) {
-                this.onFulfilledCallbacks.push(fulfilledMicrotask);
-                this.onRejectedCallbacks.push(rejectedMicrotask);
-            }
+          }
+        );
+      });
+    });
+  }
+
+  then(onFulfilled, onRejected) {
+    const realOnFulfilled =
+      typeof onFulfilled === "function" ? onFulfilled : (value) => value;
+    const realOnRejected =
+      typeof onRejected === "function"
+        ? onRejected
+        : (reason) => {
+            throw reason;
+          };
+
+    // 要支持链式调用 返回新的 promise
+    const promise2 = new MyPromise((resolve, reject) => {
+      const fulfilledMicrotask = () => {
+        queueMicrotask(() => {
+          try {
+            const x = realOnFulfilled(this.value);
+            resolvePromise(promise2, x, resolve, reject);
+          } catch (error) {
+            reject(error);
+          }
         });
+      };
 
-        return promise2;
-    }
+      const rejectedMicrotask = () => {
+        queueMicrotask(() => {
+          try {
+            const x = realOnRejected(this.reason);
+            resolvePromise(promise2, x, resolve, reject);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      };
 
-    catch(onRejected) {
-        this.then(undefined, onRejected);
-    }
+      if (this.status === this.#FULFILLED) {
+        fulfilledMicrotask();
+      }
+      if (this.status === this.#REJECTED) {
+        rejectedMicrotask();
+      }
+      if (this.status === this.#PENDING) {
+        this.onFulfilledCallbacks.push(fulfilledMicrotask);
+        this.onRejectedCallbacks.push(rejectedMicrotask);
+      }
+    });
 
-    finally(fn) {
-        return this.then((value) => MyPromise.resolve(fn()).then(() => value), (error) => MyPromise.resolve(fn()).then(() => {
-            throw error;
-        }));
-    }
+    return promise2;
+  }
+
+  catch(onRejected) {
+    this.then(undefined, onRejected);
+  }
+
+  finally(fn) {
+    return this.then(
+      (value) => MyPromise.resolve(fn()).then(() => value),
+      (error) =>
+        MyPromise.resolve(fn()).then(() => {
+          throw error;
+        })
+    );
+  }
 }
 
 const resolvePromise = (prePromise, x, resolve, reject) => {
-    if (prePromise === x) {
-        return reject(
-            new TypeError('Chaining cycle detected for promise #<Promise>'),
-        );
+  if (prePromise === x) {
+    return reject(
+      new TypeError("Chaining cycle detected for promise #<Promise>")
+    );
+  }
+  if (typeof x === "function" || typeof x === "object") {
+    if (x === null) {
+      return resolve(x);
     }
-    if (typeof x === 'function' || typeof x === 'object') {
-        if (x === null) {
-            return resolve(x);
-        }
-        let then;
-        try {
-            then = x.then;
-        } catch (error) {
-            return reject(error);
-        }
+    let then;
+    try {
+      then = x.then;
+    } catch (error) {
+      return reject(error);
+    }
 
-        if (typeof then === 'function') {
-            let called = false;
-            try {
-                then.call(
-                    x,
-                    (y) => {
-                        if (called) return;
-                        called = true;
-                        resolvePromise(prePromise, y, resolve, reject);
-                    },
-                    (r) => {
-                        if (called) return;
-                        called = true;
-                        reject(r);
-                    },
-                );
-            } catch (error) {
-                if (called) return;
-                reject(error);
-            }
-        } else {
-            return resolve(x);
-        }
+    if (typeof then === "function") {
+      let called = false;
+      try {
+        then.call(
+          x,
+          (y) => {
+            if (called) return;
+            called = true;
+            resolvePromise(prePromise, y, resolve, reject);
+          },
+          (r) => {
+            if (called) return;
+            called = true;
+            reject(r);
+          }
+        );
+      } catch (error) {
+        if (called) return;
+        reject(error);
+      }
     } else {
-        return resolve(x);
+      return resolve(x);
     }
-    // if (x instanceof MyPromise) {
-    //     x.then(resolve, reject)
-    // } else {
-    //     resolve(x)
-    // }
+  } else {
+    return resolve(x);
+  }
+  // if (x instanceof MyPromise) {
+  //     x.then(resolve, reject)
+  // } else {
+  //     resolve(x)
+  // }
 };
 
 MyPromise.deferred = function () {
-    const result = {};
-    result.promise = new MyPromise((resolve, reject) => {
-        result.resolve = resolve;
-        result.reject = reject;
-    });
-    return result;
+  const result = {};
+  result.promise = new MyPromise((resolve, reject) => {
+    result.resolve = resolve;
+    result.reject = reject;
+  });
+  return result;
 };
 module.exports = MyPromise;

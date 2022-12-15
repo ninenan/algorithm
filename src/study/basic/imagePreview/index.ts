@@ -1,5 +1,5 @@
 let originalEl: HTMLElement | null = null; // 来源的 dom
-let cloneEl: Node | null = null; // 克隆的 dom
+let cloneEl: HTMLElement | null = null; // 克隆的 dom
 
 document.getElementById("list")?.addEventListener("click", (e: Event) => {
   e.preventDefault();
@@ -33,7 +33,19 @@ const openPreveiw = () => {
 
   maskEl.addEventListener("click", maskClickFn);
   // 蒙层中添加图片
-  if (cloneEl) {
+  if (cloneEl && originalEl) {
+    const { top, left } = originalEl?.getBoundingClientRect();
+
+    console.log(top);
+    console.log(top);
+    changeStyle(cloneEl, [`left: ${left}px`, `top: ${top}px`]);
     maskEl.appendChild(cloneEl);
   }
+};
+
+const changeStyle = (el: HTMLElement, arr: string[]) => {
+  const originalStyle = el.style.cssText.split(";"); // 获取设置的 css 样式
+  originalStyle.pop(); // 空字符串
+
+  el.style.cssText = originalStyle.concat(arr).join(";") + ";";
 };

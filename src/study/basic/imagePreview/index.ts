@@ -35,10 +35,12 @@ const openPreveiw = () => {
     changeStyle(cloneEl, [`left: ${left}px`, `top: ${top}px`]);
     maskEl.appendChild(cloneEl);
 
+    // 来源图片中心点
     const originalCenterPoint = {
       x: offsetWidth / 2 + left,
       y: offsetHeight / 2 + top,
     };
+    // 可视区域中心点
     const winCenterPoint = {
       x: winWidth / 2,
       y: winHeight / 2,
@@ -46,6 +48,8 @@ const openPreveiw = () => {
     const offsetDistance = {
       left: winCenterPoint.x - originalCenterPoint.x + left,
       top: winCenterPoint.y - originalCenterPoint.y + top,
+      // left: winCenterPoint.x - originalCenterPoint.x,
+      // top: winCenterPoint.y - originalCenterPoint.y,
     };
     const diffs = {
       left: ((adaptScale() - 1) * offsetWidth) / 2,
@@ -112,6 +116,7 @@ const adaptScale = () => {
  * @param {Event} e - event
  */
 const maskClickFn = (e: Event) => {
+  console.log(e.target);
   if (originalEl && cloneEl) {
     const { top, left, right } = originalEl?.getBoundingClientRect();
 
@@ -124,9 +129,10 @@ const maskClickFn = (e: Event) => {
     ]);
 
     setTimeout(() => {
-      document.body.removeChild(e.target as HTMLElement);
+      const maskEl = document.getElementsByClassName("modal")[0];
+      document.body.removeChild(maskEl);
       (originalEl as HTMLElement).style.visibility = "initial";
-      (e.target as HTMLElement).removeEventListener("click", maskClickFn);
+      maskEl.removeEventListener("click", maskClickFn, false);
     }, 300);
   }
 };

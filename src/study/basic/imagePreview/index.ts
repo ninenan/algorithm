@@ -1,5 +1,10 @@
 let originalEl: HTMLElement | null = null; // 来源的 dom
 let cloneEl: HTMLElement | null = null; // 克隆的 dom
+const { innerWidth: winWidth, innerHeight: winHeight } = window; // 获取可视窗口的宽高
+let offset = {
+  left: 0,
+  top: 0,
+};
 
 document.getElementById("list")?.addEventListener("click", (e: Event) => {
   e.preventDefault();
@@ -20,26 +25,57 @@ const openPreveiw = () => {
   maskEl.classList.add("modal");
 
   document.body.appendChild(maskEl);
-
-  const maskClickFn = () => {
-    document.body.removeChild(maskEl);
-
-    if (originalEl) {
-      originalEl.style.visibility = "initial";
-    }
-
-    maskEl.removeEventListener("click", maskClickFn);
-  };
-
   maskEl.addEventListener("click", maskClickFn);
   // 蒙层中添加图片
   if (cloneEl && originalEl) {
+    // 获取原始图片的距离可是窗口的 top 和 left 值
     const { top, left } = originalEl?.getBoundingClientRect();
+    const { offsetWidth, offsetHeight } = originalEl;
 
-    console.log(top);
-    console.log(top);
     changeStyle(cloneEl, [`left: ${left}px`, `top: ${top}px`]);
     maskEl.appendChild(cloneEl);
+
+    const originalCenterPoint = {
+      x: offsetWidth / 2 + left,
+      y: offsetHeight / 2 + top,
+    };
+    const winCenterPoint = {
+      x: winWidth / 2,
+      y: winHeight / 2,
+    };
+    const offsetDistance = {
+      left: winCenterPoint.x - originalCenterPoint.x + left,
+      top: winCenterPoint.y - originalCenterPoint.y + top,
+    };
+    const diffs = {
+      left: ((adaptScale() - 1) * offsetWidth) / 2,
+      top: ((adaptScale() - 1) * offsetHeight) / 2,
+    };
+
+    changeStyle(cloneEl, [
+      "transition: all .3s",
+      `width: ${offsetWidth * adaptScale()}px`,
+      `transform: translate(${offsetDistance.left - left - diffs.left}px, ${
+        offsetDistance.top - top - diffs.top
+      }px)`,
+    ]);
+
+    setTimeout(() => {
+      if (cloneEl) {
+        changeStyle(cloneEl, [
+          "transition: all 0s",
+          `left: 0`,
+          `top: 0`,
+          `transform: translate(${offsetDistance.left - diffs.left}px, ${
+            offsetDistance.top - diffs.top
+          }px)`,
+        ]);
+        offset = {
+          left: offsetDistance.left - diffs.left,
+          top: offsetDistance.top - diffs.top,
+        }; // 记录值
+      }
+    }, 300);
   }
 };
 
@@ -48,4 +84,49 @@ const changeStyle = (el: HTMLElement, arr: string[]) => {
   originalStyle.pop(); // 空字符串
 
   el.style.cssText = originalStyle.concat(arr).join(";") + ";";
+};
+
+/**
+ * 计算图片的放大比例
+ *
+ * @returns {number} 放大比例
+ */
+const adaptScale = () => {
+  let scale = 1;
+  // 获取文档中图片的宽高
+  if (originalEl) {
+    const { offsetWidth: w, offsetHeight: h } = originalEl;
+
+    scale = winWidth / w;
+    if (h * scale > winHeight - 80) {
+      scale = (winHeight - 80) / h;
+    }
+  }
+
+  return scale;
+};
+
+/**
+ * 蒙层监听事件
+ *
+ * @param {Event} e - event
+ */
+const maskClickFn = (e: Event) => {
+  if (originalEl && cloneEl) {
+    const { top, left, right } = originalEl?.getBoundingClientRect();
+
+    changeStyle(cloneEl, [
+      "transition: all .3s",
+      `left: ${left}px`,
+      `top: ${top}px`,
+      `transform: translate(0, 0)`,
+      `width: ${right - left}px`,
+    ]);
+
+    setTimeout(() => {
+      document.body.removeChild(e.target as HTMLElement);
+      (originalEl as HTMLElement).style.visibility = "initial";
+      (e.target as HTMLElement).removeEventListener("click", maskClickFn);
+    }, 300);
+  }
 };

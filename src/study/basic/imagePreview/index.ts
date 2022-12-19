@@ -26,7 +26,7 @@ const openPreveiw = () => {
 
   document.body.appendChild(maskEl);
   maskEl.addEventListener("click", maskClickFn);
-  // 蒙层中添加图片
+  // 遮罩中添加图片
   if (cloneEl && originalEl) {
     // 获取原始图片的距离可是窗口的 top 和 left 值
     const { top, left } = originalEl?.getBoundingClientRect();
@@ -48,8 +48,6 @@ const openPreveiw = () => {
     const offsetDistance = {
       left: winCenterPoint.x - originalCenterPoint.x + left,
       top: winCenterPoint.y - originalCenterPoint.y + top,
-      // left: winCenterPoint.x - originalCenterPoint.x,
-      // top: winCenterPoint.y - originalCenterPoint.y,
     };
     const diffs = {
       left: ((adaptScale() - 1) * offsetWidth) / 2,
@@ -97,10 +95,11 @@ const changeStyle = (el: HTMLElement, arr: string[]) => {
  */
 const adaptScale = () => {
   let scale = 1;
-  // 获取文档中图片的宽高
   if (originalEl) {
+    // 获取文档中图片的宽高
     const { offsetWidth: w, offsetHeight: h } = originalEl;
 
+    // 计算缩放比例
     scale = winWidth / w;
     if (h * scale > winHeight - 80) {
       scale = (winHeight - 80) / h;
@@ -111,12 +110,11 @@ const adaptScale = () => {
 };
 
 /**
- * 蒙层监听事件
+ * 遮罩监听事件
  *
  * @param {Event} e - event
  */
-const maskClickFn = (e: Event) => {
-  console.log(e.target);
+const maskClickFn = () => {
   if (originalEl && cloneEl) {
     const { top, left, right } = originalEl?.getBoundingClientRect();
 
@@ -136,3 +134,5 @@ const maskClickFn = (e: Event) => {
     }, 300);
   }
 };
+
+export {};

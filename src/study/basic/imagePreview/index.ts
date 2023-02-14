@@ -1,10 +1,16 @@
 let originalEl: HTMLElement | null = null; // 来源的 dom
 let cloneEl: HTMLElement | null = null; // 克隆的 dom
-const { innerWidth: winWidth, innerHeight: winHeight } = window; // 获取可视窗口的宽高
 let offset = {
   left: 0,
   top: 0,
 };
+let isMove = false; // 是否移动中
+let startPonit = {
+  x: 0,
+  y: 0,
+}; // 初始触摸节点
+let isTouching = false; // 标记是否正在移动
+const { innerWidth: winWidth, innerHeight: winHeight } = window; // 获取可视窗口的宽高
 
 document.getElementById("list")?.addEventListener("click", (e: Event) => {
   e.preventDefault();
@@ -17,6 +23,52 @@ document.getElementById("list")?.addEventListener("click", (e: Event) => {
     originalEl.style.visibility = "hidden";
     openPreveiw();
   }
+});
+
+/**
+ * 鼠标/手机按下
+ *
+ * @param {Event} e - Event
+ */
+window.addEventListener("pointerdown", (e) => {
+  const { clientX, clientY } = e;
+  e.preventDefault();
+  isTouching = true;
+  startPonit = {
+    x: clientX,
+    y: clientY,
+  };
+});
+
+/**
+ * 鼠标/手指移动
+ *
+ * @param {Event} e - Event
+ */
+window.addEventListener("pointermove", (e) => {
+  if (isTouching) {
+    isMove = true;
+    offset = {
+      left: offset.left + (e.clientX - startPonit.x),
+      top: offset.top + (e.clientY - startPonit.y),
+    };
+    if (cloneEl) {
+      changeStyle(cloneEl, [
+        `transform: translate(${offset.left}px, ${offset.top}px)`,
+      ]);
+      startPonit = {
+        x: e.clientX,
+        y: e.clientY,
+      };
+    }
+  }
+});
+
+window.addEventListener("pointerup", () => {
+  isTouching = false;
+  setTimeout(() => {
+    isMove = false;
+  }, 300);
 });
 
 // 显示预览
@@ -115,6 +167,10 @@ const adaptScale = () => {
  * @param {Event} e - event
  */
 const maskClickFn = () => {
+  if (isMove) {
+    isMove = false;
+    return;
+  }
   if (originalEl && cloneEl) {
     const { top, left, right } = originalEl?.getBoundingClientRect();
 
@@ -134,5 +190,3 @@ const maskClickFn = () => {
     }, 300);
   }
 };
-
-export {};

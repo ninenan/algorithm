@@ -48,8 +48,6 @@ const openPreveiw = () => {
     const offsetDistance = {
       left: winCenterPoint.x - originalCenterPoint.x + left,
       top: winCenterPoint.y - originalCenterPoint.y + top,
-      // left: winCenterPoint.x - originalCenterPoint.x,
-      // top: winCenterPoint.y - originalCenterPoint.y,
     };
     const diffs = {
       left: ((adaptScale() - 1) * offsetWidth) / 2,

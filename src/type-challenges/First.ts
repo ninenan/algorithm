@@ -6,7 +6,7 @@ type First<T extends any[]> = T extends [] ? never : T[0];
 
 // infer R 表示数组的第一个元素
 // infer L 表示数组剩余的元素
-type First1<T extends any[]> = T extends [infer R, ...infer L] ? R : never;
+type First1<T extends any[]> = T extends [infer R, ...unknown[]] ? R : never;
 
 // 3
 type result1 = First<[3, 2, 1]>;
@@ -16,4 +16,4 @@ type result3 = First1<[3, 2, 1]>;
 type result2 = First<[]>;
 type result4 = First1<[]>;
 
-export {}
+export {};

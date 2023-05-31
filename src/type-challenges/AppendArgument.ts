@@ -7,12 +7,12 @@ type AppendArgument<T extends (...args: any[]) => any, U> = T extends (
   ? (...args: [...R, U]) => S
   : never;
 
-type T1 = AppendArgument<(a: number) => number, number>
+type T1 = AppendArgument<(a: number) => number, number>;
 
-const fn:T1 = (a, b) => {
-  return a + b
-}
+const fn: T1 = (a, b) => {
+  return a + b;
+};
 
-fn(2, 3)
+fn(2, 3);
 
-export {}
+export {};

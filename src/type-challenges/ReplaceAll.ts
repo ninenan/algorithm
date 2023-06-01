@@ -11,9 +11,19 @@ type ReplaceAll<
     : `${ReplaceAll<L, T, U>}${U}${ReplaceAll<R, T, U>}`
   : S;
 
+type MyReplaceAll<
+  S extends string,
+  F extends string,
+  T extends string
+> = S extends `${infer L}${F}${infer R}`
+  ? `${L}${T}${MyReplaceAll<R, F, T>}`
+  : S;
+
 // worldworldworld
-type T1 = ReplaceAll<'hellohellohello', 'hello', 'world'>
+type T1 = ReplaceAll<"hellohellohello", "hello", "world">;
+type T2 = MyReplaceAll<"helloVueReact", "Vue", "Node">;
 
-const str:T1 = 'worldworldworld';
+const str1: T1 = "worldworldworld";
+const str2: T2 = "helloNodeReact";
 
-export {}
+export {};

@@ -19,11 +19,12 @@ type MyReplaceAll<
   ? `${L}${T}${MyReplaceAll<R, F, T>}`
   : S;
 
-// worldworldworld
-type T1 = ReplaceAll<"hellohellohello", "hello", "world">;
+// worldWorld
+type T1 = ReplaceAll<"helloWorld", "hello", "world">;
+// helloNodeReact
 type T2 = MyReplaceAll<"helloVueReact", "Vue", "Node">;
 
-const str1: T1 = "worldworldworld";
+const str1: T1 = "worldWorld";
 const str2: T2 = "helloNodeReact";
 
 export {};

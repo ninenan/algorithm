@@ -10,28 +10,33 @@ type IsUnion<T, F = T> = (
   ? false
   : true;
 
-type IsUnion2<T, U = T> = T extends T ? [Exclude<U, T>] extends [never] ? true : false : never
+type IsUnion2<A, B = A> = A extends A
+  ? [B] extends [A]
+    ? false
+    : true
+  : never;
 
 // true
-type Tc1 = [never] extends [never] ? true : false
-// true
-type Tc2 = [Exclude<string | number, string | number>] extends [never] ? false : true
+type Tc1 = [never] extends [never] ? true : false;
+// false
+type Tc2 = [Exclude<string | number, string | number>] extends [never]
+  ? false
+  : true;
 // true
 type Tc3 = string | number extends string | number ? true : false;
 
 // T1 = false
-type T1 = IsUnion<string> 
+type T1 = IsUnion<string>;
 // T2 = true
-type T2 = IsUnion<string|number>
+type T2 = IsUnion<string | number>;
 // T3 = false
-type T3 = IsUnion<[string|number]>
+type T3 = IsUnion<[string | number]>;
 
-
-// T1 = false
-type T11 = IsUnion2<string> 
-// T2 = true
-type T22 = IsUnion2<string|number>
-// T3 = false
-type T33 = IsUnion2<[string|number]>
+// T11 = false
+type T11 = IsUnion2<string>;
+// T22 = true
+type T22 = IsUnion2<string | number>;
+// T33 = false
+type T33 = IsUnion2<[string | number]>;
 
 export {};

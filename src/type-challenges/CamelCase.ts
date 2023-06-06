@@ -8,6 +8,8 @@ type CamelCase<T extends string> = T extends `${infer S1}-${infer S2}`
   : T;
 
 // T1 = helloWorldWolf
-type T1 = CamelCase<'hello-world-wolf'>;
+type T1 = CamelCase<"hello-world-wolf">;
+// helloWorld
+type T2 = CamelCase<"hello-world">;
 
 export {};

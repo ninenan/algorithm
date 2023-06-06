@@ -4,6 +4,7 @@
 type StringToUnion<S extends string> = S extends `${infer R}${infer U}`
   ? R | StringToUnion<U>
   : never;
+
 type Combination<S extends string, U extends string = "", K = S> = [S] extends [
   never
 ]

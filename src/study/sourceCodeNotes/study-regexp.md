@@ -1,6 +1,6 @@
 # 学习正则的笔记
 
-> [文章来自《JS 正则迷你书》](https://github.com/qdlaoyao/js-regex-mini-book) > [文章来自《JS 正则迷你书》](https://github.com/qdlaoyao/js-regex-mini-book) > [文章来自《JS 正则迷你书》](https://github.com/qdlaoyao/js-regex-mini-book)
+> [文章来自《JS 正则迷你书》](https://github.com/qdlaoyao/js-regex-mini-book)
 
 ```javascript
 const RE = /ab{2,5}c/g; // 表示匹配 第一个字符是 a，2-5 的 b 最后一个字符是 c
@@ -801,7 +801,7 @@ console.log(RE.test(".2"));
 index.html
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />

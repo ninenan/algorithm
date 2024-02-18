@@ -456,7 +456,7 @@ interface IOptions {
 const throttle4 = function (
   fn: Function,
   delay: number,
-  options: IOptions = { leading: true }
+  options: IOptions = { leading: true },
 ) {
   let timeout: null | ReturnType<typeof setTimeout> = null,
     context: any = null,
@@ -1207,7 +1207,12 @@ const compose =
     fns.reduceRight((prev, cur) => cur(prev), initValue);
 
 console.log(
-  compose([[1, 2, 2], [3, 4, 5, 5], [6, 7, 8, 9, [11, 12, [12, 13, [14]]]], 10])
+  compose([
+    [1, 2, 2],
+    [3, 4, 5, 5],
+    [6, 7, 8, 9, [11, 12, [12, 13, [14]]]],
+    10,
+  ]),
 ); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 ]
 ```
 
@@ -1281,7 +1286,7 @@ const sortedIndex = <T>(
   array: T[],
   param: T,
   iterate: Function,
-  context = null
+  context = null,
 ) => {
   function cb(fn: Function, context = null) {
     return function (...reset) {
@@ -1314,7 +1319,7 @@ let result = sortedIndex(
   { name: "stooge3", age: 20 },
   function (stooge) {
     return stooge.age;
-  }
+  },
 );
 
 console.log(result); // 1
@@ -1366,7 +1371,7 @@ console.log(myLastIndexOf([5, 2, 3, 4, 5], 5)); // 4
 const createIndexOf = (
   dir: 1 | -1,
   predicate: Function,
-  sortedIndex?: Function
+  sortedIndex?: Function,
 ) => {
   return function (array: unknown[], item: unknown, idx?: number) {
     let length = array.length;
@@ -1526,7 +1531,7 @@ const eq = (a: unknown, b: unknown, aStack = [], bStack = []): boolean => {
 
 console.log(eq([1], [1])); // true
 console.log(
-  eq({ value: 1, name: [1, 2, 3, 44] }, { value: 1, name: [1, 2, 3, 44] })
+  eq({ value: 1, name: [1, 2, 3, 44] }, { value: 1, name: [1, 2, 3, 44] }),
 ); // true
 
 let a = { foo: { b: { foo: { c: { foo: null } } } } };
@@ -1747,6 +1752,8 @@ function addEvent(type, el, fn) {
 
 ### underscore 中的 compose 函数
 
+**实际上是倒序的`pipe`**
+
 ```javascript
 const compose = (...reset) => {
   const args = reset;
@@ -1777,9 +1784,23 @@ function compose(...funcs) {
   return funcs.reduce(
     (a, b) =>
       (...args) =>
-        a(b(...args))
+        a(b(...args)),
   );
 }
+```
+
+### pipe
+
+```javascript
+const pipe = (...funcs: any[]) => {
+  function callback(input: any[], func: any) {
+    return func(input);
+  }
+
+  return function (param: any) {
+    return funcs.reduce(callback, param);
+  };
+};
 ```
 
 ## 乱序
@@ -2452,7 +2473,7 @@ function pAllSettled(promiseArr) {
   });
 }
 pAllSettled([sleep3, sleep2, sleep1]).then((res) =>
-  console.log("res :>> ", res)
+  console.log("res :>> ", res),
 );
 
 // [ { status: 'fulfilled', value: 'sleep1' },
@@ -2541,12 +2562,12 @@ Object.create2 = function (proto, propertiesObject = undefined) {
   }
   if (proto === null) {
     throw new Error(
-      "This browser's implementation of Object.create is a shim and doesn't support 'null' as the first argument."
+      "This browser's implementation of Object.create is a shim and doesn't support 'null' as the first argument.",
     );
   }
   if (typeof propertiesObject !== "undefined") {
     throw new Error(
-      "This browser's implementation of Object.create is a shim and doesn't support a second argument."
+      "This browser's implementation of Object.create is a shim and doesn't support a second argument.",
     );
   }
 
@@ -2657,7 +2678,7 @@ class Scheduler {
   }
 }
 
-const timeout = time => new Promise(resolve => setTimeout(resolve, time))
+const timeout = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 const scheduler = new Scheduler();
 
@@ -2818,30 +2839,32 @@ const to = <T, U = Error>(promise: Promise<T>, errorExt?: object) => {
 
 > [源码地址](https://github.com/koajs/compose/blob/master/index.js)
 
-
 ```typescript
 const compose = (middleware: Function[]) => {
-  if (!Array.isArray(middleware)) throw new TypeError('Middleware stack must be an array!')
+  if (!Array.isArray(middleware))
+    throw new TypeError("Middleware stack must be an array!");
   for (const fn of middleware) {
-    if (typeof fn !== 'function') throw new TypeError('Middleware must be composed of functions!');
+    if (typeof fn !== "function")
+      throw new TypeError("Middleware must be composed of functions!");
   }
 
-  return function(context: unknown, next: Function) {
+  return function (context: unknown, next: Function) {
     let index = -1;
     return dispatch(0);
 
     function dispatch(i: number): Promise<unknown> {
-      if (i <= index) return Promise.reject(new Error('next() called multiple times'))
+      if (i <= index)
+        return Promise.reject(new Error("next() called multiple times"));
       index = i;
       let fn = middleware[i];
-      if (i === middleware.length) fn = next
-      if (!fn) return Promise.resolve()
+      if (i === middleware.length) fn = next;
+      if (!fn) return Promise.resolve();
       try {
         return Promise.resolve(fn(context, dispatch.bind(null, i + 1)));
       } catch (error) {
         return Promise.reject(error);
       }
     }
-  }
-}
+  };
+};
 ```

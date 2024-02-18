@@ -1,1 +1,1 @@
-export const getStr = () => 'common Module';
+export const getStr = () => "common Module";

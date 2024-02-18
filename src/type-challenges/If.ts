@@ -17,5 +17,7 @@ type Res = { name: string } & { age: number; name: number }; // 这里的 name �
 const res: Res = {
   number: 18,
 };
+
 console.log(res);
+
 export {};

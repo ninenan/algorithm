@@ -18,6 +18,7 @@ export const compose = (...funcs: any[]) => {
   };
 };
 
+// test demo
 export const compose1 =
   (...funcs: Function[]) =>
   (initialVal: any) =>

@@ -26,7 +26,7 @@ export const produce = (base: any, recipe: any) => {
   return Object.freeze(copy || base);
 };
 
-// 测试验证代码
+// test demo
 const baseObj = {
   a: 1,
   b: {

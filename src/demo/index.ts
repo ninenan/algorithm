@@ -112,28 +112,34 @@ const imgs = document.getElementById("root")?.getElementsByTagName("img");
 
 console.log(imgs);
 
-
-
 export class TimeDown {
   sysTime: number;
   targetTime: number;
   setTimeFun: (...args: unknown[]) => void;
+  timer: any;
+
   /**
    * 倒计时构造函数
    * @param {系统时间} sysTime
    * @param {目标时间} targetTime
    */
-  constructor(sysTime, targetTime, setTimeFun: (...args: unknown[]) => void) {
+  constructor(
+    sysTime: number,
+    targetTime: number,
+    setTimeFun: (...args: unknown[]) => void,
+  ) {
     // 系统时间
     this.sysTime = sysTime;
     this.targetTime = targetTime;
     this.setTimeFun = setTimeFun;
-    console.log('setTimeFun', setTimeFun(), this);
+    console.log("setTimeFun", setTimeFun(), this);
   }
 
   startTimeDown = () => {
     // 相差的总秒数
-    const totalSeconds = parseInt((this.targetTime - this.sysTime) / 1000);
+    const totalSeconds: number = parseInt(
+      (this.targetTime - this.sysTime) / 1000 + "",
+    );
 
     totalSeconds === 0 && this.clearTimeDown(); // 倒计时结束  清空倒计时
 

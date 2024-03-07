@@ -15,7 +15,7 @@ type Data<T = unknown> = T & {
 type Res = { name: string } & { age: number; name: number }; // 这里的 name 属性将会返回 never
 
 const res: Res = {
-  number: 18,
+  age: 18,
 };
 
 console.log(res);

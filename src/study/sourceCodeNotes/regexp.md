@@ -566,16 +566,16 @@ console.log(
 
 ## 案例
 
-### 1. 匹配十六进制颜色
+### 匹配十六进制颜色
 
 ```javascript
 const RE = /#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})/g;
 const str = "#ffbbad,#ddd,#fff,#FFF,#Fc01DF";
 
-console.log(str.match(RE)); // [ '#ffbbad', '#ddd', '#fff', '#FFF', '#Fc01DF' ]
+coneole.log(str.match(RE)); // [ '#ffbbad', '#ddd', '#fff', '#FFF', '#Fc01DF' ]
 ```
 
-### 2. 匹配 24 小时时间
+### 匹配 24 小时时间
 
 ```javascript
 // 23:59
@@ -588,7 +588,7 @@ const str1 = "23:59, 00:00, 01:01";
 console.log(str1.match(RE)); // [ '23:59', '00:00', '01:01' ]
 ```
 
-### 3. 匹配 24 小时时间
+### 匹配 24 小时时间
 
 ```javascript
 const RE = /((0?[0-9]|1[0-9]|2[0-3]):([1-5][0-9]|0?[0-9]))/g;
@@ -597,7 +597,7 @@ const str = "7:9";
 console.log(RE.test(str)); // true
 ```
 
-### 4. 匹配日期
+### 匹配日期
 
 格式 yyyy-mm-dd
 
@@ -618,7 +618,26 @@ console.log(RE.test(str4)); // true
 console.log(str5.match(RE1)); // [ '2020-01-01', '2020-10-31', '2020-09-01', '2020-12-31' ]
 ```
 
-### 5.window 操作系统文件路径
+### 匹配不同日期
+
+```javascript
+const RE = /^[0-9]{4}(-|\.|\/)(0[1-9]|1[0-2])\1(0[1-9]|[12][0-9]|3[01])$/;
+const RE1 = /[0-9]{4}(-|\.|\/)(0[1-9]|1[0-2])\1(0[1-9]|[12][0-9]|3[01])/g;
+
+const str1 = "2020-12-31";
+const str2 = "2020/09/01";
+const str3 = "2020.10.31";
+const str4 = "2020-01.01";
+const str5 = "2020-01-01, 2020-10/31, 2020.09.01, 2020-12.31";
+
+console.log(RE.test(str1)); // true
+console.log(RE.test(str2)); // true
+console.log(RE.test(str3)); // true
+console.log(RE.test(str4)); // false
+console.log(str5.match(RE1)); // [ '2020-01-01', '2020.09.0131' ]
+```
+
+### window 操作系统文件路径
 
 ```javascript
 // F:\study\javascript\regex\regular expression.pdf
@@ -642,7 +661,7 @@ console.log(RE.test(str3)); // true
 console.log(RE.test(str4)); // true
 ```
 
-### 6. 匹配手机号
+### 匹配手机号
 
 ```javascript
 const RE = /^1[34578]\d{9}$/g;
@@ -658,7 +677,7 @@ const str = "15111655112, 15111111111111111";
 console.log(str.match(RE)); // [ '15111655112' ]
 ```
 
-### 7. 匹配标签中的 id
+### 匹配标签中的 id
 
 ```javascript
 const RE = /id=".*?"/;
@@ -669,51 +688,54 @@ console.log(str.match(RE)[0]); // ['id="container"']
 console.log(str.match(RE1)[0]); // ['id="container"']
 ```
 
-### 8. 不匹配任何东西
+### 不匹配任何东西
 
 ```javascript
 const RE = /.^/; // 匹配一个字符，但是该字符后面是开头
 ```
 
-### 9. 数字千位分隔符
+### 数字千位分隔符
 
 #### 正整数
 
 ```javascript
-const RE = /(?!^)(?=(\d{3})+$)/g;
+const RE1 = /(?=\d{3}$)/g;
+const RE2 = /(?=(\d{3})+$)/g;
+const RE3 = /(?!^)(?=(\d{3})+$)/g;
 const str = "123123123123";
 
-console.log(str.replace(RE, ",")); // 123,123,123,123
+console.log(str.replace(RE1, ",")); // 123123123,123
+console.log(str.replace(RE2, ",")); // ,123,123,123,123
+console.log(str.replace(RE3, ",")); // 123,123,123,123
 ```
 
 #### 负数和小数
 
 ```javascript
+const str = "-123123123.123123";
 const RE = /(?!^)(?=(\d{3})+$)/g;
 const RE1 = /(?!\b)(?=(\d{3})+\b)/g;
 const RE2 = /\B(?=(\d{3})+\b)/g;
-const str = "-123123123";
 
-console.log(str.replace(/\d+/, (s) => s.replace(RE, ","))); // -123,123,123
-console.log(str.replace(RE1, ",")); // -123,123,123
-console.log(str.replace(RE2, ",")); // -123,123,123
+console.log(str.replace(/\d+/, (s) => s.replace(RE, ","))); // -123,123,123.123123
+console.log(str.replace(RE1, ",")); // -123,123,123.123,123
+console.log(str.replace(RE2, ",")); // -123,123,123.123,123
 ```
 
-### 10. 货币格式化
+### 货币格式化
 
 ```javascript
-const num = 188;
 const format = (num: number) =>
   num
     .toFixed(2)
     .replace(/\B(?=(\d{3})+\b)/g, ",")
     .replace(/^/, "$$ ");
 
-console.log(format(188)); // $ 188.00
+console.log(format(1888)); // $ 1,888.00
 console.log(format(-123123.123123)); // $ -123,123.12
 ```
 
-### 11. 验证密码问题
+### 验证密码问题
 
 密码长度 6-12 位，由数字、小写字符和大写字母组成，但必须至少包括 2 种字符。
 
@@ -748,7 +770,7 @@ console.log(RE5.test("ABCDEF234")); // true 大写字母和数字
 console.log(RE5.test("abcdEF234")); // true 三者都有
 ```
 
-### 12. 实现 trim
+### 实现 trim
 
 去掉开头和结尾的空格
 
@@ -766,7 +788,7 @@ console.log(str.replace(RE, "$1")); // 123123
 console.log(str.replace(RE, "$1").length); // 6
 ```
 
-### 13. 将每个字符的首字母都大写
+### 将每个字符的首字母都大写
 
 ```javascript
 const RE = /(?:^|\s)\w/g;
@@ -782,26 +804,30 @@ console.log(res); // Regular Is Terrible
 console.log(res1); // Regular Is Terrible
 ```
 
-### 14. 驼峰化
+### 驼峰化
 
 ```javascript
 const RE = /[-_\s]+(.)?/g;
-const RE1 = /-(\w)/g;
-const str = "on-click";
+const RE1 = /-+(\w)/g;
+const str = "--on-click";
 
 const res = str.replace(RE, (_, s) => {
+  console.log(_); // --0, -c
+  console.log(s); // o, c
   return s && s.toLocaleUpperCase();
 });
 
 const res1 = str.replace(RE1, (_, s) => {
+  console.log(_); // --o, -c
+  console.log(s); // -c, c
   return s && s.toLocaleUpperCase();
 });
 
-console.log("res :>> ", res); // onClick
-console.log("res1 :>> ", res1); // onClick
+console.log("res :>> ", res); // OnClick
+console.log("res1 :>> ", res1); // OnClick
 ```
 
-### 15. 连字符
+### 连字符
 
 ```javascript
 const RE = /\B([A-Z])/g;
@@ -827,7 +853,7 @@ const res = str.replace(RE, "-$1").toLocaleLowerCase();
 console.log(res); // on-click
 ```
 
-### 16. 匹配成对的标签
+### 匹配成对的标签
 
 ```javascript
 const RE = /<([^>]+)>[\d\D]*<\/\1>/;

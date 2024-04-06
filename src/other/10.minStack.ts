@@ -32,8 +32,9 @@ class MinStack {
   }
   push(x: number) {
     this.stack.push(x);
+
     if (this.minStack.length) {
-      this.minStack.push(Math.min(this.minStack.length - 1, x));
+      this.minStack.push(Math.min(this.minStack[this.minStack.length - 1], x));
     } else {
       this.minStack.push(x);
     }
@@ -49,3 +50,5 @@ class MinStack {
     return this.minStack[this.minStack.length - 1];
   }
 }
+
+export {};

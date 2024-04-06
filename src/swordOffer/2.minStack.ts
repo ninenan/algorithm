@@ -10,6 +10,7 @@ class MinStack {
   push(val: number): void {
     this.stack.push(val);
     const len = this.minStack.length;
+
     if (len) {
       this.minStack.push(Math.min(this.minStack[len - 1], val));
     } else {

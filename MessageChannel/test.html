@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Channel messaging demo</title>
+    <style>
+      iframe {
+        border-radius: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Channel messaging demo</h1>
+    <p class="output">Index.html para (I will be overwritten)</p>
+    <iframe src="page2.html" width="480" height="320"></iframe>
+    <script>
+      const channel = new MessageChannel();
+      const output = document.querySelector(".output");
+      const iframe = document.querySelector("iframe");
+
+      // Wait for the iframe to load
+      iframe.addEventListener("load", onLoad);
+
+      function onLoad() {
+        // Listen for messages on port1
+        channel.port1.onmessage = onMessage;
+        // Transfer port2 to the iframe
+        iframe.contentWindow.postMessage(
+          "A message from the index.html page!",
+          "*",
+          [channel.port2],
+        );
+      }
+
+      // Handle messages received on port1
+      function onMessage(e) {
+        output.innerText = e.data;
+        console.log(3333);
+      }
+    </script>
+  </body>
+</html>

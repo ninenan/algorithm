@@ -10,7 +10,7 @@
 
 const merge = (intervals: number[][]): number[][] => {
   if (!intervals.length) {
-    return []
+    return [];
   }
 
   const res: number[][] = [];
@@ -26,11 +26,13 @@ const merge = (intervals: number[][]): number[][] => {
     const prev = res[res.length - 1];
 
     if (prev[1] >= intervals[index][0]) {
-      prev[1] = Math.max(prev[1], intervals[index][1])
+      prev[1] = Math.max(prev[1], intervals[index][1]);
     } else {
       res.push(intervals[index]);
     }
   }
 
   return res;
-}
+};
+
+export {};

@@ -35,6 +35,7 @@ const preOrder = (root: TreeNode) => {
 
 const preorderTraversal = (root: TreeNode | null): number[] => {
   let res: number[] = [];
+
   if (!root) {
     return res;
   }
@@ -47,33 +48,35 @@ const preorderTraversal = (root: TreeNode | null): number[] => {
     dfs(root.left);
     dfs(root.right);
   };
+
   dfs(root);
 
   return res;
 };
 
-// 先序遍历（先根节点->左节点->右节点） 
+// 先序遍历（先根节点->左节点->右节点）
 // 具体代码实现（右-左-根）
 const preorderTraversal2 = (root: TreeNode | null): number[] => {
-  const res: number[] = []
+  const res: number[] = [];
 
-  if (!root) return res
+  if (!root) return res;
 
-  const stack = []
-  stack.push(root)
+  const stack = [];
+  stack.push(root);
 
   while (stack.length) {
-    const cur = stack.pop()
+    const cur = stack.pop();
     if (cur?.val) {
-      res.push(cur.val)
+      res.push(cur.val);
     }
     if (cur?.right) {
-      stack.push(cur.right)
+      stack.push(cur.right);
     }
     if (cur?.left) {
-      stack.push(cur.left)
+      stack.push(cur.left);
     }
   }
 
-  return res
-}
+  return res;
+};
+

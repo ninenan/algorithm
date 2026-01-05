@@ -15,7 +15,7 @@ const _merge = (
   numArr1: number[],
   numArr1Length: number,
   numArr2: number[],
-  numArr2Length: number
+  numArr2Length: number,
 ): number[] => {
   let totalLength = numArr1Length + numArr2Length - 1;
   let lLength = numArr1Length - 1;
@@ -39,7 +39,7 @@ const merge = (
   numArr1: number[],
   numArr1Length: number,
   numArr2: number[],
-  numArr2Length: number
+  numArr2Length: number,
 ): number[] => {
   let totalLen = numArr1Length + numArr2Length - 1;
   let lLen = numArr1Length - 1;

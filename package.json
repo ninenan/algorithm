@@ -10,7 +10,8 @@
     "watch": "webpack --watch --config webpack.dev.js",
     "dev": "webpack-dev-server --open --config webpack.dev.js",
     "build:stats": "webpack --config webpack.prod.js --json > stats.json",
-    "dll": "webpack --config webpack.dll.js"
+    "dll": "webpack --config webpack.dll.js",
+    "tsc": "tsc --watch"
   },
   "keywords": [],
   "author": "",

@@ -17,11 +17,13 @@ function myNew() {
   obj.__proto__ = Constructor.prototype;
 
   // 上面的代码可以直接用下面两行替代
+  // 最好使用这两段代码
   // let Constructor = [].shift.call(arguments);
   // let obj = Object.create(Constructor.prototype);
 
   // 绑定 this，obj 可以访问构造函数中的属性
   let res = Constructor.apply(obj, arguments);
+  // 判断函数是否返回对象，如果没有，则返回新创建的对象
   return res instanceof Object ? res : obj;
 }
 ```
@@ -54,14 +56,13 @@ function myNew() {
 ```javascript
 // demo.js
 function myNew() {
-  // 创建一个空对象
-  let obj = new Object();
-  // 获取构造函数，去除 arguments 的第一个参数
-  let Constructor = [].shift.call(arguments);
-  // 将空对象的 __proto__ 指向 构造函数的 prototype
-  obj.__proto__ = Constructor.prototype;
-  // 绑定 this，obj 可以访问构造函数中的属性
+  // 1. 获取构造函数，去除 arguments 的第一个参数
+  const Constructor = [].shift.call(arguments);
+  // 2. 创建一个空对象，并将空对象的 __proto__ 指向 构造函数的 prototype
+  const obj = Object.create(Constructor);
+  // 3. 绑定 this，obj 可以访问构造函数中的属性
   let res = Constructor.apply(obj, arguments);
+  // 4. 判断函数是否返回对象，如果没有，则返回新创建的对象
   return res instanceof Object ? res : obj;
 }
 

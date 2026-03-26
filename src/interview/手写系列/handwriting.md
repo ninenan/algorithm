@@ -224,14 +224,18 @@ Function.prototype.myBind = function (context = window) {
   let fBound = function () {
     // 这时候的 arguments 是 bind 返回的函数所传递的参数
     const bindArgs = [].slice.call(arguments);
-    // 当作为构造函数时，this 指向实例，此时结果为 true，将绑定函数的 this 指向该实例，可以让实例获得来自绑定函数的值
+    // 当作为构造函数时，this 指向实例，此时结果为 true，将绑定函数的 this 指向该实例，
+    // 可以让实例获得来自绑定函数的值
     return self.apply(
       this instanceof NOOP ? this : context,
       args.concat(bindArgs)
     );
   };
 
-  // 修改返回函数的 prototype 为绑定函数的 prototype，实例就可以继承绑定函数的原型中的值
+
+  // 原型式继承
+  // 修改返回函数的 prototype 为绑定函数的 prototype，
+  // 实例就可以继承绑定函数的原型中的值
   NOOP.prototype = this.prototype;
   fBound.prototype = new NOOP();
   return fBound;

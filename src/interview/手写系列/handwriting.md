@@ -283,7 +283,8 @@ console.log(testObj2.friend); // xxx
 
 ```javascript
 const debounce = function (fn, delay = 500) {
-  let timer: null | ReturnType<typeof setTimeout> = null;
+  // let timer: null | ReturnType<typeof setTimeout> = null;
+  let timer = null;
 
   const debounced = (...args) => {
     if (timer) {
@@ -305,7 +306,7 @@ const debounce = function (fn, delay = 500) {
 // demo
 document.getElementsByTagName("img")[0].addEventListener(
   "click",
-  debounce(() => console.log("2222"))
+  debounce(() => console.log("2222")),
 );
 ```
 

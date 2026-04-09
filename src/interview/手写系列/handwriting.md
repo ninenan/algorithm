@@ -484,51 +484,50 @@ interface IOptions {
   trailing?: boolean; // 表示禁用停止触发的回调 true-不禁用 false-禁用
 }
 
-const throttle4 = function (
+const throttle = (
   fn: Function,
-  delay: number,
-  options: IOptions = { leading: true },
-) {
-  let timeout: null | ReturnType<typeof setTimeout> = null,
-    context: any = null,
-    previous: number = 0,
-    args: any = null;
+  delay = 500,
+  { leading = true, trailing = false }: IOptions,
+) => {
+  let timer: null | ReturnType<typeof setTimeout> = null;
+  let previous = 0;
+  let isFirst = true;
 
-  const later = function () {
-    previous = options.leading === false ? 0 : +new Date();
-    timeout = null;
-    fn.apply(context, args);
-    if (!timeout) context = args = null;
-  };
-  const throttled = function () {
+  const throttled = function (...rest: any[]) {
     const now = +new Date();
-    if (!previous && options.leading === false) previous = now;
-    const remaining = delay - (now - previous);
-    context = this;
-    args = arguments;
-    // 如果没有剩余时间了或者用户修改了系统时间
-    if (remaining <= 0 || remaining > delay) {
-      if (timeout) {
-        clearTimeout(timeout);
-        timeout = null;
-      }
+
+    if (leading === false && isFirst) {
       previous = now;
-      fn.apply(context, args);
-      if (!timeout) context = args = null;
-    } else if (!timeout && options.trailing !== false) {
-      timeout = setTimeout(later, delay);
+      isFirst = false;
+    }
+
+    const remaining = delay - (now - previous);
+
+    if (remaining <= 0 || remaining > delay) {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+
+      previous = now;
+      fn.apply(this, rest);
+    } else if (!timer && trailing) {
+      timer = setTimeout(() => {
+        fn.apply(this, rest);
+        timer = null;
+        previous = leading ? +new Date() : 0;
+      }, remaining);
     }
   };
 
-  /**
-   * 取消
-   */
-  throttled.cancel = function () {
-    if (timeout) {
-      clearTimeout(timeout);
+  throttled.cancel = () => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
     }
+
     previous = 0;
-    timeout = null;
+    isFirst = true;
   };
 
   return throttled;

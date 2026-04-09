@@ -1237,12 +1237,11 @@ const compose =
     fns.reduceRight((prev, cur) => cur(prev), initValue);
 
 console.log(
-  compose([
-    [1, 2, 2],
-    [3, 4, 5, 5],
-    [6, 7, 8, 9, [11, 12, [12, 13, [14]]]],
-    10,
-  ]),
+  compose(
+    sort,
+    unique,
+    flatten,
+  )([[1, 2, 2], [3, 4, 5, 5], [6, 7, 8, 9, [11, 12, [12, 13, [14]]]], 10]),
 ); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 ]
 ```
 
@@ -1608,6 +1607,18 @@ const subCurry = function (fn, ...reset) {
     return fn.apply(this, [].concat.call(args, reset));
   };
 };
+
+// const curry = (fn: Function) => {
+//   const curried = function (...args: any[]) {
+//     if (args.length >= fn.length) {
+//       return fn.apply(this, args);
+//     } else {
+//       return (...nextArgs: any[]) => curried(...args, ...nextArgs);
+//     }
+//   };
+//
+//   return curried;
+// };
 
 const curry = (fn, length = 0) => {
   length = length || fn.length; // 初始状态下是函数参数的长度
@@ -2699,7 +2710,7 @@ class Scheduler {
       this.runCount++;
       // 执行回调函数
       promiseFn().then((result) => {
-        // 函数完毕 runCount --
+        // 函数���毕 runCount --
         this.runCount--;
         // 执行���一次函数
         this.runQueue();

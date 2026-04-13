@@ -1648,60 +1648,62 @@ console.log(fn("a")("b", "c")); // [ 'a', 'b', 'c' ]
 ### hard
 
 ```typescript
-const curry = (fn: Function, args: unknown[] = [], holes: unknown[] = []) => {
-  length = fn.length;
+const _ = Symbol();
 
-  return function () {
-    let _args = args.slice(0),
-      _holes = holes.slice(0),
-      argsLen = args.length,
-      holesLen = holes.length,
-      arg,
-      i,
-      index = 0;
+const curry = (fn: Function, arity = fn.length) => {
+  const isPlaceholder = (str: any) => str === _;
 
-    for (i = 0; i < arguments.length; i++) {
-      let arg = arguments[i];
+  // 合并参数
+  const mergeArgs = (prevArgs, nextArgs) => {
+    let result = [...prevArgs];
+    let nextArgsIdx = 0;
 
-      if (arg === "_" && holesLen) {
-        index++;
-        if (index > holesLen) {
-          _args.push(arg);
-          _holes.push(argsLen - 1 + index - holesLen);
-        }
-      } else if (arg === "_") {
-        _args.push(arg);
-        _holes.push(argsLen + i);
-      } else if (holesLen) {
-        if (index >= holesLen) {
-          _args.push(arg);
-        } else {
-          _args.splice(_holes[index] as number, 1, arg);
-          _holes.splice(index, 1);
-        }
-      } else {
-        _args.push(arg);
+    for (
+      let index = 0;
+      index < result.length && nextArgsIdx < nextArgs.length;
+      index++
+    ) {
+      if (isPlaceholder(result[index])) {
+        result[index] = nextArgs[nextArgsIdx++];
       }
     }
-    if (_holes.length || _args.length < length) {
-      return curry.call(this, fn, _args, _holes);
+
+    if (nextArgsIdx < nextArgs.length) {
+      result.push(...nextArgs.slice(nextArgsIdx));
+    }
+
+    return result;
+  };
+
+  const curried = function (...currArgs: any[]) {
+    // 1. 获取实际参数长度
+    const realArgsLength = currArgs.filter(
+      (item) => !isPlaceholder(item),
+    ).length;
+
+    // 1. 实际参数长度超过类函数参数长度
+    // 2. 实际参数里面不包含占位符号
+    if (realArgsLength >= arity && !currArgs.includes(_)) {
+      return fn.apply(this, currArgs);
     } else {
-      return fn.apply(this, _args);
+      return (...nextArgs: any[]) =>
+        curried.apply(this, mergeArgs(currArgs, nextArgs));
     }
   };
+
+  return curried;
 };
 
-var fn = curry(function (a, b, c, d, e) {
+const fn = curry(function (a, b, c, d, e) {
   console.log([a, b, c, d, e]);
 });
 
-// 验证 输出全部都是 [1, 2, 3, 4, 5]
-// fn(1, 2, 3, 4, 5);
-// fn('_', 2, 3, 4, 5)(1);
-// fn(1, '_', 3, 4, 5)(2);
-// fn(1, '_', 3)('_', 4)(2)(5);
-// fn(1, '_', '_', 4)('_', 3)(2)(5);
-// fn('_', 2)('_', '_', 4)(1)(3)(5)
+fn(1, 2, 3, 4, 5);
+fn(_, 2, 3, 4, 5)(1);
+fn(1, _, 3, 4, 5)(2);
+fn(1, _, 3)(_, 4)(2)(5);
+fn(1, _, _, 4)(_, 3)(2)(5);
+fn(_, 2)(_, _, 4)(1)(3)(5);
 ```
 
 ### hard
@@ -1728,7 +1730,7 @@ const partial = (fn: Function, ...reset: unknown[]) => {
 const subtract = function (a, b) {
   return b - a;
 };
-subFrom20 = partial(subtract, "_", 20);
+const subFrom20 = partial(subtract, "_", 20);
 subFrom20(5);
 console.log(subFrom20(5)); //15
 ```

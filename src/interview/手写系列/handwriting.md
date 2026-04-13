@@ -1675,19 +1675,19 @@ const curry = (fn: Function, arity = fn.length) => {
     return result;
   };
 
-  const curried = function (...currArgs: any[]) {
+  const curried = function (...curArgs: any[]) {
     // 1. 获取实际参数长度
-    const realArgsLength = currArgs.filter(
+    const realArgsLength = curArgs.filter(
       (item) => !isPlaceholder(item),
     ).length;
 
     // 1. 实际参数长度超过类函数参数长度
     // 2. 实际参数里面不包含占位符号
-    if (realArgsLength >= arity && !currArgs.includes(_)) {
-      return fn.apply(this, currArgs);
+    if (realArgsLength >= arity && !curArgs.includes(_)) {
+      return fn.apply(this, curArgs);
     } else {
       return (...nextArgs: any[]) =>
-        curried.apply(this, mergeArgs(currArgs, nextArgs));
+        curried.apply(this, mergeArgs(curArgs, nextArgs));
     }
   };
 

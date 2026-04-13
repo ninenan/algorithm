@@ -1866,12 +1866,13 @@ const shuffle = (arr: unknown[]): unknown[] => {
 ```typescript
 const mySetInterval = (fn: Function, delay: number) => {
   let timer: null | ReturnType<typeof setTimeout> = null;
+
   let interval = () => {
     fn();
     timer = setTimeout(interval, delay);
   };
 
-  interval();
+  timer = setTimeout(interval, delay);
 
   return {
     cancel: () => {

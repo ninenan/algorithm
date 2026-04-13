@@ -1893,6 +1893,14 @@ const mySetTimeout = function (fn: Function, delay: number) {
     clearInterval(timer);
     fn();
   }, delay);
+
+  return {
+    cancel: () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    },
+  };
 };
 ```
 

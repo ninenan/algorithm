@@ -2335,10 +2335,14 @@ let arr: INode[] = [
   },
 ];
 
-function arrayToTree(arr, parentId) {
-  const array = [];
+const array2Tree = (arr: INode[], parentId: INode["parentId"]) => {
+  const array: any[] = [];
 
-  function buildTree(arr, parentId, childrenArray) {
+  const buildTree = (
+    arr: INode[],
+    parentId: INode["parentId"],
+    childrenArray: any[],
+  ) => {
     arr.forEach((item) => {
       if (item.parentId === parentId) {
         item.children = [];
@@ -2346,13 +2350,14 @@ function arrayToTree(arr, parentId) {
         childrenArray.push(item);
       }
     });
-  }
+  };
 
   buildTree(arr, parentId, array);
-  return array.length > 0 ? (array.length > 1 ? array : array[0]) : {};
-}
 
-console.log(arrToTree(arr, null));
+  return array;
+};
+
+console.log(array2Tree(arr, null));
 ```
 
 ```typescript
@@ -2362,7 +2367,7 @@ interface INode {
   parentId: number;
 }
 
-interface TreeNode {
+interface ITreeNode {
   id: number;
   val: string;
   parentId: number;
@@ -2402,9 +2407,9 @@ let arr: INode[] = [
   },
 ];
 
-const listToTree = (arr: INode[]): ITreeNode | undefined => {
-  const map = arr.reduce<Map<number, ITreeNode>>((prev, curr) => {
-    prev.set(curr.id, { ...curr, children: [] });
+const array2Tree = (arr: INode[], id: INode["id"]): ITreeNode | undefined => {
+  const map = arr.reduce<Map<number, ITreeNode>>((prev, cur) => {
+    prev.set(cur.id, { ...cur, children: [] });
     return prev;
   }, new Map());
 
@@ -2412,8 +2417,11 @@ const listToTree = (arr: INode[]): ITreeNode | undefined => {
     const parent = map.get(item.parentId as number);
     if (parent) parent.children?.push(item);
   });
-  return map.get(1);
+
+  return map.get(id);
 };
+
+console.log(listToTree(arr, 1));
 ```
 
 ## 树转数组

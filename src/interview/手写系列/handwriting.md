@@ -1907,46 +1907,57 @@ const mySetTimeout = function (fn: Function, delay: number) {
 ## 订阅发布者模式
 
 ```typescript
-class EventEmitter {
-  handlers: object;
+class EventEmitter class EventEmitter<T extends Record<string, (...args: any[]) => any>> {
+  // handlers 是一个 map 用于存储事件与回调之间的对应关系
+  handlers: {
+    [K in keyof T]?: T[K][];
+  };
+
   constructor() {
-    // handlers 是一个 map 用于存储事件与回调之间的对应关系
     this.handlers = {};
   }
+
   // 安装事件监听器，接受目标事件名和回调函数作为参数
-  on(eventName, cb: Function) {
+  on<K extends keyof T>(eventName: K, cb: T[K]) {
     if (!this.handlers[eventName]) {
-      // 如果没有，就先初始化一个监听函数队列
       this.handlers[eventName] = [];
     }
-    this.handlers[eventName].push(cb);
+
+    this.handlers[eventName]!.push(cb);
   }
+
   // emit 用于触发事件，接受事件名称和监听函数入参作为参数
-  emit(eventName, ...reset: unknown[]) {
-    if (this.handlers[eventName]) {
+  emit<K extends keyof T>(eventName: K, ...args: Parameters<T[K]>) {
+    const callbacks = this.handlers[eventName];
+
+    if (callbacks?.length) {
       // 对 this.handlers[eventName] 进行一次浅拷贝
       // 主要目的地是避免通过 once 安装的监听器在移除的过程中出现顺序问题
-      const handlers = this.handlers[eventName].slice();
-      handlers.forEach((cb) => {
-        cb(...reset);
-      });
+      [...callbacks].forEach((cb) => cb(...args));
     }
   }
+
   // 移除某个回调函数队列里的指定回调函数
-  off(eventName, cb) {
+  off<K extends keyof T>(eventName: K, cb: T[K]) {
     const callbacks = this.handlers[eventName];
-    const index = callbacks.indexOf(cb);
-    if (index !== -1) {
-      callbacks.splice(index, 1);
+
+    if (callbacks?.length) {
+      const index = callbacks.findIndex((item) => item === cb);
+
+      if (index !== -1) {
+        callbacks.splice(index, 1);
+      }
     }
   }
-  // 为事件注册单词回调函数
-  once(eventName, cb) {
-    const wrapper = (...reset: unknown[]) => {
-      cb(...reset);
-      this.off(eventName, wrapper);
+
+  // 为事件注册单次回调函数
+  once<K extends keyof T>(eventName: K, cb: T[K]) {
+    const wrapper = (...args: Parameters<T[K]>) => {
+      cb(...args);
+      this.off(eventName, wrapper as unknown as T[K]);
     };
-    this.on(eventName, wrapper);
+
+    this.on(eventName, wrapper as unknown as T[K]);
   }
 }
 
@@ -1977,15 +1988,25 @@ event1.emit("dbClick"); // 不输出
 > [forEach](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach)
 
 ```typescript
-Array.prototype.myForEach = function (cb: Function, thisArg = window) {
-  if (this === null || this === undefined) {
+Array.prototype.myForEach = function <T>(
+  this: T[],
+  cb: (curVal: T, index: number, array: T[]) => void,
+  thisArgs?: any,
+) {
+  if (this === undefined || this === null) {
     throw new TypeError("this is null or not defined");
   }
-  if (typeof cb !== "function") throw new TypeError(cb + " is not a function");
-  const arr = this;
+
+  if (typeof cb !== "function") {
+    throw new TypeError(`${cb} is not a function`);
+  }
+
+  const arr = Object(this);
+
   for (let index = 0; index < arr.length; index++) {
-    // 执行回调函数
-    cb.call(thisArg, arr[index], index, arr);
+    if (index in arr) {
+      cb.call(thisArgs, arr[index], index, arr);
+    }
   }
 };
 ```
@@ -1995,12 +2016,26 @@ Array.prototype.myForEach = function (cb: Function, thisArg = window) {
 > [map](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
 
 ```typescript
-Array.prototype.myMap = function (cb: Function, thisArg = window) {
-  const arr = this;
-  const res = [];
+Array.prototype.myMap = function <T, R>(
+  this: T[],
+  cb: (curVal: T, index: number, array: T[]) => R,
+  thisArgs?: any,
+): R[] {
+  if (this === undefined || this === null) {
+    throw new TypeError("this is null or not defined");
+  }
+
+  if (typeof cb !== "function") {
+    throw new TypeError(`${cb} is not a function`);
+  }
+
+  const arr = Object(this);
+  const res: R[] = [];
 
   for (let index = 0; index < arr.length; index++) {
-    res.push(cb.call(thisArg, arr[index], index, arr));
+    if (index in arr) {
+      res[index] = cb.call(thisArgs, arr[index], index, arr);
+    }
   }
 
   return res;
@@ -2011,31 +2046,41 @@ Array.prototype.myMap = function (cb: Function, thisArg = window) {
 
 > [reduce](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce)
 
-```javascript
-Array.prototype.myReduce = function (cb: Function, initValue) {
-  if (this === null || this === undefined) {
-    throw new TypeError(
-      "Array.prototype.reduce " + "called on null or undefined"
-    );
+```typescript
+Array.prototype.myReduce = function <T, R>(
+  this: T[],
+  cb: (accumulator: R, curVal: T, index: number, array: T[]) => R,
+  initialVal?: R,
+  thisArgs?: any,
+): R {
+  if (this === undefined || this === null) {
+    throw new TypeError("this is null or not defined");
   }
 
   if (typeof cb !== "function") {
-    throw new TypeError(`${cb} is not a Function`);
+    throw new TypeError(`${cb} is not a function`);
   }
 
-  let accumulator = initValue;
-  let arr = this;
+  const arr = Object(this);
+  let accumulator = initialVal;
   let index = 0;
 
   if (accumulator === undefined) {
-    accumulator = arr[index];
-    index++;
+    // 空数组且未提供初始值
+    if (arr.length === 0) {
+      throw new TypeError("Reduce of empty array with no initialVal");
+    }
+  } else {
+    accumulator = arr[index++];
   }
 
   for (; index < arr.length; index++) {
-    accumulator = cb(accumulator, arr[index], index, arr);
+    if (index in arr) {
+      accumulator = cb.call(thisArgs, accumulator, arr[index], index, arr);
+    }
   }
-  return accumulator;
+
+  return accumulator!;
 };
 ```
 
@@ -2044,23 +2089,30 @@ Array.prototype.myReduce = function (cb: Function, initValue) {
 > [every](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/every)
 
 ```typescript
-Array.prototype.myEvery = function (cb: Function, thisArg = window) {
-  if (this == null) {
-    throw new TypeError("Array.prototype.some called on null or undefined");
+Array.prototype.myEvery = function <T>(
+  this: T[],
+  cb: (curVal: T, index: number, array: T[]) => boolean,
+  thisArgs?: any,
+): boolean {
+  if (this === undefined || this === null) {
+    throw new TypeError("this is null or not defined");
   }
 
   if (typeof cb !== "function") {
-    throw new TypeError();
+    throw new TypeError(`${cb} is not a function`);
   }
 
-  const arr = this;
-  let flag = true;
+  const arr = Object(this);
 
   for (let index = 0; index < arr.length; index++) {
-    if (!cb.call(thisArg, arr[index], index, arr)) return false;
+    if (index in arr) {
+      if (!cb.call(thisArgs, arr[index], index, arr)) {
+        return false;
+      }
+    }
   }
 
-  return flag;
+  return true;
 };
 ```
 
@@ -2069,23 +2121,30 @@ Array.prototype.myEvery = function (cb: Function, thisArg = window) {
 > [some](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/some)
 
 ```typescript
-Array.prototype.mySome = function (cb: Function, thisArg = window) {
-  if (this == null) {
+Array.prototype.mySome = function <T>(
+  this: T[],
+  cb: (curVal: T, index: number, array: T[]) => boolean,
+  thisArgs?: any,
+): boolean {
+  if (this === undefined || this === null) {
     throw new TypeError("this is null or not defined");
   }
+
   if (typeof cb !== "function") {
-    throw new TypeError();
+    throw new TypeError(`${cb} is not a function`);
   }
 
-  const arr = this;
-  const flag = false;
+  const arr = Object(this);
 
   for (let index = 0; index < arr.length; index++) {
-    if (cb.call(thisArg, arr[index], index, arr)) {
-      return true;
+    if (index in arr) {
+      if (cb.call(thisArgs, arr[index], index, arr)) {
+        return true;
+      }
     }
   }
-  return flag;
+
+  return false;
 };
 ```
 
@@ -2094,18 +2153,29 @@ Array.prototype.mySome = function (cb: Function, thisArg = window) {
 > [find](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
 
 ```typescript
-Array.prototype.myFind = function (cb: Function, thisArg = null) {
-  if (this == null) {
+Array.prototype.myFind = function <T>(
+  this: T[],
+  cb: (curVal: T, index: number, array: T[]) => boolean,
+  thisArgs?: any,
+): T | undefined {
+  if (this === undefined || this === null) {
     throw new TypeError("this is null or not defined");
   }
+
   if (typeof cb !== "function") {
-    throw new TypeError();
+    throw new TypeError(`${cb} is not a function`);
   }
 
-  const arr = this;
+  const arr = Object(this);
+
   for (let index = 0; index < arr.length; index++) {
-    if (cb.call(thisArg, arr[index], index, arr)) return arr[index];
+    if (index in arr) {
+      if (cb.call(thisArgs, arr[index], index, arr)) {
+        return arr[index];
+      }
+    }
   }
+
   return undefined;
 };
 ```
@@ -2115,18 +2185,29 @@ Array.prototype.myFind = function (cb: Function, thisArg = null) {
 > [findIndex](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex)
 
 ```typescript
-Array.prototype.myFindIndex = function (cb: Function, thisArg = null) {
-  if (this == null) {
+Array.prototype.myFindIndex = function <T>(
+  this: T[],
+  cb: (curVal: T, index: number, array: T[]) => boolean,
+  thisArgs?: any,
+): number {
+  if (this === undefined || this === null) {
     throw new TypeError("this is null or not defined");
   }
+
   if (typeof cb !== "function") {
-    throw new TypeError();
+    throw new TypeError(`${cb} is not a function`);
   }
 
-  const arr = this;
+  const arr = Object(this);
+
   for (let index = 0; index < arr.length; index++) {
-    if (cb.call(thisArg, arr[index], index, arr)) return index;
+    if (index in arr) {
+      if (cb.call(thisArgs, arr[index], index, arr)) {
+        return index;
+      }
+    }
   }
+
   return -1;
 };
 ```
@@ -2136,16 +2217,29 @@ Array.prototype.myFindIndex = function (cb: Function, thisArg = null) {
 > [indexOf](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
 
 ```typescript
-Array.prototype.myIndexOf = function (val, beginIndex = 0) {
-  if (this.length < 1) {
-    return -1;
+Array.prototype.myIndexOf = function <T>(
+  this: T[],
+  val: T,
+  beginIndex = 0,
+): number {
+  if (this === undefined || this === null) {
+    throw new TypeError("this is null or not defined");
   }
 
-  const arr = this;
-  beginIndex = beginIndex <= 0 ? 0 : beginIndex;
+  const arr = Object(this);
+  let begin = beginIndex;
 
-  for (let index = beginIndex; index < arr.length; index++) {
-    if (val === arr[index]) return index;
+  if (begin < 0) {
+    begin = beginIndex + arr.length;
+    if (beginIndex < 0) {
+      begin = 0;
+    }
+  }
+
+  for (let index = begin; index < arr.length; index++) {
+    if (arr[index] === val) {
+      return index;
+    }
   }
 
   return -1;
@@ -2666,7 +2760,7 @@ if (!Object.entries) {
 ```typescript
 /*
 JS实现一个带并发限制的异步调度器Scheduler，保证同时运行的任务最多有两个。
-完善下面代码的Scheduler类，使以下程序能够正常输出：
+完善�������代码的Scheduler类，使以下程序能够正常输出：
 class Scheduler {
   add(promiseCreator) { ... }
   // ...
@@ -2695,7 +2789,7 @@ addTask(400, '4')
 起始1、2两个任务开始执行
 500ms时，2任务执行完毕，输出2，任务3开始执行
 800ms时，3任务执行完毕，输出3，任务4开始执行
-1000ms时，1任务执行完毕，输出1，此时只剩下4任务在执行
+1000ms时，1���务执行完毕，输出1，此时只剩下4任务在执行
 1200ms时，4任务执行完毕，输出4
 */
 

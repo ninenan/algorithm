@@ -2502,7 +2502,8 @@ console.log(sum(1, 2)(3).sumOf()); // 6
 ## composePromise
 
 ```typescript
-const sleep = (timer) => new Promise((resolve) => setTimeout(resolve, timer));
+const sleep = (timer = 300) =>
+  new Promise((resolve) => setTimeout(resolve, timer));
 
 const composePromise = (...fns) => {
   return function (...rest) {

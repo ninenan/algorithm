@@ -2627,13 +2627,18 @@ function pAllSettled(promiseArr) {
     });
   });
 }
+
+const sleep = function (time: number) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+};
+
+const sleep1 = sleep(1_0000).then(() => "sleep1");
+const sleep2 = sleep(2_0000).then(() => "sleep2");
+const sleep3 = sleep(3_000).then(() => "sleep3");
+
 pAllSettled([sleep3, sleep2, sleep1]).then((res) =>
   console.log("res :>> ", res),
 );
-
-// [ { status: 'fulfilled', value: 'sleep1' },
-// { status: 'fulfilled', value: 'sleep2' },
-// { status: 'fulfilled', value: 'sleep3' } ]
 ```
 
 ## Promise.any
@@ -2642,18 +2647,30 @@ pAllSettled([sleep3, sleep2, sleep1]).then((res) =>
 function pAny(promiseArr) {
   let count = 0;
   const len = promiseArr.length;
+
   return new Promise((resolve, reject) => {
     if (!len) return;
+
     promiseArr.forEach((item) => {
       Promise.resolve(item)
         .then((data) => resolve(data))
-        .catch((reason) => {
+        .catch(() => {
           if (++count === len)
             reject(new AggregateError("All promise were rejected"));
         });
     });
   });
 }
+
+const sleep = function (time: number) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+};
+
+const sleep1 = sleep(1_0000).then(() => "sleep1");
+const sleep2 = sleep(2_0000).then(() => "sleep2");
+const sleep3 = sleep(3_000).then(() => "sleep3");
+
+pAny([sleep3, sleep2, sleep1]).then((res) => console.log("res :>> ", res)); // res :>>  sleep3
 ```
 
 ## 字符串模板

@@ -484,8 +484,8 @@ interface IOptions {
   trailing?: boolean; // 表示禁用停止触发的回调 true-不禁用 false-禁用
 }
 
-const throttle = (
-  fn: Function,
+const throttle = <T extends (...rest: any[]) => any>(
+  fn: T,
   delay = 500,
   { leading = true, trailing = false }: IOptions,
 ) => {
@@ -493,7 +493,7 @@ const throttle = (
   let previous = 0;
   let isFirst = true;
 
-  const throttled = function (...rest: any[]) {
+  const throttled = function (...rest: Parameters<T>) {
     const now = +new Date();
 
     if (leading === false && isFirst) {
